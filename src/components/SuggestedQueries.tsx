@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Code, Database, Cpu, Network } from 'lucide-react';
+import { Code, Database, Cpu, Network, ExternalLink } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery: (query: string) => void;
@@ -30,6 +30,33 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
     }
   ];
 
+  const websites = [
+    {
+      icon: <Code className="text-cyber-blue" size={16} />,
+      name: "Python.org",
+      url: "https://python.org",
+      category: "Python"
+    },
+    {
+      icon: <Database className="text-cyber-purple" size={16} />,
+      name: "OWASP",
+      url: "https://owasp.org",
+      category: "Security"
+    },
+    {
+      icon: <Cpu className="text-cyber-pink" size={16} />,
+      name: "TensorFlow",
+      url: "https://tensorflow.org",
+      category: "AI"
+    },
+    {
+      icon: <Network className="text-cyber-green" size={16} />,
+      name: "React Docs",
+      url: "https://react.dev",
+      category: "Web Dev"
+    }
+  ];
+
   return (
     <div className="cyber-panel p-4 mb-4 animate-fade-in">
       <h3 className="font-orbitron text-lg mb-3">Suggested Topics</h3>
@@ -49,6 +76,29 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
               {query.category}
             </span>
           </button>
+        ))}
+      </div>
+
+      <h3 className="font-orbitron text-lg mt-6 mb-3">Learning Resources</h3>
+      
+      <div className="space-y-2">
+        {websites.map((website, index) => (
+          <a 
+            key={index}
+            href={website.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cyber-button w-full text-left flex items-center justify-between neon-glow"
+          >
+            <span className="flex items-center">
+              {website.icon}
+              <span className="ml-2 text-sm truncate">{website.name}</span>
+            </span>
+            <span className="flex items-center text-xs bg-cyber-darker px-2 py-1 rounded-md">
+              <ExternalLink size={12} className="mr-1" />
+              {website.category}
+            </span>
+          </a>
         ))}
       </div>
     </div>
