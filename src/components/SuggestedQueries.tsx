@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Code, Database, Cpu, Network, ExternalLink, Book, Video, Graduation, Globe, School } from 'lucide-react';
+import { Code, Database, Cpu, Network, ExternalLink, Book, Video, GraduationCap, Globe, School } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery: (query: string) => void;
@@ -68,7 +68,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       category: "Courses"
     },
     {
-      icon: <Graduation className="text-cyber-green" size={16} />,
+      icon: <GraduationCap className="text-cyber-green" size={16} />,
       name: "MIT OpenCourseWare",
       url: "https://ocw.mit.edu",
       category: "Academic"
