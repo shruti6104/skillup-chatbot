@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, BarChart, Award, Settings, LogOut } from 'lucide-react';
+import { Menu, X, User, BarChart, Award, Settings, LogOut, Book, Cpu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,7 +35,9 @@ const Header = () => {
     <header className="cyber-panel py-3 px-6 mb-6 cyber-border">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <span className="font-orbitron text-2xl cyber-gradient-text">SkillUp</span>
+          <Link to="/" className="flex items-center">
+            <span className="font-orbitron text-2xl cyber-gradient-text">SkillUp</span>
+          </Link>
           <div className="hidden md:block terminal-text animate-typing">
             {displayText}<span className="animate-blink"></span>
           </div>
@@ -43,12 +45,18 @@ const Header = () => {
         
         <div className="flex items-center">
           <div className="hidden md:flex items-center space-x-1">
-            <button className="cyber-button text-sm px-3 neon-glow">
+            <Link to="/" className="cyber-button text-sm px-3 neon-glow">
               <span className="flex items-center">
-                <User size={16} className="mr-2" />
-                Profile
+                <Cpu size={16} className="mr-2" />
+                AI Chat
               </span>
-            </button>
+            </Link>
+            <Link to="/resources" className="cyber-button text-sm px-3 neon-glow">
+              <span className="flex items-center">
+                <Book size={16} className="mr-2" />
+                Resources
+              </span>
+            </Link>
             <button className="cyber-button text-sm px-3 neon-glow">
               <span className="flex items-center">
                 <BarChart size={16} className="mr-2" />
@@ -75,35 +83,33 @@ const Header = () => {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden mt-4 space-y-2 animate-fade-in">
-          <button className="cyber-button w-full text-left">
-            <span className="flex items-center">
-              <User size={16} className="mr-2" />
-              Profile
-            </span>
+          <Link to="/" className="cyber-button w-full text-left flex items-center">
+            <Cpu size={16} className="mr-2" />
+            AI Chat
+          </Link>
+          <Link to="/resources" className="cyber-button w-full text-left flex items-center">
+            <Book size={16} className="mr-2" />
+            Resources
+          </Link>
+          <button className="cyber-button w-full text-left flex items-center">
+            <User size={16} className="mr-2" />
+            Profile
           </button>
-          <button className="cyber-button w-full text-left">
-            <span className="flex items-center">
-              <BarChart size={16} className="mr-2" />
-              Stats
-            </span>
+          <button className="cyber-button w-full text-left flex items-center">
+            <BarChart size={16} className="mr-2" />
+            Stats
           </button>
-          <button className="cyber-button w-full text-left">
-            <span className="flex items-center">
-              <Award size={16} className="mr-2" />
-              Badges
-            </span>
+          <button className="cyber-button w-full text-left flex items-center">
+            <Award size={16} className="mr-2" />
+            Badges
           </button>
-          <button className="cyber-button w-full text-left">
-            <span className="flex items-center">
-              <Settings size={16} className="mr-2" />
-              Settings
-            </span>
+          <button className="cyber-button w-full text-left flex items-center">
+            <Settings size={16} className="mr-2" />
+            Settings
           </button>
-          <button className="cyber-button w-full text-left">
-            <span className="flex items-center">
-              <LogOut size={16} className="mr-2" />
-              Logout
-            </span>
+          <button className="cyber-button w-full text-left flex items-center">
+            <LogOut size={16} className="mr-2" />
+            Logout
           </button>
         </div>
       )}
