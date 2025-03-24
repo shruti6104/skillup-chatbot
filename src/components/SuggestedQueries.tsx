@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Code, Database, Cpu, Network, ExternalLink } from 'lucide-react';
+import { Code, Database, Cpu, Network, ExternalLink, Book, Video, Graduation, Globe, School } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery: (query: string) => void;
@@ -36,6 +36,42 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       name: "Python.org",
       url: "https://python.org",
       category: "Python"
+    },
+    {
+      icon: <Book className="text-cyber-green" size={16} />,
+      name: "GeeksforGeeks",
+      url: "https://geeksforgeeks.org",
+      category: "Coding"
+    },
+    {
+      icon: <Video className="text-cyber-pink" size={16} />,
+      name: "Coursera",
+      url: "https://coursera.org",
+      category: "Courses"
+    },
+    {
+      icon: <School className="text-cyber-purple" size={16} />,
+      name: "Khan Academy",
+      url: "https://khanacademy.org",
+      category: "Learning"
+    },
+    {
+      icon: <Globe className="text-cyber-blue" size={16} />,
+      name: "W3Schools",
+      url: "https://w3schools.com",
+      category: "Web Dev"
+    },
+    {
+      icon: <Video className="text-cyber-pink" size={16} />,
+      name: "Udemy",
+      url: "https://udemy.com",
+      category: "Courses"
+    },
+    {
+      icon: <Graduation className="text-cyber-green" size={16} />,
+      name: "MIT OpenCourseWare",
+      url: "https://ocw.mit.edu",
+      category: "Academic"
     },
     {
       icon: <Database className="text-cyber-purple" size={16} />,
@@ -81,7 +117,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
 
       <h3 className="font-orbitron text-lg mt-6 mb-3">Learning Resources</h3>
       
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
         {websites.map((website, index) => (
           <a 
             key={index}
