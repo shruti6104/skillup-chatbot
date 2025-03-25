@@ -14,17 +14,40 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [error, setError] = useState('');
   
   const validateEmail = (email: string) => {
+    // More comprehensive email validation
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+    
+    // Basic format validation
+    if (!re.test(String(email).toLowerCase())) {
+      return { valid: false, message: 'Please enter a valid email address' };
+    }
+    
+    // Additional security checks
+    const domainPart = email.split('@')[1];
+    
+    // Check if domain has a valid TLD (at least 2 characters after the dot)
+    if (!/\.[a-z]{2,}$/i.test(domainPart)) {
+      return { valid: false, message: 'Email domain appears to be invalid' };
+    }
+    
+    // For demo purposes, only allow certain domains (optional)
+    const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'example.com'];
+    const emailDomain = domainPart.toLowerCase();
+    if (!allowedDomains.some(domain => emailDomain.endsWith(domain))) {
+      return { valid: false, message: 'Please use a valid email provider' };
+    }
+    
+    return { valid: true, message: '' };
   };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
-    // Email validation
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
+    // Enhanced Email validation
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      setError(emailValidation.message);
       return;
     }
     
@@ -51,6 +74,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         title: "Login Successful",
         description: "Welcome to SkillUp AI",
       });
+      
+      // Store login information in localStorage
+      localStorage.setItem('skillup_isLoggedIn', 'true');
+      localStorage.setItem('skillup_email', email);
       
       onLogin();
     }, 2000); // Simulated login delay
