@@ -29,6 +29,9 @@ interface Message {
   timestamp: Date;
 }
 
+const STREAK_KEY = 'skillup_streak';
+const LAST_LOGIN_KEY = 'skillup_last_login';
+
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -36,6 +39,7 @@ const Index = () => {
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(25);
   const [userBadges, setUserBadges] = useState(2);
+  const [userStreak, setUserStreak] = useState(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom of messages
@@ -46,6 +50,61 @@ const Index = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Calculate streak on login
+  const calculateStreak = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
+    const todayStr = today.toISOString();
+    
+    // Get last login date from localStorage
+    const lastLoginStr = localStorage.getItem(LAST_LOGIN_KEY);
+    const currentStreak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+    
+    let newStreak = 1; // Default to 1 if no previous streak
+    
+    if (lastLoginStr) {
+      const lastLogin = new Date(lastLoginStr);
+      lastLogin.setHours(0, 0, 0, 0); // Normalize to start of day
+      
+      // Calculate difference in days
+      const timeDiff = today.getTime() - lastLogin.getTime();
+      const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+      
+      if (dayDiff === 1) {
+        // Consecutive day, increment streak
+        newStreak = currentStreak + 1;
+        toast({
+          title: "Streak Increased!",
+          description: `You're on a ${newStreak}-day streak! Keep it up!`,
+        });
+      } else if (dayDiff === 0) {
+        // Same day login, maintain streak
+        newStreak = currentStreak;
+      } else {
+        // Streak broken
+        if (currentStreak > 1) {
+          toast({
+            title: "Streak Reset",
+            description: "Your streak has been reset. Start a new one today!",
+          });
+        }
+        newStreak = 1;
+      }
+    } else {
+      // First time login
+      toast({
+        title: "Streak Started!",
+        description: "You've started your learning streak! Come back tomorrow to keep it going!",
+      });
+    }
+    
+    // Save updated streak and login date
+    localStorage.setItem(STREAK_KEY, newStreak.toString());
+    localStorage.setItem(LAST_LOGIN_KEY, todayStr);
+    
+    return newStreak;
+  };
 
   useEffect(() => {
     // Add initial message if logged in
@@ -63,6 +122,8 @@ const Index = () => {
   }, [isLoggedIn, messages.length]);
 
   const handleLogin = () => {
+    const streak = calculateStreak();
+    setUserStreak(streak);
     setIsLoggedIn(true);
     
     // Show welcome toast
@@ -179,6 +240,7 @@ const Index = () => {
                 xp={userXP}
                 nextLevelXp={100}
                 badges={userBadges}
+                streak={userStreak}
               />
               
               <SuggestedQueries onSelectQuery={handleSelectQuery} />

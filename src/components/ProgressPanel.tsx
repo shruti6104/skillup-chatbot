@@ -7,9 +7,22 @@ interface ProgressPanelProps {
   xp: number;
   nextLevelXp: number;
   badges: number;
+  streak?: number; // Make streak optional with a default value
+  topics?: number;
+  avgResponse?: number;
+  rank?: number;
 }
 
-const ProgressPanel: React.FC<ProgressPanelProps> = ({ level, xp, nextLevelXp, badges }) => {
+const ProgressPanel: React.FC<ProgressPanelProps> = ({ 
+  level, 
+  xp, 
+  nextLevelXp, 
+  badges,
+  streak = 1, // Default to 1 if not provided
+  topics = 5,
+  avgResponse = 93,
+  rank = 42
+}) => {
   const progressPercentage = Math.min(100, (xp / nextLevelXp) * 100);
   
   return (
@@ -46,19 +59,19 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({ level, xp, nextLevelXp, b
       <div className="grid grid-cols-2 gap-3">
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Topics</div>
-          <div className="font-orbitron text-cyber-green text-lg">5</div>
+          <div className="font-orbitron text-cyber-green text-lg">{topics}</div>
         </div>
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Days Streak</div>
-          <div className="font-orbitron text-cyber-purple text-lg">7</div>
+          <div className="font-orbitron text-cyber-purple text-lg">{streak}</div>
         </div>
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Avg. Response</div>
-          <div className="font-orbitron text-cyber-blue text-lg">93%</div>
+          <div className="font-orbitron text-cyber-blue text-lg">{avgResponse}%</div>
         </div>
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Rank</div>
-          <div className="font-orbitron text-cyber-pink text-lg">42</div>
+          <div className="font-orbitron text-cyber-pink text-lg">{rank}</div>
         </div>
       </div>
       
