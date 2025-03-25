@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Brain, Zap, Award, BarChart2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface ProgressPanelProps {
   level: number;
@@ -20,10 +21,14 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({
   badges,
   streak = 1, // Default to 1 if not provided
   topics = 5,
-  avgResponse = 93,
+  avgResponse = 0,
   rank = 42
 }) => {
   const progressPercentage = Math.min(100, (xp / nextLevelXp) * 100);
+  
+  // Calculate a more realistic average response value based on XP and streak
+  const calculatedAvgResponse = Math.min(98, Math.floor(60 + (xp / 2) + (streak * 2)));
+  const displayedAvgResponse = avgResponse > 0 ? avgResponse : calculatedAvgResponse;
   
   return (
     <div className="cyber-panel p-4 mb-4 animate-fade-in">
@@ -67,7 +72,10 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({
         </div>
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Avg. Response</div>
-          <div className="font-orbitron text-cyber-blue text-lg">{avgResponse}%</div>
+          <div className="font-orbitron text-cyber-blue text-lg">{displayedAvgResponse}%</div>
+          <div className="w-full mt-1">
+            <Progress value={displayedAvgResponse} className="h-1 bg-cyber-darker" />
+          </div>
         </div>
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Rank</div>
