@@ -13,28 +13,40 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
   
+  // Comprehensive email validation with more strict security checks
   const validateEmail = (email: string) => {
-    // More comprehensive email validation
+    // Basic format validation with regex
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     
-    // Basic format validation
     if (!re.test(String(email).toLowerCase())) {
       return { valid: false, message: 'Please enter a valid email address' };
     }
     
-    // Additional security checks
-    const domainPart = email.split('@')[1];
+    // Extract domain part for additional checks
+    const domainPart = email.split('@')[1].toLowerCase();
     
-    // Check if domain has a valid TLD (at least 2 characters after the dot)
-    if (!/\.[a-z]{2,}$/i.test(domainPart)) {
-      return { valid: false, message: 'Email domain appears to be invalid' };
+    // Check for disposable email domains that are commonly used by attackers
+    const suspiciousDomains = ['tempmail.com', 'temp-mail.org', 'fakeinbox.com', 'guerrillamail.com', 'mailinator.com'];
+    if (suspiciousDomains.some(domain => domainPart.includes(domain))) {
+      return { valid: false, message: 'Please use a permanent email address' };
     }
     
-    // For demo purposes, only allow certain domains (optional)
-    const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'example.com'];
-    const emailDomain = domainPart.toLowerCase();
-    if (!allowedDomains.some(domain => emailDomain.endsWith(domain))) {
-      return { valid: false, message: 'Please use a valid email provider' };
+    // Whitelist approach - only allow specific trusted domains for enhanced security
+    const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'example.com', 'company.com', 'education.org', 'school.edu'];
+    
+    if (!allowedDomains.some(domain => domainPart === domain)) {
+      return { valid: false, message: 'Please use an authorized email provider' };
+    }
+    
+    // Check for common email patterns that might indicate a bot
+    if (
+      email.includes('admin') || 
+      email.includes('support') || 
+      email.includes('info') || 
+      email.includes('test') || 
+      /\d{6,}/.test(email) // Contains 6+ consecutive digits
+    ) {
+      return { valid: false, message: 'This email address appears to be invalid' };
     }
     
     return { valid: true, message: '' };
@@ -44,7 +56,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     
-    // Enhanced Email validation
+    // Enhanced Email validation with stricter rules
     const emailValidation = validateEmail(email);
     if (!emailValidation.valid) {
       setError(emailValidation.message);
@@ -54,6 +66,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     // Password validation (minimum 6 characters)
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      return;
+    }
+    
+    // Enhanced password security checks
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter');
+      return;
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number');
       return;
     }
     
@@ -165,3 +188,4 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
 };
 
 export default LoginForm;
+
