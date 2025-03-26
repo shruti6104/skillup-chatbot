@@ -18,11 +18,13 @@ interface StatCard {
 
 const StatsPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Updated stats - fixed "Hours Learned" to be a more realistic value (was 8.5)
   const [userStats, setUserStats] = useState({
     messageCount: 42,
     topicsExplored: 15,
-    hoursLearned: 8.5,
-    dailyStreak: 3,
+    hoursLearned: 2.5, // Changed from 8.5 to a more realistic value
+    dailyStreak: 1, // Changed from 3 to 1 to address the streak issue
     skillProgress: {
       'Python': 65,
       'Web Dev': 45,
@@ -35,7 +37,7 @@ const StatsPage = () => {
   const [userProfile, setUserProfile] = useState({
     name: localStorage.getItem('skillup_name') || "User",
     email: localStorage.getItem('skillup_email') || "user@example.com",
-    joinDate: "November 15, 2023",
+    joinDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), // Updated to use current date
     interests: ["Machine Learning", "Web Development", "Cybersecurity"],
     skills: ["Python", "JavaScript", "React"]
   });
@@ -54,6 +56,7 @@ const StatsPage = () => {
     });
   };
   
+  // Updated stat cards with fixed hours learned value
   const statCards: StatCard[] = [
     {
       title: "Messages Sent",

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, BarChart, Award, Settings, LogOut, Book, Cpu } from 'lucide-react';
+import { Menu, X, User, BarChart, Award, LogOut, Book, Cpu } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
@@ -147,10 +147,6 @@ const Header = () => {
             <User size={16} className="mr-2" />
             Profile
           </Link>
-          <button className="cyber-button w-full text-left flex items-center">
-            <Settings size={16} className="mr-2" />
-            Settings
-          </button>
           <button 
             className="cyber-button w-full text-left flex items-center bg-red-500/20 hover:bg-red-500/30"
             onClick={handleLogout}

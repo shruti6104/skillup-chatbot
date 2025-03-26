@@ -54,7 +54,11 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ badges }) => {
   );
 };
 
-// Default badges to use in the app
+// Default badges to use in the app - updated with current dates
+const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
+const formattedMonth = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}`;
+
 export const defaultBadges: BadgeItem[] = [
   {
     id: 'first-chat',
@@ -62,7 +66,7 @@ export const defaultBadges: BadgeItem[] = [
     description: 'Started your first conversation with SkillUp AI',
     icon: <Star size={18} className="text-yellow-400" />,
     earned: true,
-    date: '2023-11-15'
+    date: `${currentYear}-${formattedMonth}-01`
   },
   {
     id: 'python-beginner',
@@ -70,7 +74,7 @@ export const defaultBadges: BadgeItem[] = [
     description: 'Completed the basics of Python programming',
     icon: <Code size={18} className="text-blue-400" />,
     earned: true,
-    date: '2023-11-18'
+    date: `${currentYear}-${formattedMonth}-05`
   },
   {
     id: 'ai-enthusiast',
@@ -78,7 +82,7 @@ export const defaultBadges: BadgeItem[] = [
     description: 'Explored the fundamentals of artificial intelligence',
     icon: <Brain size={18} className="text-purple-400" />,
     earned: true,
-    date: '2023-11-20'
+    date: `${currentYear}-${formattedMonth}-10`
   },
   {
     id: 'web-explorer',
