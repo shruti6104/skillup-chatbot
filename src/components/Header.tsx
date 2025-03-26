@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Menu, X, User, BarChart, Award, Settings, LogOut, Book, Cpu } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
 const STREAK_KEY = 'skillup_streak';
@@ -11,6 +12,7 @@ const Header = () => {
   const [displayText, setDisplayText] = useState('');
   const fullText = 'Welcome to SkillUp AI';
   const navigate = useNavigate();
+  const location = useLocation();
   
   useEffect(() => {
     let i = 0;
@@ -49,6 +51,10 @@ const Header = () => {
     window.location.href = '/';
   };
 
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
     <header className="cyber-panel py-3 px-6 mb-6 cyber-border">
       <div className="flex justify-between items-center">
@@ -63,30 +69,42 @@ const Header = () => {
         
         <div className="flex items-center">
           <div className="hidden md:flex items-center space-x-1">
-            <Link to="/" className="cyber-button text-sm px-3 neon-glow">
+            <Link 
+              to="/" 
+              className={`cyber-button text-sm px-3 ${isActive('/') ? 'bg-cyber-blue/20' : ''} neon-glow`}
+            >
               <span className="flex items-center">
                 <Cpu size={16} className="mr-2" />
                 AI Chat
               </span>
             </Link>
-            <Link to="/resources" className="cyber-button text-sm px-3 neon-glow">
+            <Link 
+              to="/resources" 
+              className={`cyber-button text-sm px-3 ${isActive('/resources') ? 'bg-cyber-blue/20' : ''} neon-glow`}
+            >
               <span className="flex items-center">
                 <Book size={16} className="mr-2" />
                 Resources
               </span>
             </Link>
-            <button className="cyber-button text-sm px-3 neon-glow">
+            <Link
+              to="/stats"
+              className={`cyber-button text-sm px-3 ${isActive('/stats') ? 'bg-cyber-blue/20' : ''} neon-glow`}
+            >
               <span className="flex items-center">
                 <BarChart size={16} className="mr-2" />
                 Stats
               </span>
-            </button>
-            <button className="cyber-button text-sm px-3 neon-glow">
+            </Link>
+            <Link
+              to="/stats?tab=badges"
+              className={`cyber-button text-sm px-3 ${isActive('/stats') && location.search.includes('tab=badges') ? 'bg-cyber-blue/20' : ''} neon-glow`}
+            >
               <span className="flex items-center">
                 <Award size={16} className="mr-2" />
                 Badges
               </span>
-            </button>
+            </Link>
             <button 
               className="cyber-button text-sm px-3 neon-glow bg-red-500/20 hover:bg-red-500/30"
               onClick={handleLogout}
@@ -117,18 +135,18 @@ const Header = () => {
             <Book size={16} className="mr-2" />
             Resources
           </Link>
-          <button className="cyber-button w-full text-left flex items-center">
-            <User size={16} className="mr-2" />
-            Profile
-          </button>
-          <button className="cyber-button w-full text-left flex items-center">
+          <Link to="/stats" className="cyber-button w-full text-left flex items-center">
             <BarChart size={16} className="mr-2" />
             Stats
-          </button>
-          <button className="cyber-button w-full text-left flex items-center">
+          </Link>
+          <Link to="/stats?tab=badges" className="cyber-button w-full text-left flex items-center">
             <Award size={16} className="mr-2" />
             Badges
-          </button>
+          </Link>
+          <Link to="/stats?tab=profile" className="cyber-button w-full text-left flex items-center">
+            <User size={16} className="mr-2" />
+            Profile
+          </Link>
           <button className="cyber-button w-full text-left flex items-center">
             <Settings size={16} className="mr-2" />
             Settings

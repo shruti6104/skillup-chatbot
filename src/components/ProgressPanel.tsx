@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Brain, Zap, Award, BarChart2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
@@ -8,10 +8,12 @@ interface ProgressPanelProps {
   xp: number;
   nextLevelXp: number;
   badges: number;
-  streak?: number; // Make streak optional with a default value
+  streak?: number;
   topics?: number;
   avgResponse?: number;
   rank?: number;
+  messageCount?: number;
+  skillProgress?: {[key: string]: number};
 }
 
 const ProgressPanel: React.FC<ProgressPanelProps> = ({ 
@@ -19,14 +21,14 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({
   xp, 
   nextLevelXp, 
   badges,
-  streak = 1, // Default to 1 if not provided
+  streak = 1,
   topics = 5,
   avgResponse = 0,
-  rank = 42
+  rank = 42,
+  messageCount = 0,
+  skillProgress = { 'Python': 35, 'Web Dev': 20, 'AI': 15, 'Security': 10 }
 }) => {
   const progressPercentage = Math.min(100, (xp / nextLevelXp) * 100);
-  
-  // Calculate a more realistic average response value based on XP and streak
   const calculatedAvgResponse = Math.min(98, Math.floor(60 + (xp / 2) + (streak * 2)));
   const displayedAvgResponse = avgResponse > 0 ? avgResponse : calculatedAvgResponse;
   
@@ -61,6 +63,25 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({
         </div>
       </div>
       
+      {/* Skill progress tracking */}
+      <div className="mb-4">
+        <h4 className="text-sm font-semibold mb-2">Skills Progress</h4>
+        {Object.entries(skillProgress).map(([skill, progress]) => (
+          <div key={skill} className="mb-2">
+            <div className="flex justify-between text-xs mb-1">
+              <span>{skill}</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="w-full h-2 bg-cyber-darker rounded-full">
+              <div 
+                className="h-full rounded-full bg-gradient-to-r from-cyber-green to-cyber-blue"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      
       <div className="grid grid-cols-2 gap-3">
         <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Topics</div>
@@ -71,15 +92,15 @@ const ProgressPanel: React.FC<ProgressPanelProps> = ({
           <div className="font-orbitron text-cyber-purple text-lg">{streak}</div>
         </div>
         <div className="cyber-panel p-2 text-center">
+          <div className="text-xs text-muted-foreground">Messages</div>
+          <div className="font-orbitron text-cyber-blue text-lg">{messageCount}</div>
+        </div>
+        <div className="cyber-panel p-2 text-center">
           <div className="text-xs text-muted-foreground">Avg. Response</div>
           <div className="font-orbitron text-cyber-blue text-lg">{displayedAvgResponse}%</div>
           <div className="w-full mt-1">
             <Progress value={displayedAvgResponse} className="h-1 bg-cyber-darker" />
           </div>
-        </div>
-        <div className="cyber-panel p-2 text-center">
-          <div className="text-xs text-muted-foreground">Rank</div>
-          <div className="font-orbitron text-cyber-pink text-lg">{rank}</div>
         </div>
       </div>
       
