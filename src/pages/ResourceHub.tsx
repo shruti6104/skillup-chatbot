@@ -357,9 +357,9 @@ const ResourceHub: React.FC = () => {
   // Apply filters
   const filteredResources = resourceData.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                          resource.platform.toLowerCase().includes(searchTerm.toLowerCase());
+                        resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        resource.platform.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || resource.category === categoryFilter;
     const matchesDifficulty = difficultyFilter === 'all' || resource.difficulty === difficultyFilter || resource.difficulty === 'all';
     const matchesType = typeFilter === 'all' || resource.type === typeFilter;
