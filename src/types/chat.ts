@@ -36,3 +36,20 @@ export interface LearningTopic {
   roadmap: string[];
   funFacts: string[];
 }
+
+export interface ResourceItem {
+  id: string;
+  title: string;
+  url: string;
+  platform: string;
+  category: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'all';
+  type: 'free' | 'paid';
+  duration?: string;
+  icon: React.ReactNode;
+  description: string;
+  certification?: boolean;
+  rating?: number;
+  tags: string[];
+  hasProjects?: boolean;
+}

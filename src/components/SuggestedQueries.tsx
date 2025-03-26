@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Code, Database, Cpu, Network, ExternalLink, Book, Video, GraduationCap, Globe, School, Search, Filter, Clock, Award, DollarSign, CheckCircle, Lock } from 'lucide-react';
+import { Code, Database, Cpu, Network, ExternalLink, Book, Video, GraduationCap, Globe, School, Search, Filter, Clock, Award, DollarSign, CheckCircle, Lock, FileText, Shield } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery: (query: string) => void;
@@ -41,6 +41,16 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       icon: <Code className="text-cyber-purple" size={16} />,
       text: "Best free courses for web development?",
       category: "Courses"
+    },
+    {
+      icon: <Shield className="text-cyber-pink" size={16} />,
+      text: "How to get started with cybersecurity?",
+      category: "Security"
+    },
+    {
+      icon: <FileText className="text-cyber-green" size={16} />,
+      text: "What are the best resources for data science?",
+      category: "Data Science"
     }
   ];
 
@@ -124,6 +134,55 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       category: "Web Dev",
       difficulty: "intermediate",
       type: "free"
+    },
+    // New resources added
+    {
+      icon: <Code className="text-cyber-blue" size={16} />,
+      name: "CS50 (Harvard)",
+      url: "https://cs50.harvard.edu/",
+      category: "Programming",
+      difficulty: "beginner",
+      type: "free"
+    },
+    {
+      icon: <Globe className="text-cyber-purple" size={16} />,
+      name: "Google Developers",
+      url: "https://developers.google.com/",
+      category: "Web & AI",
+      difficulty: "intermediate",
+      type: "free"
+    },
+    {
+      icon: <FileText className="text-cyber-green" size={16} />,
+      name: "Kaggle",
+      url: "https://www.kaggle.com/learn",
+      category: "Data Science",
+      difficulty: "intermediate",
+      type: "free"
+    },
+    {
+      icon: <Cpu className="text-cyber-pink" size={16} />,
+      name: "Fast.ai",
+      url: "https://www.fast.ai/",
+      category: "AI",
+      difficulty: "intermediate",
+      type: "free"
+    },
+    {
+      icon: <Code className="text-cyber-blue" size={16} />,
+      name: "Roadmap.sh",
+      url: "https://roadmap.sh/",
+      category: "Dev Paths",
+      difficulty: "all",
+      type: "free"
+    },
+    {
+      icon: <Network className="text-cyber-green" size={16} />,
+      name: "freeCodeCamp",
+      url: "https://www.freecodecamp.org/",
+      category: "Web Dev",
+      difficulty: "beginner",
+      type: "free"
     }
   ];
 
@@ -163,6 +222,31 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       difficulty: "advanced",
       category: "Security",
       xp: 200
+    },
+    // New learning paths
+    {
+      title: "Full Stack JavaScript",
+      steps: [
+        "1. HTML/CSS/JS Fundamentals - freeCodeCamp",
+        "2. Node.js & Express - MDN Docs",
+        "3. MongoDB & Databases",
+        "4. React & Frontend Frameworks"
+      ],
+      difficulty: "intermediate",
+      category: "Web Dev",
+      xp: 175
+    },
+    {
+      title: "Data Science Career Path",
+      steps: [
+        "1. Python & Statistics - Kaggle",
+        "2. Data Visualization - Matplotlib/Seaborn",
+        "3. Machine Learning Basics - Scikit-learn",
+        "4. SQL & Database Management"
+      ],
+      difficulty: "intermediate",
+      category: "Data Science",
+      xp: 180
     }
   ];
 

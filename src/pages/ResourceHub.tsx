@@ -1,31 +1,23 @@
 
 import React, { useState } from 'react';
 import { Code, Database, Cpu, Network, Book, Video, GraduationCap, Globe, School, Search, Filter, 
-  ExternalLink, CheckCircle, DollarSign, Clock, Award, CheckSquare, User, LucideIcon } from 'lucide-react';
+  ExternalLink, CheckCircle, DollarSign, Clock, Award, CheckSquare, User, LucideIcon, Briefcase, 
+  Layout, Shield, Terminal, Github, BookOpen, Rocket, FileCode, FileText, Server } from 'lucide-react';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Header from '@/components/Header';
-
-interface ResourceItem {
-  id: string;
-  title: string;
-  url: string;
-  platform: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'all';
-  type: 'free' | 'paid';
-  duration?: string;
-  icon: React.ReactNode;
-  description: string;
-  certification?: boolean;
-  rating?: number;
-  tags: string[];
-}
+import { ResourceItem } from '@/types/chat';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const ResourceHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [certFilter, setCertFilter] = useState<boolean>(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   
   const categories = [
     { id: 'all', name: 'All Categories', icon: <Filter size={16} /> },
@@ -34,9 +26,11 @@ const ResourceHub: React.FC = () => {
     { id: 'ai', name: 'AI & ML', icon: <Cpu size={16} /> },
     { id: 'security', name: 'Cybersecurity', icon: <Database size={16} /> },
     { id: 'softskills', name: 'Soft Skills', icon: <User size={16} /> },
+    { id: 'datascience', name: 'Data Science', icon: <FileText size={16} /> },
   ];
 
   const resourceData: ResourceItem[] = [
+    // Web Development Resources
     {
       id: '1',
       title: 'Python for Everybody',
@@ -50,7 +44,8 @@ const ResourceHub: React.FC = () => {
       description: 'A complete introduction to Python programming for beginners.',
       certification: true,
       rating: 4.8,
-      tags: ['python', 'programming', 'beginner']
+      tags: ['python', 'programming', 'beginner'],
+      hasProjects: true
     },
     {
       id: '2',
@@ -65,7 +60,8 @@ const ResourceHub: React.FC = () => {
       description: 'Dive in and learn React.js from scratch! Learn Reactjs, Hooks, Redux, React Routing, Animations, Next.js and more!',
       certification: true,
       rating: 4.7,
-      tags: ['react', 'javascript', 'frontend', 'redux']
+      tags: ['react', 'javascript', 'frontend', 'redux'],
+      hasProjects: true
     },
     {
       id: '3',
@@ -80,7 +76,8 @@ const ResourceHub: React.FC = () => {
       description: 'A self-study guide for aspiring machine learning practitioners.',
       certification: false,
       rating: 4.5,
-      tags: ['machine learning', 'tensorflow', 'ai']
+      tags: ['machine learning', 'tensorflow', 'ai'],
+      hasProjects: true
     },
     {
       id: '4',
@@ -95,7 +92,8 @@ const ResourceHub: React.FC = () => {
       description: 'Free, online web security training from the creators of Burp Suite.',
       certification: false,
       rating: 4.9,
-      tags: ['cybersecurity', 'web security', 'hacking']
+      tags: ['cybersecurity', 'web security', 'hacking'],
+      hasProjects: true
     },
     {
       id: '5',
@@ -110,7 +108,8 @@ const ResourceHub: React.FC = () => {
       description: 'Learn how to communicate effectively in various business contexts.',
       certification: true,
       rating: 4.3,
-      tags: ['communication', 'business', 'soft skills']
+      tags: ['communication', 'business', 'soft skills'],
+      hasProjects: false
     },
     {
       id: '6',
@@ -125,7 +124,233 @@ const ResourceHub: React.FC = () => {
       description: 'Harvard University\'s introduction to the intellectual enterprises of computer science.',
       certification: true,
       rating: 4.9,
-      tags: ['cs50', 'computer science', 'programming']
+      tags: ['cs50', 'computer science', 'programming'],
+      hasProjects: true
+    },
+    // New resources based on user request
+    {
+      id: '7',
+      title: 'The Odin Project',
+      url: 'https://www.theodinproject.com/',
+      platform: 'The Odin Project',
+      category: 'webdev',
+      difficulty: 'beginner',
+      type: 'free',
+      duration: 'Self-paced',
+      icon: <Layout className="text-cyber-blue" size={18} />,
+      description: 'Full stack curriculum that's completely free and open source, with a focus on project-based learning.',
+      certification: false,
+      rating: 4.8,
+      tags: ['web development', 'javascript', 'ruby', 'full-stack'],
+      hasProjects: true
+    },
+    {
+      id: '8',
+      title: 'Fast.ai Practical Deep Learning',
+      url: 'https://www.fast.ai/',
+      platform: 'fast.ai',
+      category: 'ai',
+      difficulty: 'intermediate',
+      type: 'free',
+      duration: '7 weeks',
+      icon: <Cpu className="text-cyber-pink" size={18} />,
+      description: 'Making neural networks uncool again. Practical Deep Learning for Coders.',
+      certification: false,
+      rating: 4.9,
+      tags: ['deep learning', 'pytorch', 'machine learning', 'neural networks'],
+      hasProjects: true
+    },
+    {
+      id: '9',
+      title: 'Cybersecurity: TryHackMe',
+      url: 'https://tryhackme.com/',
+      platform: 'TryHackMe',
+      category: 'security',
+      difficulty: 'beginner',
+      type: 'free',
+      duration: 'Self-paced',
+      icon: <Shield className="text-cyber-purple" size={18} />,
+      description: 'Learn cybersecurity through hands-on exercises and labs in your browser.',
+      certification: true,
+      rating: 4.7,
+      tags: ['ethical hacking', 'penetration testing', 'security'],
+      hasProjects: true
+    },
+    {
+      id: '10',
+      title: 'Automate the Boring Stuff with Python',
+      url: 'https://automatetheboringstuff.com/',
+      platform: 'Al Sweigart',
+      category: 'python',
+      difficulty: 'beginner',
+      type: 'free',
+      duration: 'Self-paced',
+      icon: <Terminal className="text-cyber-green" size={18} />,
+      description: 'Learn Python programming through practical projects that automate everyday tasks.',
+      certification: false,
+      rating: 4.8,
+      tags: ['python', 'automation', 'programming'],
+      hasProjects: true
+    },
+    {
+      id: '11',
+      title: 'Leadership: Coursera Specialization',
+      url: 'https://www.coursera.org/specializations/leadership-development',
+      platform: 'Coursera',
+      category: 'softskills',
+      difficulty: 'intermediate',
+      type: 'paid',
+      duration: '3 months',
+      icon: <Briefcase className="text-cyber-blue" size={18} />,
+      description: 'Develop your leadership skills and build a strong foundation for business leadership and management.',
+      certification: true,
+      rating: 4.6,
+      tags: ['leadership', 'management', 'soft skills'],
+      hasProjects: false
+    },
+    {
+      id: '12',
+      title: 'MDN Web Docs',
+      url: 'https://developer.mozilla.org/',
+      platform: 'Mozilla',
+      category: 'webdev',
+      difficulty: 'all',
+      type: 'free',
+      duration: 'Reference',
+      icon: <BookOpen className="text-cyber-green" size={18} />,
+      description: 'Resources for developers, by developers. Comprehensive web development documentation.',
+      certification: false,
+      rating: 4.9,
+      tags: ['html', 'css', 'javascript', 'web apis'],
+      hasProjects: false
+    },
+    {
+      id: '13',
+      title: 'Google Machine Learning Bootcamp',
+      url: 'https://developers.google.com/machine-learning/bootcamp',
+      platform: 'Google Developers',
+      category: 'ai',
+      difficulty: 'advanced',
+      type: 'free',
+      duration: '6 months',
+      icon: <Cpu className="text-cyber-pink" size={18} />,
+      description: 'Comprehensive program to help developers build expertise in machine learning and enhance their career prospects.',
+      certification: true,
+      rating: 4.8,
+      tags: ['tensorflow', 'machine learning', 'ai', 'certification'],
+      hasProjects: true
+    },
+    {
+      id: '14',
+      title: 'Complete JavaScript Course',
+      url: 'https://www.udemy.com/course/the-complete-javascript-course/',
+      platform: 'Udemy',
+      category: 'webdev',
+      difficulty: 'beginner',
+      type: 'paid',
+      duration: '69 hours',
+      icon: <FileCode className="text-cyber-blue" size={18} />,
+      description: 'The most comprehensive JavaScript course. From zero to expert!',
+      certification: true,
+      rating: 4.7,
+      tags: ['javascript', 'web development', 'programming'],
+      hasProjects: true
+    },
+    {
+      id: '15',
+      title: 'Kaggle Learn',
+      url: 'https://www.kaggle.com/learn',
+      platform: 'Kaggle',
+      category: 'datascience',
+      difficulty: 'intermediate',
+      type: 'free',
+      duration: 'Self-paced',
+      icon: <FileText className="text-cyber-green" size={18} />,
+      description: 'Gain the skills you need to do independent data science projects through hands-on practice.',
+      certification: true,
+      rating: 4.6,
+      tags: ['data science', 'machine learning', 'python'],
+      hasProjects: true
+    },
+    {
+      id: '16',
+      title: 'Roadmap.sh',
+      url: 'https://roadmap.sh/',
+      platform: 'roadmap.sh',
+      category: 'webdev',
+      difficulty: 'all',
+      type: 'free',
+      duration: 'Reference',
+      icon: <Rocket className="text-cyber-purple" size={18} />,
+      description: 'Step by step guides and paths to learn different tools or technologies.',
+      certification: false,
+      rating: 4.9,
+      tags: ['web development', 'devops', 'backend', 'frontend'],
+      hasProjects: false
+    },
+    {
+      id: '17',
+      title: 'Next.js Foundations',
+      url: 'https://nextjs.org/learn',
+      platform: 'Vercel',
+      category: 'webdev',
+      difficulty: 'intermediate',
+      type: 'free',
+      duration: '5 hours',
+      icon: <Server className="text-cyber-blue" size={18} />,
+      description: 'Learn Next.js step-by-step, from the basics to advanced topics.',
+      certification: false,
+      rating: 4.8,
+      tags: ['next.js', 'react', 'javascript', 'frontend'],
+      hasProjects: true
+    },
+    {
+      id: '18',
+      title: 'Ethical Hacking Course',
+      url: 'https://www.cybrary.it/course/ethical-hacking/',
+      platform: 'Cybrary',
+      category: 'security',
+      difficulty: 'intermediate',
+      type: 'free',
+      duration: '16 hours',
+      icon: <Shield className="text-cyber-purple" size={18} />,
+      description: 'Learn the fundamentals of ethical hacking and penetration testing.',
+      certification: true,
+      rating: 4.5,
+      tags: ['ethical hacking', 'penetration testing', 'cybersecurity'],
+      hasProjects: true
+    },
+    {
+      id: '19',
+      title: 'Natural Language Processing Specialization',
+      url: 'https://www.coursera.org/specializations/natural-language-processing',
+      platform: 'Coursera',
+      category: 'ai',
+      difficulty: 'advanced',
+      type: 'paid',
+      duration: '4 months',
+      icon: <Cpu className="text-cyber-pink" size={18} />,
+      description: 'Build Natural Language Processing applications using deep learning models.',
+      certification: true,
+      rating: 4.7,
+      tags: ['nlp', 'ai', 'deep learning', 'python'],
+      hasProjects: true
+    },
+    {
+      id: '20',
+      title: 'freeCodeCamp',
+      url: 'https://www.freecodecamp.org/',
+      platform: 'freeCodeCamp',
+      category: 'webdev',
+      difficulty: 'beginner',
+      type: 'free',
+      duration: 'Self-paced',
+      icon: <Github className="text-cyber-green" size={18} />,
+      description: 'Learn to code for free. Build projects. Earn certifications.',
+      certification: true,
+      rating: 4.9,
+      tags: ['web development', 'javascript', 'responsive design', 'algorithms'],
+      hasProjects: true
     }
   ];
 
@@ -133,12 +358,14 @@ const ResourceHub: React.FC = () => {
   const filteredResources = resourceData.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           resource.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                          resource.platform.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || resource.category === categoryFilter;
-    const matchesDifficulty = difficultyFilter === 'all' || resource.difficulty === difficultyFilter;
+    const matchesDifficulty = difficultyFilter === 'all' || resource.difficulty === difficultyFilter || resource.difficulty === 'all';
     const matchesType = typeFilter === 'all' || resource.type === typeFilter;
+    const matchesCert = certFilter ? resource.certification : true;
     
-    return matchesSearch && matchesCategory && matchesDifficulty && matchesType;
+    return matchesSearch && matchesCategory && matchesDifficulty && matchesType && matchesCert;
   });
 
   const getDifficultyBadge = (difficulty: string) => {
@@ -174,11 +401,17 @@ const ResourceHub: React.FC = () => {
                   className="cyber-input w-full pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === '/' && e.ctrlKey) {
+                      e.preventDefault();
+                      setShowCommandPalette(true);
+                    }
+                  }}
                 />
               </div>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 mb-4">
               {categories.map(category => (
                 <button
                   key={category.id}
@@ -191,7 +424,7 @@ const ResourceHub: React.FC = () => {
               ))}
             </div>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-4">
               <button
                 className={`px-3 py-1 text-xs rounded-md flex items-center ${difficultyFilter === 'all' ? 'bg-cyber-pink/20 border border-cyber-pink/40' : 'bg-cyber-darker'}`}
                 onClick={() => setDifficultyFilter('all')}
@@ -217,7 +450,9 @@ const ResourceHub: React.FC = () => {
               >
                 Advanced
               </button>
-              
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
               <button
                 className={`px-3 py-1 text-xs rounded-md flex items-center ${typeFilter === 'free' ? 'bg-cyber-green/20 border border-cyber-green/40' : 'bg-cyber-darker'}`}
                 onClick={() => setTypeFilter(typeFilter === 'free' ? 'all' : 'free')}
@@ -233,11 +468,34 @@ const ResourceHub: React.FC = () => {
                 Paid
               </button>
               <button
-                className={`px-3 py-1 text-xs rounded-md flex items-center ${typeFilter === 'certification' ? 'bg-cyber-blue/20 border border-cyber-blue/40' : 'bg-cyber-darker'}`}
-                onClick={() => setTypeFilter(typeFilter === 'certification' ? 'all' : 'certification')}
+                className={`px-3 py-1 text-xs rounded-md flex items-center ${certFilter ? 'bg-cyber-blue/20 border border-cyber-blue/40' : 'bg-cyber-darker'}`}
+                onClick={() => setCertFilter(!certFilter)}
               >
                 <Award size={12} className="mr-1" />
                 With Certification
+              </button>
+              <button
+                className="px-3 py-1 text-xs rounded-md flex items-center bg-cyber-green/20 border border-cyber-green/40"
+                onClick={() => {
+                  setTypeFilter('free');
+                  setDifficultyFilter('beginner');
+                  setCategoryFilter('all');
+                  setCertFilter(false);
+                }}
+              >
+                <Rocket size={12} className="mr-1" />
+                Perfect for Beginners
+              </button>
+              <button
+                className="px-3 py-1 text-xs rounded-md flex items-center bg-cyber-purple/20 border border-cyber-purple/40"
+                onClick={() => {
+                  setTypeFilter('all');
+                  setCategoryFilter('all');
+                  setCertFilter(true);
+                }}
+              >
+                <Award size={12} className="mr-1" />
+                Career Focused
               </button>
             </div>
           </div>
@@ -263,7 +521,11 @@ const ResourceHub: React.FC = () => {
                   
                   <div className="flex flex-wrap gap-1 mb-3">
                     {resource.tags.map((tag, idx) => (
-                      <span key={idx} className="text-xs bg-cyber-darker px-2 py-0.5 rounded-full">
+                      <span 
+                        key={idx} 
+                        className="text-xs bg-cyber-darker px-2 py-0.5 rounded-full cursor-pointer hover:bg-cyber-blue/20"
+                        onClick={() => setSearchTerm(tag)}
+                      >
                         {tag}
                       </span>
                     ))}
@@ -283,6 +545,12 @@ const ResourceHub: React.FC = () => {
                         <span className="flex items-center text-cyber-green">
                           <CheckSquare size={12} className="mr-1" />
                           Cert
+                        </span>
+                      )}
+                      {resource.hasProjects && (
+                        <span className="flex items-center text-cyber-pink ml-2">
+                          <Code size={12} className="mr-1" />
+                          Projects
                         </span>
                       )}
                     </div>
@@ -306,6 +574,63 @@ const ResourceHub: React.FC = () => {
               </div>
             )}
           </div>
+
+          {showCommandPalette && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowCommandPalette(false)}>
+              <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                <Command className="border border-cyber-blue/50 bg-cyber-dark/90">
+                  <CommandInput placeholder="Search for resources or topics..." />
+                  <CommandList>
+                    <CommandEmpty>No results found</CommandEmpty>
+                    <CommandGroup heading="Categories">
+                      {categories.map(category => (
+                        <CommandItem 
+                          key={category.id}
+                          onSelect={() => {
+                            setCategoryFilter(category.id);
+                            setShowCommandPalette(false);
+                          }}
+                        >
+                          {category.icon}
+                          <span className="ml-2">{category.name}</span>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                    <CommandGroup heading="Quick Filters">
+                      <CommandItem
+                        onSelect={() => {
+                          setTypeFilter('free');
+                          setShowCommandPalette(false);
+                        }}
+                      >
+                        <CheckCircle size={16} className="mr-2 text-cyber-green" />
+                        Free Resources
+                      </CommandItem>
+                      <CommandItem
+                        onSelect={() => {
+                          setCertFilter(true);
+                          setShowCommandPalette(false);
+                        }}
+                      >
+                        <Award size={16} className="mr-2 text-cyber-blue" />
+                        With Certification
+                      </CommandItem>
+                      <CommandItem
+                        onSelect={() => {
+                          setTypeFilter('free');
+                          setDifficultyFilter('beginner');
+                          setShowCommandPalette(false);
+                        }}
+                      >
+                        <Rocket size={16} className="mr-2 text-cyber-pink" />
+                        Beginner Friendly
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
