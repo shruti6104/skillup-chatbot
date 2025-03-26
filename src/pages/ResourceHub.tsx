@@ -138,7 +138,7 @@ const ResourceHub: React.FC = () => {
       type: 'free',
       duration: 'Self-paced',
       icon: <Layout className="text-cyber-blue" size={18} />,
-      description: 'Full stack curriculum that's completely free and open source, with a focus on project-based learning.',
+      description: "Full stack curriculum that's completely free and open source, with a focus on project-based learning.",
       certification: false,
       rating: 4.8,
       tags: ['web development', 'javascript', 'ruby', 'full-stack'],
