@@ -21,3 +21,18 @@ export interface UserProfile {
   xp: number;
   badges: number;
 }
+
+export interface LearningResource {
+  name: string;
+  url: string;
+  description?: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  type?: 'course' | 'tutorial' | 'documentation' | 'project' | 'tool';
+}
+
+export interface LearningTopic {
+  intro: string;
+  resources: LearningResource[];
+  roadmap: string[];
+  funFacts: string[];
+}

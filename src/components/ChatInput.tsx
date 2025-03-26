@@ -14,13 +14,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }
   const [showSuggestions, setShowSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Example suggestions
+  // Updated suggestions to cover more learning topics
   const quickSuggestions = [
     "I want to learn Python",
-    "Tell me about web development",
-    "How can I get started with AI?",
-    "What are some cybersecurity basics?",
-    "Tell me a fun fact about coding"
+    "Tell me about Web Development",
+    "How can I get started with Artificial Intelligence?",
+    "What are some Cybersecurity basics?",
+    "How to improve my Soft Skills?",
+    "Tell me about JavaScript",
+    "I want to learn Data Science"
   ];
 
   useEffect(() => {
