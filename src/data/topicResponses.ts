@@ -1,4 +1,3 @@
-
 export const topicResponses: Record<string, string> = {
   'python-decorators': `
 # Python Decorators Explained
@@ -217,7 +216,7 @@ function VirtualizedList({ items }) {
 
 ## 6. Other Best Practices
 
-- Use production builds (\`npm run build\`)
+- Use production builds (`npm run build`)
 - Implement proper loading states and error boundaries
 - Optimize images and assets
 - Use web workers for CPU-intensive tasks
