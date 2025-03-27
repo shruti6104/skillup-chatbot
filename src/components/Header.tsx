@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, BarChart, Award, LogOut, Book, Cpu } from 'lucide-react';
+import { Menu, X, User, LogOut, Book, Cpu } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
@@ -87,24 +87,6 @@ const Header = () => {
                 Resources
               </span>
             </Link>
-            <Link
-              to="/stats"
-              className={`cyber-button text-sm px-3 ${isActive('/stats') ? 'bg-cyber-blue/20' : ''} neon-glow`}
-            >
-              <span className="flex items-center">
-                <BarChart size={16} className="mr-2" />
-                Stats
-              </span>
-            </Link>
-            <Link
-              to="/stats?tab=badges"
-              className={`cyber-button text-sm px-3 ${isActive('/stats') && location.search.includes('tab=badges') ? 'bg-cyber-blue/20' : ''} neon-glow`}
-            >
-              <span className="flex items-center">
-                <Award size={16} className="mr-2" />
-                Badges
-              </span>
-            </Link>
             <button 
               className="cyber-button text-sm px-3 neon-glow bg-red-500/20 hover:bg-red-500/30"
               onClick={handleLogout}
@@ -134,14 +116,6 @@ const Header = () => {
           <Link to="/resources" className="cyber-button w-full text-left flex items-center">
             <Book size={16} className="mr-2" />
             Resources
-          </Link>
-          <Link to="/stats" className="cyber-button w-full text-left flex items-center">
-            <BarChart size={16} className="mr-2" />
-            Stats
-          </Link>
-          <Link to="/stats?tab=badges" className="cyber-button w-full text-left flex items-center">
-            <Award size={16} className="mr-2" />
-            Badges
           </Link>
           <Link to="/stats?tab=profile" className="cyber-button w-full text-left flex items-center">
             <User size={16} className="mr-2" />

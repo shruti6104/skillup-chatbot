@@ -73,16 +73,14 @@ export const defaultBadges: BadgeItem[] = [
     name: 'Python Beginner',
     description: 'Completed the basics of Python programming',
     icon: <Code size={18} className="text-blue-400" />,
-    earned: true,
-    date: `${currentYear}-${formattedMonth}-05`
+    earned: false
   },
   {
     id: 'ai-enthusiast',
     name: 'AI Enthusiast',
     description: 'Explored the fundamentals of artificial intelligence',
     icon: <Brain size={18} className="text-purple-400" />,
-    earned: true,
-    date: `${currentYear}-${formattedMonth}-10`
+    earned: false
   },
   {
     id: 'web-explorer',

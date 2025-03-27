@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, StopCircle, Plus } from 'lucide-react';
+import { Send, Plus } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 interface ChatInputProps {
@@ -10,7 +10,6 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }) => {
   const [message, setMessage] = useState('');
-  const [isListening, setIsListening] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -64,53 +63,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }
     }
   };
   
-  const startListening = () => {
-    // Check if speech recognition is available
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      setIsListening(true);
-      
-      // Create a speech recognition instance
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.continuous = false;
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setMessage(prev => prev + ' ' + transcript);
-        setIsListening(false);
-      };
-      
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error', event.error);
-        setIsListening(false);
-        toast({
-          title: "Microphone Error",
-          description: "Could not access the microphone. Please check permissions.",
-        });
-      };
-      
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-      
-      recognition.start();
-    } else {
-      toast({
-        title: "Feature Not Available",
-        description: "Speech recognition is not supported in your browser.",
-      });
-    }
-  };
-  
-  const stopListening = () => {
-    setIsListening(false);
-    // If there's an active recognition instance, it should be stopped
-    // But we can't access it directly from here
-  };
-  
   const handleSelectSuggestion = (suggestion: string) => {
     onSendMessage(suggestion);
     setShowSuggestions(false);
@@ -160,18 +112,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }
           disabled={disabled || !message.trim()}
         >
           <Send size={18} className="text-cyber-blue" />
-        </button>
-        
-        <button 
-          className={`cyber-button h-12 w-12 p-0 flex items-center justify-center ${disabled ? 'opacity-50 cursor-not-allowed' : 'neon-glow'}`}
-          onClick={isListening ? stopListening : startListening}
-          disabled={disabled}
-        >
-          {isListening ? (
-            <StopCircle size={18} className="text-cyber-pink animate-pulse" />
-          ) : (
-            <Mic size={18} className="text-cyber-blue" />
-          )}
         </button>
       </div>
     </div>

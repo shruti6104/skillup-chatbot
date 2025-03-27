@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Cpu, Trophy, Brain } from 'lucide-react';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -11,6 +12,7 @@ import ChatbotAvatar from '@/components/ChatbotAvatar';
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
 import { detectIntent, generateResponse, updateSkillLevel, getContext, resetContext } from '@/utils/messageUtils';
+import { defaultBadges } from '@/components/BadgesSection';
 
 // Storage keys for user data
 const STREAK_KEY = 'skillup_streak';
@@ -18,6 +20,7 @@ const LAST_LOGIN_KEY = 'skillup_last_login';
 const MESSAGE_COUNT_KEY = 'skillup_message_count';
 const TOPICS_EXPLORED_KEY = 'skillup_topics';
 const SKILLS_PROGRESS_KEY = 'skillup_skills_progress';
+const BADGES_KEY = 'skillup_badges';
 
 // Learning topics for tracking progress
 const learningTopics = [
@@ -31,7 +34,7 @@ const Index = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [userLevel, setUserLevel] = useState(1);
   const [userXP, setUserXP] = useState(25);
-  const [userBadges, setUserBadges] = useState(2);
+  const [userBadges, setUserBadges] = useState(1);
   const [userStreak, setUserStreak] = useState(1);
   const [messageCount, setMessageCount] = useState(0);
   const [topicsExplored, setTopicsExplored] = useState<string[]>([]);
@@ -41,6 +44,17 @@ const Index = () => {
     'AI': 0,
     'Cybersecurity': 0,
     'Soft Skills': 0
+  });
+  const [userBadgesList, setUserBadgesList] = useState<typeof defaultBadges>(() => {
+    const savedBadges = localStorage.getItem(BADGES_KEY);
+    if (savedBadges) {
+      return JSON.parse(savedBadges);
+    }
+    // Set only "First Conversation" badge as earned by default
+    return defaultBadges.map((badge, index) => ({
+      ...badge,
+      earned: index === 0
+    }));
   });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -75,10 +89,21 @@ const Index = () => {
       const currentLevelXP = totalXP % xpPerLevel;
       setUserXP(currentLevelXP);
       
-      // Calculate badges based on topics explored
-      setUserBadges(Math.min(8, savedTopics.length + 1));
+      // Count earned badges
+      const earnedBadgesCount = userBadgesList.filter(b => b.earned).length;
+      setUserBadges(earnedBadgesCount);
     }
   }, []);
+
+  // Save badges whenever they change
+  useEffect(() => {
+    if (isLoggedIn) {
+      localStorage.setItem(BADGES_KEY, JSON.stringify(userBadgesList));
+      // Update badge count
+      const earnedBadgesCount = userBadgesList.filter(b => b.earned).length;
+      setUserBadges(earnedBadgesCount);
+    }
+  }, [isLoggedIn, userBadgesList]);
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -210,6 +235,139 @@ const Index = () => {
     }
   };
 
+  // Function to check for badge triggers in user message
+  const checkForBadgeTriggers = (message: string) => {
+    const lowerMessage = message.toLowerCase();
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split('T')[0];
+    
+    // Check for Python badge
+    if ((lowerMessage.includes("completed python") || 
+         lowerMessage.includes("learned python") || 
+         lowerMessage.includes("finished python") || 
+         lowerMessage.includes("python basics")) && 
+        !userBadgesList.find(b => b.id === 'python-beginner')?.earned) {
+      
+      // Award Python Beginner badge
+      setUserBadgesList(prev => prev.map(badge => 
+        badge.id === 'python-beginner' 
+          ? { ...badge, earned: true, date: formattedDate } 
+          : badge
+      ));
+      
+      // Show toast notification
+      setTimeout(() => {
+        toast({
+          title: "New Badge Earned!",
+          description: "🎉 Congratulations! You've earned the Python Beginner badge!",
+        });
+      }, 1000);
+      
+      // Update skill progress
+      setSkillProgress(prev => ({
+        ...prev,
+        'Python': Math.max(prev['Python'], 40)
+      }));
+      
+      return true;
+    }
+    
+    // Check for Web Explorer badge
+    if ((lowerMessage.includes("completed web") || 
+         lowerMessage.includes("learned web") || 
+         lowerMessage.includes("web development") || 
+         lowerMessage.includes("web dev")) && 
+        !userBadgesList.find(b => b.id === 'web-explorer')?.earned) {
+      
+      // Award Web Explorer badge
+      setUserBadgesList(prev => prev.map(badge => 
+        badge.id === 'web-explorer' 
+          ? { ...badge, earned: true, date: formattedDate } 
+          : badge
+      ));
+      
+      // Show toast notification
+      setTimeout(() => {
+        toast({
+          title: "New Badge Earned!",
+          description: "🚀 Great job! You've earned the Web Explorer badge!",
+        });
+      }, 1000);
+      
+      // Update skill progress
+      setSkillProgress(prev => ({
+        ...prev,
+        'Web Dev': Math.max(prev['Web Dev'], 40)
+      }));
+      
+      return true;
+    }
+    
+    // Check for AI Enthusiast badge
+    if ((lowerMessage.includes("ai fundamentals") || 
+         lowerMessage.includes("artificial intelligence") || 
+         lowerMessage.includes("learned ai") || 
+         lowerMessage.includes("completed ai")) && 
+        !userBadgesList.find(b => b.id === 'ai-enthusiast')?.earned) {
+      
+      // Award AI Enthusiast badge
+      setUserBadgesList(prev => prev.map(badge => 
+        badge.id === 'ai-enthusiast' 
+          ? { ...badge, earned: true, date: formattedDate } 
+          : badge
+      ));
+      
+      // Show toast notification
+      setTimeout(() => {
+        toast({
+          title: "New Badge Earned!",
+          description: "🧠 Amazing! You've earned the AI Enthusiast badge!",
+        });
+      }, 1000);
+      
+      // Update skill progress
+      setSkillProgress(prev => ({
+        ...prev,
+        'AI': Math.max(prev['AI'], 40)
+      }));
+      
+      return true;
+    }
+    
+    // Check for Cyber Guardian badge
+    if ((lowerMessage.includes("cybersecurity") || 
+         lowerMessage.includes("cyber security") || 
+         lowerMessage.includes("network security") || 
+         lowerMessage.includes("information security")) && 
+        !userBadgesList.find(b => b.id === 'cyber-guardian')?.earned) {
+      
+      // Award Cyber Guardian badge
+      setUserBadgesList(prev => prev.map(badge => 
+        badge.id === 'cyber-guardian' 
+          ? { ...badge, earned: true, date: formattedDate } 
+          : badge
+      ));
+      
+      // Show toast notification
+      setTimeout(() => {
+        toast({
+          title: "New Badge Earned!",
+          description: "🛡️ Well done! You've earned the Cyber Guardian badge!",
+        });
+      }, 1000);
+      
+      // Update skill progress
+      setSkillProgress(prev => ({
+        ...prev,
+        'Cybersecurity': Math.max(prev['Cybersecurity'], 40)
+      }));
+      
+      return true;
+    }
+    
+    return false;
+  };
+
   const handleLogin = () => {
     const streak = calculateStreak();
     setUserStreak(streak);
@@ -249,7 +407,10 @@ const Index = () => {
     const newMessageCount = messageCount + 1;
     setMessageCount(newMessageCount);
     
-    // Process the message using our new intelligent system
+    // Check for badge triggers in user message
+    const badgeTriggered = checkForBadgeTriggers(content);
+    
+    // Process the message using our intelligent system
     const { intent, topic, confidence } = detectIntent(content);
     
     // Update context and skills if a topic was detected
@@ -272,7 +433,30 @@ const Index = () => {
     }
     
     // Generate intelligent response
-    const botResponse = generateResponse(intent, topic, messages);
+    let botResponse = generateResponse(intent, topic, messages);
+    
+    // If a badge was triggered, add badge notification to response
+    if (badgeTriggered) {
+      const badgeMessage = "\n\n🏆 **Achievement Unlocked!** A new badge has been added to your collection!";
+      botResponse += badgeMessage;
+    }
+    
+    // Check for progress encouragement
+    const pythonProgress = skillProgress['Python'];
+    const webDevProgress = skillProgress['Web Dev'];
+    const aiProgress = skillProgress['AI'];
+    const cyberProgress = skillProgress['Cybersecurity'];
+    
+    // Add encouragement message for skills close to earning a badge
+    if (pythonProgress >= 30 && !userBadgesList.find(b => b.id === 'python-beginner')?.earned) {
+      botResponse += "\n\nYou're making great progress with Python! Keep learning to unlock the Python Beginner badge.";
+    } else if (webDevProgress >= 30 && !userBadgesList.find(b => b.id === 'web-explorer')?.earned) {
+      botResponse += "\n\nYou're on your way to becoming a web developer! Continue learning to earn the Web Explorer badge.";
+    } else if (aiProgress >= 30 && !userBadgesList.find(b => b.id === 'ai-enthusiast')?.earned) {
+      botResponse += "\n\nYou're diving deep into AI! Keep exploring to earn the AI Enthusiast badge.";
+    } else if (cyberProgress >= 30 && !userBadgesList.find(b => b.id === 'cyber-guardian')?.earned) {
+      botResponse += "\n\nYou're building solid cybersecurity knowledge! Continue to unlock the Cyber Guardian badge.";
+    }
     
     // Simulate typing delay based on response length
     const typingDelay = Math.min(1500, 500 + botResponse.length / 10);
@@ -300,12 +484,20 @@ const Index = () => {
             description: `You've reached Level ${userLevel + 1}!`,
           });
           
-          // Maybe earn a badge
-          if (Math.random() > 0.7) {
-            setUserBadges(prev => prev + 1);
+          // Check for Quick Learner badge
+          if (messageCount > 20 && !userBadgesList.find(b => b.id === 'quick-learner')?.earned) {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().split('T')[0];
+            
+            setUserBadgesList(prev => prev.map(badge => 
+              badge.id === 'quick-learner' 
+                ? { ...badge, earned: true, date: formattedDate } 
+                : badge
+            ));
+            
             toast({
               title: "New Badge Earned!",
-              description: "You've earned a new achievement badge",
+              description: "⚡ Quick Learner badge unlocked!",
             });
           }
           
@@ -314,6 +506,45 @@ const Index = () => {
         
         return newXP;
       });
+      
+      // Check for Knowledge Seeker badge
+      if (newMessageCount >= 50 && !userBadgesList.find(b => b.id === 'knowledge-seeker')?.earned) {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().split('T')[0];
+        
+        setUserBadgesList(prev => prev.map(badge => 
+          badge.id === 'knowledge-seeker' 
+            ? { ...badge, earned: true, date: formattedDate } 
+            : badge
+        ));
+        
+        setTimeout(() => {
+          toast({
+            title: "New Badge Earned!",
+            description: "📚 You've earned the Knowledge Seeker badge!",
+          });
+        }, 1500);
+      }
+      
+      // Check for Skill Master badge if any skill reaches 100%
+      const hasMaxSkill = Object.values(skillProgress).some(value => value >= 95);
+      if (hasMaxSkill && !userBadgesList.find(b => b.id === 'skill-master')?.earned) {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().split('T')[0];
+        
+        setUserBadgesList(prev => prev.map(badge => 
+          badge.id === 'skill-master' 
+            ? { ...badge, earned: true, date: formattedDate } 
+            : badge
+        ));
+        
+        setTimeout(() => {
+          toast({
+            title: "New Badge Earned!",
+            description: "✅ Congratulations! You've earned the Skill Master badge!",
+          });
+        }, 2000);
+      }
     }, typingDelay);
   };
 
