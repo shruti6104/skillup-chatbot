@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TopicsSection from '@/components/TopicsSection';
+import QuickLearningSection from '@/components/QuickLearningSection';
 import topicResponses from '@/data/topicResponses';
 
 interface SkillUpHubProps {
@@ -24,12 +25,17 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   
   return (
     <div className="cyber-panel p-4 mb-6">
-      <h2 className="font-orbitron text-xl mb-4 text-center cyber-gradient-text">SkillUp Hub</h2>
+      <h2 className="font-orbitron text-xl mb-4 text-center cyber-gradient-text">Quick Learning Hub</h2>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">
           <TabsTrigger value="topics" className="font-orbitron text-sm">Topics</TabsTrigger>
-          <TabsTrigger value="resources" className="font-orbitron text-sm">Resources</TabsTrigger>
+          <TabsTrigger 
+            value="resources" 
+            className="font-orbitron text-sm bg-cyber-blue text-black data-[state=active]:text-black data-[state=active]:bg-cyber-blue"
+          >
+            Resources
+          </TabsTrigger>
           <TabsTrigger value="paths" className="font-orbitron text-sm">Paths</TabsTrigger>
         </TabsList>
         
@@ -38,16 +44,7 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
         </TabsContent>
         
         <TabsContent value="resources">
-          <div className="p-4 text-center">
-            <p className="text-muted-foreground">Explore our curated learning resources in the Resources section.</p>
-            
-            <button 
-              className="cyber-button mt-4 neon-glow"
-              onClick={() => window.location.href = '/resources'}
-            >
-              View All Resources
-            </button>
-          </div>
+          <QuickLearningSection onSelectTopic={onSelectTopic} />
         </TabsContent>
         
         <TabsContent value="paths">

@@ -1,15 +1,13 @@
 
 import React, { useState } from 'react';
-import { Code, Database, Cpu, Network, ExternalLink, Book, Video, GraduationCap, Globe, School, Search, Filter, Clock, Award, DollarSign, CheckCircle, Lock, FileText, Shield } from 'lucide-react';
+import { Code, Database, Cpu, Network, Search, Filter, Clock, Award, Shield, FileText } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery: (query: string) => void;
 }
 
 const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) => {
-  const [activeTab, setActiveTab] = useState<'topics' | 'resources' | 'paths'>('topics');
-  const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'topics' | 'paths'>('topics');
 
   const queries = [
     {
@@ -51,138 +49,6 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       icon: <FileText className="text-cyber-green" size={16} />,
       text: "What are the best resources for data science?",
       category: "Data Science"
-    }
-  ];
-
-  const websites = [
-    {
-      icon: <Code className="text-cyber-blue" size={16} />,
-      name: "Python.org",
-      url: "https://python.org",
-      category: "Python",
-      difficulty: "all",
-      type: "free"
-    },
-    {
-      icon: <Book className="text-cyber-green" size={16} />,
-      name: "GeeksforGeeks",
-      url: "https://geeksforgeeks.org",
-      category: "Coding",
-      difficulty: "all",
-      type: "free"
-    },
-    {
-      icon: <Video className="text-cyber-pink" size={16} />,
-      name: "Coursera",
-      url: "https://coursera.org",
-      category: "Courses",
-      difficulty: "all",
-      type: "paid"
-    },
-    {
-      icon: <School className="text-cyber-purple" size={16} />,
-      name: "Khan Academy",
-      url: "https://khanacademy.org",
-      category: "Learning",
-      difficulty: "beginner",
-      type: "free"
-    },
-    {
-      icon: <Globe className="text-cyber-blue" size={16} />,
-      name: "W3Schools",
-      url: "https://w3schools.com",
-      category: "Web Dev",
-      difficulty: "beginner",
-      type: "free"
-    },
-    {
-      icon: <Video className="text-cyber-pink" size={16} />,
-      name: "Udemy",
-      url: "https://udemy.com",
-      category: "Courses",
-      difficulty: "all",
-      type: "paid"
-    },
-    {
-      icon: <GraduationCap className="text-cyber-green" size={16} />,
-      name: "MIT OpenCourseWare",
-      url: "https://ocw.mit.edu",
-      category: "Academic",
-      difficulty: "advanced",
-      type: "free"
-    },
-    {
-      icon: <Database className="text-cyber-purple" size={16} />,
-      name: "OWASP",
-      url: "https://owasp.org",
-      category: "Security",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    {
-      icon: <Cpu className="text-cyber-pink" size={16} />,
-      name: "TensorFlow",
-      url: "https://tensorflow.org",
-      category: "AI",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    {
-      icon: <Network className="text-cyber-green" size={16} />,
-      name: "React Docs",
-      url: "https://react.dev",
-      category: "Web Dev",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    // New resources added
-    {
-      icon: <Code className="text-cyber-blue" size={16} />,
-      name: "CS50 (Harvard)",
-      url: "https://cs50.harvard.edu/",
-      category: "Programming",
-      difficulty: "beginner",
-      type: "free"
-    },
-    {
-      icon: <Globe className="text-cyber-purple" size={16} />,
-      name: "Google Developers",
-      url: "https://developers.google.com/",
-      category: "Web & AI",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    {
-      icon: <FileText className="text-cyber-green" size={16} />,
-      name: "Kaggle",
-      url: "https://www.kaggle.com/learn",
-      category: "Data Science",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    {
-      icon: <Cpu className="text-cyber-pink" size={16} />,
-      name: "Fast.ai",
-      url: "https://www.fast.ai/",
-      category: "AI",
-      difficulty: "intermediate",
-      type: "free"
-    },
-    {
-      icon: <Code className="text-cyber-blue" size={16} />,
-      name: "Roadmap.sh",
-      url: "https://roadmap.sh/",
-      category: "Dev Paths",
-      difficulty: "all",
-      type: "free"
-    },
-    {
-      icon: <Network className="text-cyber-green" size={16} />,
-      name: "freeCodeCamp",
-      url: "https://www.freecodecamp.org/",
-      category: "Web Dev",
-      difficulty: "beginner",
-      type: "free"
     }
   ];
 
@@ -250,11 +116,6 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
     }
   ];
 
-  const filteredWebsites = websites.filter(site => 
-    (difficultyFilter === 'all' || site.difficulty === difficultyFilter || site.difficulty === 'all') && 
-    (typeFilter === 'all' || site.type === typeFilter)
-  );
-
   const getDifficultyBadge = (difficulty: string) => {
     switch(difficulty) {
       case 'beginner':
@@ -280,12 +141,6 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
             onClick={() => setActiveTab('topics')}
           >
             Topics
-          </button>
-          <button 
-            className={`px-2 py-1 text-xs rounded-md ${activeTab === 'resources' ? 'bg-cyber-blue text-black' : 'bg-cyber-darker'}`}
-            onClick={() => setActiveTab('resources')}
-          >
-            Resources
           </button>
           <button 
             className={`px-2 py-1 text-xs rounded-md ${activeTab === 'paths' ? 'bg-cyber-green text-black' : 'bg-cyber-darker'}`}
@@ -314,58 +169,6 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
             </button>
           ))}
         </div>
-      )}
-
-      {activeTab === 'resources' && (
-        <>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex space-x-1">
-              <button 
-                className={`px-2 py-0.5 text-xs rounded-md flex items-center ${difficultyFilter === 'all' ? 'bg-cyber-pink/20 border border-cyber-pink/40' : 'bg-cyber-darker'}`}
-                onClick={() => setDifficultyFilter('all')}
-              >
-                <Filter size={12} className="mr-1" />
-                All
-              </button>
-              <button 
-                className={`px-2 py-0.5 text-xs rounded-md ${typeFilter === 'free' ? 'bg-cyber-green/20 border border-cyber-green/40' : 'bg-cyber-darker'}`}
-                onClick={() => setTypeFilter(typeFilter === 'free' ? 'all' : 'free')}
-              >
-                <CheckCircle size={12} className="mr-1 inline" />
-                Free
-              </button>
-              <button 
-                className={`px-2 py-0.5 text-xs rounded-md ${typeFilter === 'paid' ? 'bg-cyber-purple/20 border border-cyber-purple/40' : 'bg-cyber-darker'}`}
-                onClick={() => setTypeFilter(typeFilter === 'paid' ? 'all' : 'paid')}
-              >
-                <DollarSign size={12} className="mr-1 inline" />
-                Paid
-              </button>
-            </div>
-          </div>
-          
-          <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-            {filteredWebsites.map((website, index) => (
-              <a 
-                key={index}
-                href={website.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cyber-button w-full text-left flex items-center justify-between neon-glow"
-              >
-                <span className="flex items-center">
-                  {website.icon}
-                  <span className="ml-2 text-sm truncate">{website.name}</span>
-                  {website.type === 'paid' && <DollarSign size={12} className="ml-1 text-cyber-purple" />}
-                </span>
-                <span className="flex items-center text-xs bg-cyber-darker px-2 py-1 rounded-md">
-                  <ExternalLink size={12} className="mr-1" />
-                  {website.category}
-                </span>
-              </a>
-            ))}
-          </div>
-        </>
       )}
 
       {activeTab === 'paths' && (
