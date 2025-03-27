@@ -272,7 +272,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
     <div className="cyber-panel p-4 mb-4 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-orbitron text-lg">
-          SkillUp Hub
+          Quick References
         </h3>
         <div className="flex space-x-1">
           <button 
