@@ -601,10 +601,7 @@ const Index = () => {
             
             {/* Main area */}
             <div className="lg:col-span-3 space-y-6">
-              {/* SkillUp Hub section */}
-              <SkillUpHub onSelectTopic={handleTopicSelect} />
-              
-              {/* Chat area */}
+              {/* Chat area - SkillUpHub component is now removed from here */}
               <div className="cyber-panel p-4 h-[calc(100vh-430px)] flex flex-col">
                 <div className="flex-1 overflow-y-auto mb-4 pr-1">
                   {messages.map((message, index) => (
@@ -638,6 +635,9 @@ const Index = () => {
                 
                 <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
               </div>
+              
+              {/* SkillUp Hub - This is now the only instance */}
+              <SkillUpHub onSelectTopic={handleTopicSelect} />
             </div>
           </div>
           
