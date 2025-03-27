@@ -54,10 +54,14 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ badges }) => {
   );
 };
 
-// Default badges to use in the app - updated with current dates
-const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth() + 1;
-const formattedMonth = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}`;
+// Default badges to use in the app - with only the First Conversation badge earned by default
+const getCurrentFormattedDate = () => {
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export const defaultBadges: BadgeItem[] = [
   {
@@ -66,7 +70,7 @@ export const defaultBadges: BadgeItem[] = [
     description: 'Started your first conversation with SkillUp AI',
     icon: <Star size={18} className="text-yellow-400" />,
     earned: true,
-    date: `${currentYear}-${formattedMonth}-01`
+    date: getCurrentFormattedDate()
   },
   {
     id: 'python-beginner',

@@ -9,10 +9,13 @@ import ProgressPanel from '@/components/ProgressPanel';
 import SuggestedQueries from '@/components/SuggestedQueries';
 import LoginForm from '@/components/LoginForm';
 import ChatbotAvatar from '@/components/ChatbotAvatar';
+import SkillUpHub from '@/components/SkillUpHub';
+import QuizModal from '@/components/QuizModal';
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
 import { detectIntent, generateResponse, updateSkillLevel, getContext, resetContext } from '@/utils/messageUtils';
 import { defaultBadges } from '@/components/BadgesSection';
+import quizzes from '@/data/quizData';
 
 // Storage keys for user data
 const STREAK_KEY = 'skillup_streak';
@@ -27,6 +30,38 @@ const learningTopics = [
   'python', 'javascript', 'web development', 'ai', 'cybersecurity', 
   'soft skills', 'machine learning', 'react', 'database', 'data science'
 ];
+
+// Badge trigger detection patterns
+const badgeTriggerPatterns = {
+  'python-beginner': [
+    /completed python/i,
+    /learned python/i,
+    /finished python/i,
+    /python basics/i,
+    /mastered python/i
+  ],
+  'web-explorer': [
+    /completed web/i,
+    /learned web/i,
+    /web development/i,
+    /web dev/i,
+    /html.*css.*javascript/i
+  ],
+  'ai-enthusiast': [
+    /ai fundamentals/i,
+    /artificial intelligence/i,
+    /learned ai/i,
+    /completed ai/i,
+    /machine learning basics/i
+  ],
+  'cyber-guardian': [
+    /cybersecurity/i,
+    /cyber security/i,
+    /network security/i,
+    /information security/i,
+    /completed security/i
+  ]
+};
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,7 +91,8 @@ const Index = () => {
       earned: index === 0
     }));
   });
-  
+  const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load user data from localStorage
@@ -241,131 +277,91 @@ const Index = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0];
     
-    // Check for Python badge
-    if ((lowerMessage.includes("completed python") || 
-         lowerMessage.includes("learned python") || 
-         lowerMessage.includes("finished python") || 
-         lowerMessage.includes("python basics")) && 
-        !userBadgesList.find(b => b.id === 'python-beginner')?.earned) {
-      
-      // Award Python Beginner badge
-      setUserBadgesList(prev => prev.map(badge => 
-        badge.id === 'python-beginner' 
-          ? { ...badge, earned: true, date: formattedDate } 
-          : badge
-      ));
-      
-      // Show toast notification
-      setTimeout(() => {
-        toast({
-          title: "New Badge Earned!",
-          description: "🎉 Congratulations! You've earned the Python Beginner badge!",
-        });
-      }, 1000);
-      
-      // Update skill progress
-      setSkillProgress(prev => ({
-        ...prev,
-        'Python': Math.max(prev['Python'], 40)
-      }));
-      
-      return true;
+    // Check each badge pattern
+    for (const [badgeId, patterns] of Object.entries(badgeTriggerPatterns)) {
+      // If the badge is not already earned
+      if (!userBadgesList.find(b => b.id === badgeId)?.earned) {
+        // Check if any pattern matches
+        const patternMatch = patterns.some(pattern => pattern.test(lowerMessage));
+        
+        if (patternMatch) {
+          // Award the badge
+          setUserBadgesList(prev => prev.map(badge => 
+            badge.id === badgeId 
+              ? { ...badge, earned: true, date: formattedDate } 
+              : badge
+          ));
+          
+          // Show toast notification
+          setTimeout(() => {
+            toast({
+              title: "New Badge Earned!",
+              description: `🎉 Congratulations! You've earned the ${userBadgesList.find(b => b.id === badgeId)?.name} badge!`,
+            });
+          }, 1000);
+          
+          // Update related skill progress
+          let skillKey = '';
+          switch (badgeId) {
+            case 'python-beginner':
+              skillKey = 'Python';
+              break;
+            case 'web-explorer':
+              skillKey = 'Web Dev';
+              break;
+            case 'ai-enthusiast':
+              skillKey = 'AI';
+              break;
+            case 'cyber-guardian':
+              skillKey = 'Cybersecurity';
+              break;
+          }
+          
+          if (skillKey) {
+            setSkillProgress(prev => ({
+              ...prev,
+              [skillKey]: Math.max(prev[skillKey], 40)
+            }));
+          }
+          
+          // Start quiz for the badge
+          setActiveQuiz(badgeId);
+          
+          return badgeId;
+        }
+      }
     }
     
-    // Check for Web Explorer badge
-    if ((lowerMessage.includes("completed web") || 
-         lowerMessage.includes("learned web") || 
-         lowerMessage.includes("web development") || 
-         lowerMessage.includes("web dev")) && 
-        !userBadgesList.find(b => b.id === 'web-explorer')?.earned) {
-      
-      // Award Web Explorer badge
+    return null;
+  };
+
+  const handleQuizComplete = (passed: boolean, score: number, badgeId: string) => {
+    // Close the quiz
+    setActiveQuiz(null);
+    
+    // Send a message about the quiz result
+    const resultMessage = passed
+      ? `Great job! You passed the quiz with a score of ${score}%. Your badge has been confirmed!`
+      : `You scored ${score}%, which is below the 70% passing threshold. Keep learning and try again!`;
+    
+    // Add bot message about quiz results
+    const newBotMessage: Message = {
+      id: (Date.now() + 2).toString(),
+      role: 'assistant',
+      content: resultMessage,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newBotMessage]);
+    
+    // If failed, remove the badge
+    if (!passed) {
       setUserBadgesList(prev => prev.map(badge => 
-        badge.id === 'web-explorer' 
-          ? { ...badge, earned: true, date: formattedDate } 
+        badge.id === badgeId 
+          ? { ...badge, earned: false, date: undefined } 
           : badge
       ));
-      
-      // Show toast notification
-      setTimeout(() => {
-        toast({
-          title: "New Badge Earned!",
-          description: "🚀 Great job! You've earned the Web Explorer badge!",
-        });
-      }, 1000);
-      
-      // Update skill progress
-      setSkillProgress(prev => ({
-        ...prev,
-        'Web Dev': Math.max(prev['Web Dev'], 40)
-      }));
-      
-      return true;
     }
-    
-    // Check for AI Enthusiast badge
-    if ((lowerMessage.includes("ai fundamentals") || 
-         lowerMessage.includes("artificial intelligence") || 
-         lowerMessage.includes("learned ai") || 
-         lowerMessage.includes("completed ai")) && 
-        !userBadgesList.find(b => b.id === 'ai-enthusiast')?.earned) {
-      
-      // Award AI Enthusiast badge
-      setUserBadgesList(prev => prev.map(badge => 
-        badge.id === 'ai-enthusiast' 
-          ? { ...badge, earned: true, date: formattedDate } 
-          : badge
-      ));
-      
-      // Show toast notification
-      setTimeout(() => {
-        toast({
-          title: "New Badge Earned!",
-          description: "🧠 Amazing! You've earned the AI Enthusiast badge!",
-        });
-      }, 1000);
-      
-      // Update skill progress
-      setSkillProgress(prev => ({
-        ...prev,
-        'AI': Math.max(prev['AI'], 40)
-      }));
-      
-      return true;
-    }
-    
-    // Check for Cyber Guardian badge
-    if ((lowerMessage.includes("cybersecurity") || 
-         lowerMessage.includes("cyber security") || 
-         lowerMessage.includes("network security") || 
-         lowerMessage.includes("information security")) && 
-        !userBadgesList.find(b => b.id === 'cyber-guardian')?.earned) {
-      
-      // Award Cyber Guardian badge
-      setUserBadgesList(prev => prev.map(badge => 
-        badge.id === 'cyber-guardian' 
-          ? { ...badge, earned: true, date: formattedDate } 
-          : badge
-      ));
-      
-      // Show toast notification
-      setTimeout(() => {
-        toast({
-          title: "New Badge Earned!",
-          description: "🛡️ Well done! You've earned the Cyber Guardian badge!",
-        });
-      }, 1000);
-      
-      // Update skill progress
-      setSkillProgress(prev => ({
-        ...prev,
-        'Cybersecurity': Math.max(prev['Cybersecurity'], 40)
-      }));
-      
-      return true;
-    }
-    
-    return false;
   };
 
   const handleLogin = () => {
@@ -387,6 +383,18 @@ const Index = () => {
     audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAABMAB//9AAALAAA/1Wf/////////////////////gAA7LAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/4zDAACIAJKAgAAAGi1EwKAIMPNDA4T3+PevwYP4PH/4fBwcHH/h8HwcHBwcP/B8/U/8uAgICAgF/5c/8HwfBwEB/y4CAIAj55/l3//////8uD4eD58H/QEAQcAAAGbXJY2XwKFihgpGDkZ+BgZQgirgxOTEyIZrhAQoGCAgYEIQiAhoIHBiQFNQwFBRM3C50ODioGMAwMKiF8HAQELpNH7QUiDiZcVDBokwKPBRoGKGAwEKHgQibNFhYQCBhQWUg5mFiQQNjDQEFAocOMgwIZLkRIGPFAYCCwkyLGjjo4fCyEJKAtJCh4UCiQEVKAocbAQgOBggcHBAMLMCQEOGjYeWCQYaNhYEAgoqGA4YKGRcpKA4UOCgE4YIhQQJKjz50KNnTpZgLHwkkEiJI2bOGTBcUHiBEiUPlECBcoVJkxoCXPGgQQJhA0BChQgQGipE+YLmzRw+NADg6hDBAcRKEiRMiSOKGEDJ0yVLFyA03cEgBAgAA/+REwAAJ7AKXAAACAAAAAPA8AAAABAAAAP8AAAACCcAAAIB8IAAA/+M4wAAF/wCgAAAAADM/AcA8Hw/h8H/5+Hg/8/y/4IAhwfg+H8H/+X5//8HwcHBwcHwf/8+XBw/h/+fh4Pn4P/8uDg+8uDg4ODg+Dg4Ph4eD4PB8P4eD/+D4eD5+D5+AgCDh/8HD+IAQQQQLB//h/B//y5+D5+D5+fLg/5/l/5fl//y4Pn////B/B///D+IAICAgICAg+D/yAIAg4eAQBAEHAQcBAEHAEB/w//B//y//Lg//L///////////LgICD//wEAQcAQcAQcAQEBAQEA/+M4wABBiACYAAAAACODg+A/g4Pnni4OAgIeAICAgP+fwcHBw/g4Pn//L//////y5+Dg4Ph/+XBw///5f////////y/w//8EAQEB//8H////////Lgy7/w/h8P4fD////nh/B8H//4f/////8+D/y4P/////+H/5f//+fB/+XB//w///////l///+X//////L/////5//l////+X//////l//Lg//L/8v///y//////////////y//Lg//L/8v/y//Lg//L/////8v/y/+X/5f////8v/y////8v/y//L/5f/l//////L/////////////////////////////////////////////////////////////////w==';
     audio.volume = 0.2;
     audio.play();
+  };
+
+  const handleTopicSelect = (content: string) => {
+    // Add a bot message with the topic response
+    const newBotMessage: Message = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newBotMessage]);
   };
 
   const handleSendMessage = (content: string) => {
@@ -437,7 +445,7 @@ const Index = () => {
     
     // If a badge was triggered, add badge notification to response
     if (badgeTriggered) {
-      const badgeMessage = "\n\n🏆 **Achievement Unlocked!** A new badge has been added to your collection!";
+      const badgeMessage = "\n\n🏆 **Achievement Unlocked!** A new badge has been added to your collection! I'll quiz you to confirm your knowledge.";
       botResponse += badgeMessage;
     }
     
@@ -449,13 +457,13 @@ const Index = () => {
     
     // Add encouragement message for skills close to earning a badge
     if (pythonProgress >= 30 && !userBadgesList.find(b => b.id === 'python-beginner')?.earned) {
-      botResponse += "\n\nYou're making great progress with Python! Keep learning to unlock the Python Beginner badge.";
+      botResponse += "\n\nYou're making great progress with Python! Let me know when you've completed your Python basics to unlock the Python Beginner badge.";
     } else if (webDevProgress >= 30 && !userBadgesList.find(b => b.id === 'web-explorer')?.earned) {
-      botResponse += "\n\nYou're on your way to becoming a web developer! Continue learning to earn the Web Explorer badge.";
+      botResponse += "\n\nYou're on your way to becoming a web developer! Tell me when you've completed web development basics to earn the Web Explorer badge.";
     } else if (aiProgress >= 30 && !userBadgesList.find(b => b.id === 'ai-enthusiast')?.earned) {
-      botResponse += "\n\nYou're diving deep into AI! Keep exploring to earn the AI Enthusiast badge.";
+      botResponse += "\n\nYou're diving deep into AI! Let me know when you've explored the AI fundamentals to earn the AI Enthusiast badge.";
     } else if (cyberProgress >= 30 && !userBadgesList.find(b => b.id === 'cyber-guardian')?.earned) {
-      botResponse += "\n\nYou're building solid cybersecurity knowledge! Continue to unlock the Cyber Guardian badge.";
+      botResponse += "\n\nYou're building solid cybersecurity knowledge! Tell me when you've discovered the cybersecurity principles to unlock the Cyber Guardian badge.";
     }
     
     // Simulate typing delay based on response length
@@ -591,41 +599,57 @@ const Index = () => {
               <SuggestedQueries onSelectQuery={handleSelectQuery} />
             </div>
             
-            {/* Chat area */}
-            <div className="lg:col-span-3 cyber-panel p-4 h-[calc(100vh-150px)] flex flex-col">
-              <div className="flex-1 overflow-y-auto mb-4 pr-1">
-                {messages.map((message, index) => (
-                  <ChatMessage 
-                    key={message.id} 
-                    message={message} 
-                    animate={index === messages.length - 1 && message.role === 'assistant'} 
-                  />
-                ))}
-                
-                {isTyping && (
-                  <div className="flex gap-3 mb-4 p-3 rounded-lg bg-cyber-darker/60 animate-fade-in">
-                    <div className="flex-shrink-0 mt-1">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border">
-                        <Cpu size={18} className="text-white" />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-orbitron text-sm mb-1 text-cyber-blue">SkillUp AI</div>
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
+            {/* Main area */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* SkillUp Hub section */}
+              <SkillUpHub onSelectTopic={handleTopicSelect} />
               
-              <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
+              {/* Chat area */}
+              <div className="cyber-panel p-4 h-[calc(100vh-430px)] flex flex-col">
+                <div className="flex-1 overflow-y-auto mb-4 pr-1">
+                  {messages.map((message, index) => (
+                    <ChatMessage 
+                      key={message.id} 
+                      message={message} 
+                      animate={index === messages.length - 1 && message.role === 'assistant'} 
+                    />
+                  ))}
+                  
+                  {isTyping && (
+                    <div className="flex gap-3 mb-4 p-3 rounded-lg bg-cyber-darker/60 animate-fade-in">
+                      <div className="flex-shrink-0 mt-1">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border">
+                          <Cpu size={18} className="text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-orbitron text-sm mb-1 text-cyber-blue">SkillUp AI</div>
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse"></div>
+                          <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div ref={messagesEndRef} />
+                </div>
+                
+                <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
+              </div>
             </div>
           </div>
+          
+          {/* Quiz modal */}
+          {activeQuiz && quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")] && (
+            <QuizModal
+              topic={quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")].topic}
+              questions={quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")].questions}
+              onClose={() => setActiveQuiz(null)}
+              onComplete={(passed, score) => handleQuizComplete(passed, score, activeQuiz)}
+            />
+          )}
         </div>
       ) : (
         <div className="min-h-screen flex items-center justify-center p-4">
