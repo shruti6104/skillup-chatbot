@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Cpu, Trophy, Brain } from 'lucide-react';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -11,6 +10,7 @@ import LoginForm from '@/components/LoginForm';
 import ChatbotAvatar from '@/components/ChatbotAvatar';
 import SkillUpHub from '@/components/SkillUpHub';
 import QuizModal from '@/components/QuizModal';
+import LearningSummary from '@/components/LearningSummary';
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
 import { detectIntent, generateResponse, updateSkillLevel, getContext, resetContext } from '@/utils/messageUtils';
@@ -24,6 +24,7 @@ const MESSAGE_COUNT_KEY = 'skillup_message_count';
 const TOPICS_EXPLORED_KEY = 'skillup_topics';
 const SKILLS_PROGRESS_KEY = 'skillup_skills_progress';
 const BADGES_KEY = 'skillup_badges';
+const SESSION_START_KEY = 'skillup_session_start';
 
 // Learning topics for tracking progress
 const learningTopics = [
@@ -85,23 +86,23 @@ const Index = () => {
     if (savedBadges) {
       return JSON.parse(savedBadges);
     }
-    // Set only "First Conversation" badge as earned by default
     return defaultBadges.map((badge, index) => ({
       ...badge,
       earned: index === 0
     }));
   });
   const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
+  const [sessionTime, setSessionTime] = useState(0);
+  const [lastTopic, setLastTopic] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sessionInterval = useRef<number | null>(null);
 
-  // Load user data from localStorage
   useEffect(() => {
     const isUserLoggedIn = localStorage.getItem('skillup_isLoggedIn') === 'true';
     if (isUserLoggedIn) {
       setIsLoggedIn(true);
       
-      // Load saved progress data
       const savedStreak = parseInt(localStorage.getItem(STREAK_KEY) || '1', 10);
       const savedMessageCount = parseInt(localStorage.getItem(MESSAGE_COUNT_KEY) || '0', 10);
       const savedTopics = JSON.parse(localStorage.getItem(TOPICS_EXPLORED_KEY) || '[]');
@@ -115,42 +116,39 @@ const Index = () => {
         setSkillProgress(savedSkillProgress);
       }
       
-      // Calculate level based on message count
       const calculatedLevel = Math.max(1, Math.floor(savedMessageCount / 10) + 1);
       setUserLevel(calculatedLevel);
       
-      // Calculate XP based on message count and level
       const xpPerLevel = 100;
       const totalXP = savedMessageCount * 5;
       const currentLevelXP = totalXP % xpPerLevel;
       setUserXP(currentLevelXP);
       
-      // Count earned badges
       const earnedBadgesCount = userBadgesList.filter(b => b.earned).length;
       setUserBadges(earnedBadgesCount);
+      
+      const sessionStartTime = localStorage.getItem(SESSION_START_KEY);
+      if (!sessionStartTime) {
+        localStorage.setItem(SESSION_START_KEY, Date.now().toString());
+      } else {
+        const elapsedMinutes = Math.floor((Date.now() - parseInt(sessionStartTime)) / 60000);
+        setSessionTime(elapsedMinutes);
+      }
+      
+      sessionInterval.current = window.setInterval(() => {
+        setSessionTime(prev => prev + 1);
+      }, 60000);
     }
   }, []);
 
-  // Save badges whenever they change
   useEffect(() => {
-    if (isLoggedIn) {
-      localStorage.setItem(BADGES_KEY, JSON.stringify(userBadgesList));
-      // Update badge count
-      const earnedBadgesCount = userBadgesList.filter(b => b.earned).length;
-      setUserBadges(earnedBadgesCount);
-    }
-  }, [isLoggedIn, userBadgesList]);
+    return () => {
+      if (sessionInterval.current) {
+        clearInterval(sessionInterval.current);
+      }
+    };
+  }, []);
 
-  // Scroll to bottom of messages
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Save progress data whenever it changes
   useEffect(() => {
     if (isLoggedIn) {
       localStorage.setItem(MESSAGE_COUNT_KEY, messageCount.toString());
@@ -159,38 +157,32 @@ const Index = () => {
     }
   }, [isLoggedIn, messageCount, topicsExplored, skillProgress]);
 
-  // Calculate streak on login
   const calculateStreak = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to start of day
+    today.setHours(0, 0, 0, 0);
     const todayStr = today.toISOString();
     
-    // Get last login date from localStorage
     const lastLoginStr = localStorage.getItem(LAST_LOGIN_KEY);
     const currentStreak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
     
-    let newStreak = 1; // Default to 1 if no previous streak
+    let newStreak = 1;
     
     if (lastLoginStr) {
       const lastLogin = new Date(lastLoginStr);
-      lastLogin.setHours(0, 0, 0, 0); // Normalize to start of day
+      lastLogin.setHours(0, 0, 0, 0);
       
-      // Calculate difference in days
       const timeDiff = today.getTime() - lastLogin.getTime();
       const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
       
       if (dayDiff === 1) {
-        // Consecutive day, increment streak
         newStreak = currentStreak + 1;
         toast({
           title: "Streak Increased!",
           description: `You're on a ${newStreak}-day streak! Keep it up!`,
         });
       } else if (dayDiff === 0) {
-        // Same day login, maintain streak
         newStreak = currentStreak;
       } else {
-        // Streak broken
         if (currentStreak > 1) {
           toast({
             title: "Streak Reset",
@@ -200,14 +192,12 @@ const Index = () => {
         newStreak = 1;
       }
     } else {
-      // First time login
       toast({
         title: "Streak Started!",
         description: "You've started your learning streak! Come back tomorrow to keep it going!",
       });
     }
     
-    // Save updated streak and login date
     localStorage.setItem(STREAK_KEY, newStreak.toString());
     localStorage.setItem(LAST_LOGIN_KEY, todayStr);
     
@@ -215,7 +205,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // Add initial message if logged in
     if (isLoggedIn && messages.length === 0) {
       setTimeout(() => {
         const initialMessage: Message = {
@@ -229,7 +218,6 @@ const Index = () => {
     }
   }, [isLoggedIn, messages.length]);
 
-  // Check if a message is related to a specific learning topic
   const detectTopicInMessage = (message: string): string | null => {
     const lowerMessage = message.toLowerCase();
     
@@ -242,11 +230,9 @@ const Index = () => {
     return null;
   };
 
-  // Update skill progress based on the detected topic
   const updateSkillProgress = (topic: string) => {
     let skillKey = '';
     
-    // Map topics to skill categories
     if (['python', 'javascript', 'react'].includes(topic)) {
       skillKey = 'Python';
       if (topic === 'javascript' || topic === 'react') skillKey = 'Web Dev';
@@ -263,36 +249,31 @@ const Index = () => {
     if (skillKey && skillKey in skillProgress) {
       setSkillProgress(prev => {
         const updatedProgress = { ...prev };
-        // Increase skill by 5-15% randomly, max 100%
         const increase = Math.floor(Math.random() * 10) + 5;
         updatedProgress[skillKey] = Math.min(100, (updatedProgress[skillKey] || 0) + increase);
         return updatedProgress;
       });
     }
+    
+    setLastTopic(topic.charAt(0).toUpperCase() + topic.slice(1));
   };
 
-  // Function to check for badge triggers in user message
   const checkForBadgeTriggers = (message: string) => {
     const lowerMessage = message.toLowerCase();
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0];
     
-    // Check each badge pattern
     for (const [badgeId, patterns] of Object.entries(badgeTriggerPatterns)) {
-      // If the badge is not already earned
       if (!userBadgesList.find(b => b.id === badgeId)?.earned) {
-        // Check if any pattern matches
         const patternMatch = patterns.some(pattern => pattern.test(lowerMessage));
         
         if (patternMatch) {
-          // Award the badge
           setUserBadgesList(prev => prev.map(badge => 
             badge.id === badgeId 
               ? { ...badge, earned: true, date: formattedDate } 
               : badge
           ));
           
-          // Show toast notification
           setTimeout(() => {
             toast({
               title: "New Badge Earned!",
@@ -300,7 +281,6 @@ const Index = () => {
             });
           }, 1000);
           
-          // Update related skill progress
           let skillKey = '';
           switch (badgeId) {
             case 'python-beginner':
@@ -324,7 +304,6 @@ const Index = () => {
             }));
           }
           
-          // Start quiz for the badge
           setActiveQuiz(badgeId);
           
           return badgeId;
@@ -336,15 +315,12 @@ const Index = () => {
   };
 
   const handleQuizComplete = (passed: boolean, score: number, badgeId: string) => {
-    // Close the quiz
     setActiveQuiz(null);
     
-    // Send a message about the quiz result
     const resultMessage = passed
       ? `Great job! You passed the quiz with a score of ${score}%. Your badge has been confirmed!`
       : `You scored ${score}%, which is below the 70% passing threshold. Keep learning and try again!`;
     
-    // Add bot message about quiz results
     const newBotMessage: Message = {
       id: (Date.now() + 2).toString(),
       role: 'assistant',
@@ -354,7 +330,6 @@ const Index = () => {
     
     setMessages(prev => [...prev, newBotMessage]);
     
-    // If failed, remove the badge
     if (!passed) {
       setUserBadgesList(prev => prev.map(badge => 
         badge.id === badgeId 
@@ -369,16 +344,19 @@ const Index = () => {
     setUserStreak(streak);
     setIsLoggedIn(true);
     
-    // Set login status in localStorage
     localStorage.setItem('skillup_isLoggedIn', 'true');
     
-    // Show welcome toast
+    localStorage.setItem(SESSION_START_KEY, Date.now().toString());
+    
+    sessionInterval.current = window.setInterval(() => {
+      setSessionTime(prev => prev + 1);
+    }, 60000);
+    
     toast({
       title: "Login Successful",
       description: "Welcome back to SkillUp AI",
     });
     
-    // Play login success sound
     const audio = new Audio();
     audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAABMAB//9AAALAAA/1Wf/////////////////////gAA7LAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/4zDAACIAJKAgAAAGi1EwKAIMPNDA4T3+PevwYP4PH/4fBwcHH/h8HwcHBwcP/B8/U/8uAgICAgF/5c/8HwfBwEB/y4CAIAj55/l3//////8uD4eD58H/QEAQcAAAGbXJY2XwKFihgpGDkZ+BgZQgirgxOTEyIZrhAQoGCAgYEIQiAhoIHBiQFNQwFBRM3C50ODioGMAwMKiF8HAQELpNH7QUiDiZcVDBokwKPBRoGKGAwEKHgQibNFhYQCBhQWUg5mFiQQNjDQEFAocOMgwIZLkRIGPFAYCCwkyLGjjo4fCyEJKAtJCh4UCiQEVKAocbAQgOBggcHBAMLMCQEOGjYeWCQYaNhYEAgoqGA4YKGRcpKA4UOCgE4YIhQQJKjz50KNnTpZgLHwkkEiJI2bOGTBcUHiBEiUPlECBcoVJkxoCXPGgQQJhA0BChQgQGipE+YLmzRw+NADg6hDBAcRKEiRMiSOKGEDJ0yVLFyA03cEgBAgAA/+REwAAJ7AKXAAACAAAAAPA8AAAABAAAAP8AAAACCcAAAIB8IAAA/+M4wAAF/wCgAAAAADM/AcA8Hw/h8H/5+Hg/8/y/4IAhwfg+H8H/+X5//8HwcHBwcHwf/8+XBw/h/+fh4Pn4P/8uDg+8uDg4ODg+Dg4Ph4eD4PB8P4eD/+D4eD5+D5+AgCDh/8HD+IAQQQQLB//h/B//y5+D5+D5+fLg/5/l/5fl//y4Pn////B/B///D+IAICAgICAg+D/yAIAg4eAQBAEHAQcBAEHAEB/w//B//y//Lg//L///////////LgICD//wEAQcAQcAQcAQEBAQEA/+M4wABBiACYAAAAACODg+A/g4Pnni4OAgIeAICAgP+fwcHBw/g4Pn//L//////y5+Dg4Ph/+XBw///5f////////y/w//8EAQEB//8H////////Lgy7/w/h8P4fD////nh/B8H//4f/////8+D/y4P/////+H/5f//+fB/+XB//w///////l///+X//////L/////5//l////+X//////l//Lg//L/8v///y//////////////y//Lg//L/8v/y//Lg//L/////8v/y/+X/5f////8v/y////8v/y//L/5f/l//////L/////////////////////////////////////////////////////////////////w==';
     audio.volume = 0.2;
@@ -386,7 +364,6 @@ const Index = () => {
   };
 
   const handleTopicSelect = (content: string) => {
-    // Add a bot message with the topic response
     const newBotMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
@@ -400,7 +377,6 @@ const Index = () => {
   const handleSendMessage = (content: string) => {
     if (!content.trim()) return;
     
-    // Add user message
     const newUserMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -411,51 +387,38 @@ const Index = () => {
     setMessages(prev => [...prev, newUserMessage]);
     setIsTyping(true);
     
-    // Increase message count
     const newMessageCount = messageCount + 1;
     setMessageCount(newMessageCount);
     
-    // Check for badge triggers in user message
     const badgeTriggered = checkForBadgeTriggers(content);
     
-    // Process the message using our intelligent system
     const { intent, topic, confidence } = detectIntent(content);
     
-    // Update context and skills if a topic was detected
     if (topic) {
-      // Check if this is a new topic
       if (!topicsExplored.includes(topic)) {
-        // Add new topic to explored topics
         setTopicsExplored(prev => [...prev, topic]);
-        
-        // Show toast for new topic
         toast({
           title: "New Topic Explored!",
           description: `You've started learning about ${topic.charAt(0).toUpperCase() + topic.slice(1)}`,
         });
       }
       
-      // Update skill progress
       updateSkillProgress(topic);
       updateSkillLevel(topic);
     }
     
-    // Generate intelligent response
     let botResponse = generateResponse(intent, topic, messages);
     
-    // If a badge was triggered, add badge notification to response
     if (badgeTriggered) {
       const badgeMessage = "\n\n🏆 **Achievement Unlocked!** A new badge has been added to your collection! I'll quiz you to confirm your knowledge.";
       botResponse += badgeMessage;
     }
     
-    // Check for progress encouragement
     const pythonProgress = skillProgress['Python'];
     const webDevProgress = skillProgress['Web Dev'];
     const aiProgress = skillProgress['AI'];
     const cyberProgress = skillProgress['Cybersecurity'];
     
-    // Add encouragement message for skills close to earning a badge
     if (pythonProgress >= 30 && !userBadgesList.find(b => b.id === 'python-beginner')?.earned) {
       botResponse += "\n\nYou're making great progress with Python! Let me know when you've completed your Python basics to unlock the Python Beginner badge.";
     } else if (webDevProgress >= 30 && !userBadgesList.find(b => b.id === 'web-explorer')?.earned) {
@@ -466,7 +429,6 @@ const Index = () => {
       botResponse += "\n\nYou're building solid cybersecurity knowledge! Tell me when you've discovered the cybersecurity principles to unlock the Cyber Guardian badge.";
     }
     
-    // Simulate typing delay based on response length
     const typingDelay = Math.min(1500, 500 + botResponse.length / 10);
     
     setTimeout(() => {
@@ -480,11 +442,9 @@ const Index = () => {
       setMessages(prev => [...prev, newBotMessage]);
       setIsTyping(false);
       
-      // Add XP for interaction
       setUserXP(prev => {
         const newXP = prev + Math.floor(Math.random() * 5) + 3;
         
-        // Level up if XP exceeds threshold
         if (newXP >= 100) {
           setUserLevel(prevLevel => prevLevel + 1);
           toast({
@@ -492,7 +452,6 @@ const Index = () => {
             description: `You've reached Level ${userLevel + 1}!`,
           });
           
-          // Check for Quick Learner badge
           if (messageCount > 20 && !userBadgesList.find(b => b.id === 'quick-learner')?.earned) {
             const currentDate = new Date();
             const formattedDate = currentDate.toISOString().split('T')[0];
@@ -509,13 +468,12 @@ const Index = () => {
             });
           }
           
-          return newXP - 100; // Reset XP after leveling up
+          return newXP - 100;
         }
         
         return newXP;
       });
       
-      // Check for Knowledge Seeker badge
       if (newMessageCount >= 50 && !userBadgesList.find(b => b.id === 'knowledge-seeker')?.earned) {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().split('T')[0];
@@ -534,7 +492,6 @@ const Index = () => {
         }, 1500);
       }
       
-      // Check for Skill Master badge if any skill reaches 100%
       const hasMaxSkill = Object.values(skillProgress).some(value => value >= 95);
       if (hasMaxSkill && !userBadgesList.find(b => b.id === 'skill-master')?.earned) {
         const currentDate = new Date();
@@ -569,7 +526,6 @@ const Index = () => {
           <Header />
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Sidebar */}
             <div className="lg:col-span-1 space-y-6">
               <div className="text-center">
                 <ChatbotAvatar />
@@ -596,12 +552,17 @@ const Index = () => {
                 skillProgress={skillProgress}
               />
               
+              <LearningSummary
+                sessionTime={sessionTime}
+                topicsExplored={topicsExplored}
+                lastTopic={lastTopic || 'Not started yet'}
+                messageCount={messageCount}
+              />
+              
               <SuggestedQueries onSelectQuery={handleSelectQuery} />
             </div>
             
-            {/* Main area */}
             <div className="lg:col-span-3 space-y-6">
-              {/* Chat area - SkillUpHub component is now removed from here */}
               <div className="cyber-panel p-4 h-[calc(100vh-430px)] flex flex-col">
                 <div className="flex-1 overflow-y-auto mb-4 pr-1">
                   {messages.map((message, index) => (
@@ -636,12 +597,10 @@ const Index = () => {
                 <ChatInput onSendMessage={handleSendMessage} disabled={isTyping} />
               </div>
               
-              {/* SkillUp Hub - This is now the only instance */}
               <SkillUpHub onSelectTopic={handleTopicSelect} />
             </div>
           </div>
           
-          {/* Quiz modal */}
           {activeQuiz && quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")] && (
             <QuizModal
               topic={quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")].topic}
