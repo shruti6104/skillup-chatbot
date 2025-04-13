@@ -28,7 +28,7 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
       <h2 className="font-orbitron text-xl mb-4 text-center cyber-gradient-text">Quick Learning Hub</h2>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 mb-4">
+        <TabsList className="grid grid-cols-2 mb-4">
           <TabsTrigger value="topics" className="font-orbitron text-sm">Topics</TabsTrigger>
           <TabsTrigger 
             value="resources" 
@@ -36,7 +36,6 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
           >
             Resources
           </TabsTrigger>
-          <TabsTrigger value="paths" className="font-orbitron text-sm">Paths</TabsTrigger>
         </TabsList>
         
         <TabsContent value="topics">
@@ -45,12 +44,6 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
         
         <TabsContent value="resources">
           <QuickLearningSection onSelectTopic={onSelectTopic} />
-        </TabsContent>
-        
-        <TabsContent value="paths">
-          <div className="p-4 text-center">
-            <p className="text-muted-foreground">Learning paths coming soon! Stay tuned for guided learning journeys.</p>
-          </div>
         </TabsContent>
       </Tabs>
     </div>
