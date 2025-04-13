@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Globe, FileText, Cpu, Code, ExternalLink, BarChart, BookOpen, Shield, Network } from 'lucide-react';
+import { Globe, FileText, Cpu, Code, ExternalLink, BarChart, BookOpen, Shield, Network, Brain, Video, Github, Book, HeartHandshake, BookCheck, Layers, Bookmark, Blocks } from 'lucide-react';
 
 interface LearningResourceProps {
   icon: React.ReactNode;
@@ -77,6 +77,66 @@ const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) =
       name: "HACKTHEBOX",
       category: "CYBERSECURITY",
       url: "https://www.hackthebox.com/"
+    },
+    {
+      icon: <Video className="text-cyber-blue" size={16} />,
+      name: "PLURALSIGHT",
+      category: "VARIOUS TECH",
+      url: "https://www.pluralsight.com/"
+    },
+    {
+      icon: <Github className="text-cyber-green" size={16} />,
+      name: "GITHUB LEARNING LAB",
+      category: "DEV TOOLS",
+      url: "https://lab.github.com/"
+    },
+    {
+      icon: <Book className="text-cyber-purple" size={16} />,
+      name: "MDN WEB DOCS",
+      category: "WEB DEV",
+      url: "https://developer.mozilla.org/"
+    },
+    {
+      icon: <HeartHandshake className="text-cyber-pink" size={16} />,
+      name: "TOASTMASTERS",
+      category: "SOFT SKILLS",
+      url: "https://www.toastmasters.org/"
+    },
+    {
+      icon: <BookCheck className="text-cyber-blue" size={16} />,
+      name: "EDUREKA",
+      category: "TECH COURSES",
+      url: "https://www.edureka.co/"
+    },
+    {
+      icon: <Layers className="text-cyber-green" size={16} />,
+      name: "TENSORFLOW TUTORIALS",
+      category: "AI/ML",
+      url: "https://www.tensorflow.org/tutorials"
+    },
+    {
+      icon: <Bookmark className="text-cyber-purple" size={16} />,
+      name: "UDACITY",
+      category: "TECH EDUCATION",
+      url: "https://www.udacity.com/"
+    },
+    {
+      icon: <Shield className="text-cyber-pink" size={16} />,
+      name: "OWASP",
+      category: "CYBERSECURITY",
+      url: "https://owasp.org/www-project-top-ten/"
+    },
+    {
+      icon: <Blocks className="text-cyber-blue" size={16} />,
+      name: "CODECADEMY",
+      category: "CODING BASICS",
+      url: "https://www.codecademy.com/"
+    },
+    {
+      icon: <Brain className="text-cyber-green" size={16} />,
+      name: "MIT OCW",
+      category: "COMPUTER SCIENCE",
+      url: "https://ocw.mit.edu/search/?t=Computer%20Science"
     }
   ];
 
@@ -149,7 +209,7 @@ const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) =
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
         {filteredResources.map((resource, index) => (
           <a 
             key={index}
