@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Database, Code, Cpu, Globe, Shield, BookOpen, Search } from 'lucide-react';
+import { Database, Code, Cpu, Globe, Shield, BookOpen, Search, BarChart, Brain, Network } from 'lucide-react';
 
 interface TopicItem {
   id: string;
@@ -56,6 +56,24 @@ const TopicsSection: React.FC<TopicsSectionProps> = ({ onSelectTopic }) => {
       title: 'HOW TO GET STARTED WITH CYBERSECURITY',
       category: 'SECURITY',
       icon: <Shield className="text-cyber-purple" size={18} />
+    },
+    {
+      id: 'data-science-basics',
+      title: 'DATA SCIENCE FUNDAMENTALS',
+      category: 'DATA SCIENCE',
+      icon: <BarChart className="text-cyber-blue" size={18} />
+    },
+    {
+      id: 'machine-learning-intro',
+      title: 'INTRODUCTION TO MACHINE LEARNING',
+      category: 'AI/ML',
+      icon: <Brain className="text-cyber-pink" size={18} />
+    },
+    {
+      id: 'soft-skills-importance',
+      title: 'WHY SOFT SKILLS MATTER IN TECH',
+      category: 'SOFT SKILLS',
+      icon: <Network className="text-cyber-green" size={18} />
     }
   ];
 

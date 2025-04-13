@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Globe, FileText, Cpu, Code, ExternalLink } from 'lucide-react';
+import { Globe, FileText, Cpu, Code, ExternalLink, BarChart, BookOpen, Shield, Network } from 'lucide-react';
 
 interface LearningResourceProps {
   icon: React.ReactNode;
@@ -15,6 +15,7 @@ interface QuickLearningProps {
 
 const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   
   const learningResources: LearningResourceProps[] = [
     {
@@ -46,12 +47,49 @@ const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) =
       name: "FREECODECAMP",
       category: "WEB DEV",
       url: "https://www.freecodecamp.org/"
+    },
+    {
+      icon: <BarChart className="text-cyber-blue" size={16} />,
+      name: "DATACAMP",
+      category: "DATA SCIENCE",
+      url: "https://www.datacamp.com/"
+    },
+    {
+      icon: <Shield className="text-cyber-purple" size={16} />,
+      name: "TRYHACKME",
+      category: "CYBERSECURITY",
+      url: "https://tryhackme.com/"
+    },
+    {
+      icon: <Network className="text-cyber-green" size={16} />,
+      name: "COURSERA SOFT SKILLS",
+      category: "SOFT SKILLS",
+      url: "https://www.coursera.org/courses?query=soft%20skills"
+    },
+    {
+      icon: <Brain className="text-cyber-pink" size={16} />,
+      name: "DEEPLEARNING.AI",
+      category: "AI/ML",
+      url: "https://www.deeplearning.ai/"
+    },
+    {
+      icon: <Shield className="text-cyber-purple" size={16} />,
+      name: "HACKTHEBOX",
+      category: "CYBERSECURITY",
+      url: "https://www.hackthebox.com/"
     }
   ];
 
+  // Filter resources based on selected category
+  const filteredResources = categoryFilter === 'all' 
+    ? learningResources 
+    : learningResources.filter(resource => 
+        resource.category.toLowerCase().includes(categoryFilter.toLowerCase())
+      );
+
   return (
     <div className="space-y-2">
-      <div className="flex space-x-1 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <button 
           className={`px-3 py-1 text-xs rounded-md ${typeFilter === 'all' ? 'bg-cyber-purple text-black' : 'bg-cyber-darker'}`}
           onClick={() => setTypeFilter('all')}
@@ -72,8 +110,47 @@ const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) =
         </button>
       </div>
 
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'all' ? 'bg-cyber-purple text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter('all')}
+        >
+          All Topics
+        </button>
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'web' ? 'bg-cyber-blue text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter(categoryFilter === 'web' ? 'all' : 'web')}
+        >
+          Web Dev
+        </button>
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'data' ? 'bg-cyber-green text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter(categoryFilter === 'data' ? 'all' : 'data')}
+        >
+          Data Science
+        </button>
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'ai' ? 'bg-cyber-pink text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter(categoryFilter === 'ai' ? 'all' : 'ai')}
+        >
+          AI/ML
+        </button>
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'cyber' ? 'bg-cyber-purple text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter(categoryFilter === 'cyber' ? 'all' : 'cyber')}
+        >
+          Cybersecurity
+        </button>
+        <button 
+          className={`px-3 py-1 text-xs rounded-md ${categoryFilter === 'soft' ? 'bg-cyber-blue text-black' : 'bg-cyber-darker'}`}
+          onClick={() => setCategoryFilter(categoryFilter === 'soft' ? 'all' : 'soft')}
+        >
+          Soft Skills
+        </button>
+      </div>
+
       <div className="space-y-2">
-        {learningResources.map((resource, index) => (
+        {filteredResources.map((resource, index) => (
           <a 
             key={index}
             href={resource.url}
