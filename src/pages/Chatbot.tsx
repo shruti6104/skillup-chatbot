@@ -483,7 +483,7 @@ const Chatbot = () => {
         audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
         break;
       case 'achievement':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MUxBUAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MUxBgAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
         break;
       case 'levelup':
         audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAABQAAD6QAIiIiIiIiIiIiNDQ0NDQ0NDQ0NEtLS0tLS0tLS1xcXFxcXFxcXFxra2tra2tra2t7e3t7e3t7e3t7lJSUlJSUlJSUlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
@@ -687,4 +687,121 @@ const Chatbot = () => {
             <div className="flex items-center">
               <button
                 onClick={toggleSidebar}
-                className="mr-3 p
+                className="mr-3 p-1 hover:bg-cyber-blue/10 rounded-md transition-colors"
+              >
+                <MenuIcon className="text-cyber-blue" size={20} />
+              </button>
+              <h1 className="font-orbitron text-xl cyber-gradient-text hidden md:block">SkillUp AI Assistant</h1>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20"
+                onClick={handleResetChat}
+              >
+                New Chat
+              </Button>
+            </div>
+          </div>
+          
+          {/* Messages area */}
+          <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue/50 scrollbar-track-transparent">
+            {messages.length === 0 && !isTyping ? (
+              <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyber-blue/20 to-cyber-purple/20 flex items-center justify-center mb-4">
+                  <Brain size={30} className="text-cyber-blue" />
+                </div>
+                <h2 className="text-xl font-orbitron mb-2 cyber-gradient-text">Welcome to SkillUp AI</h2>
+                <p className="text-muted-foreground max-w-md mb-8">
+                  Your personal learning assistant. Ask me anything about programming, AI, data science, and more!
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
+                  {suggestedQueries.map((query, idx) => (
+                    <button
+                      key={idx}
+                      className="p-3 border border-cyber-blue/30 hover:border-cyber-blue bg-cyber-darker/50 hover:bg-cyber-darker text-left rounded-md transition-all"
+                      onClick={() => handleSelectQuery(query.text)}
+                    >
+                      <div className="flex items-center">
+                        {query.icon}
+                        <span className="ml-2 text-sm">{query.text}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 pb-20">
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} />
+                ))}
+                {isTyping && (
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <div className="w-8 h-8 rounded-full bg-cyber-blue/20 flex items-center justify-center">
+                      <Brain size={14} className="text-cyber-blue animate-pulse" />
+                    </div>
+                    <div className="flex space-x-1">
+                      <span className="animate-bounce">•</span>
+                      <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>•</span>
+                      <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>•</span>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
+          
+          {/* Input area */}
+          <div className="p-4 border-t border-cyber-blue/20 bg-cyber-darker/50">
+            {activeQuiz ? (
+              <QuizModal 
+                quizId={activeQuiz} 
+                onComplete={(passed, score) => handleQuizComplete(passed, score, activeQuiz)} 
+                questions={quizzes[activeQuiz]?.questions || []}
+                title={quizzes[activeQuiz]?.title || 'Quiz'}
+              />
+            ) : (
+              <div className="relative">
+                <div className="flex relative rounded-lg border border-cyber-blue/30 focus-within:border-cyber-blue overflow-hidden bg-cyber-dark shadow-glow transition-all">
+                  <textarea
+                    ref={messageInputRef}
+                    className="flex-1 bg-transparent outline-none p-3 pr-12 resize-none h-[60px] max-h-[200px] placeholder:text-muted-foreground"
+                    placeholder="Ask me anything about learning tech skills..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    rows={1}
+                    style={{ minHeight: '60px' }}
+                  />
+                  <button
+                    className="absolute right-2 bottom-2 p-2 rounded-md bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30 transition-colors disabled:opacity-50"
+                    onClick={handleSendMessage}
+                    disabled={!inputValue.trim()}
+                  >
+                    <CornerDownLeft size={18} />
+                  </button>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground flex justify-between items-center px-1">
+                  <div>
+                    <span>Use <kbd className="px-1 py-0.5 bg-cyber-darker rounded-sm mr-1">Shift + Enter</kbd> for new line</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="mr-2">
+                      {lastTopic ? `Learning: ${lastTopic}` : ''}
+                    </span>
+                    <span>{sessionTime > 0 ? `${sessionTime}m session` : ''}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chatbot;
