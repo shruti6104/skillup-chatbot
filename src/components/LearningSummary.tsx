@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Clock, Target, Lightning } from 'lucide-react';
+import { Brain, Clock, Target, Zap } from 'lucide-react';
 
 interface LearningSummaryProps {
   sessionTime: number; // in minutes
@@ -85,7 +85,7 @@ const LearningSummary: React.FC<LearningSummaryProps> = ({
         
         <div className="cyber-panel p-3 flex items-center">
           <div className="mr-3 p-2 rounded-full bg-cyber-green/20">
-            <Lightning size={18} className="text-cyber-green" />
+            <Zap size={18} className="text-cyber-green" />
           </div>
           <div>
             <div className="text-sm font-semibold">Learning Efficiency</div>

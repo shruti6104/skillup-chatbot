@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,17 +10,23 @@ interface SkillUpHubProps {
   onSelectTopic: (content: string) => void;
 }
 
+interface DailyChallenge {
+  topic: string;
+  description: string;
+  xpBonus: number;
+}
+
 const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   const [activeTab, setActiveTab] = useState("topics");
   const [isExpanded, setIsExpanded] = useState(true);
   const [featuredTopic, setFeaturedTopic] = useState<string | null>(null);
-  const [dailyChallenge, setDailyChallenge] = useState({
+  const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge>({
     topic: '',
+    description: '',
     xpBonus: 0
   });
   
-  // List of potential daily challenges
-  const dailyChallenges = [
+  const dailyChallenges: DailyChallenge[] = [
     { topic: 'Python', description: 'Learn the basics of Python functions', xpBonus: 15 },
     { topic: 'Web Development', description: 'Explore HTML and CSS fundamentals', xpBonus: 20 },
     { topic: 'AI', description: 'Understand Machine Learning concepts', xpBonus: 25 },
@@ -32,23 +37,19 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   ];
   
   useEffect(() => {
-    // Set a random featured topic on load
     const topics = Object.keys(topicResponses);
     const randomTopic = topics[Math.floor(Math.random() * topics.length)];
     setFeaturedTopic(randomTopic);
     
-    // Set daily challenge
     const todayDate = new Date().toDateString();
     const storedDate = localStorage.getItem('skillup_challenge_date');
     
     if (storedDate !== todayDate) {
-      // Set new daily challenge
       const randomChallenge = dailyChallenges[Math.floor(Math.random() * dailyChallenges.length)];
       setDailyChallenge(randomChallenge);
       localStorage.setItem('skillup_challenge_date', todayDate);
       localStorage.setItem('skillup_daily_challenge', JSON.stringify(randomChallenge));
     } else {
-      // Load existing challenge
       const storedChallenge = localStorage.getItem('skillup_daily_challenge');
       if (storedChallenge) {
         setDailyChallenge(JSON.parse(storedChallenge));
@@ -57,16 +58,13 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   }, []);
   
   const handleTopicSelect = (topicId: string) => {
-    // Add loading message first
     onSelectTopic("Fetching information about this topic...");
     
-    // Simulate a short delay like an API call
     setTimeout(() => {
       const content = topicResponses[topicId] || "I don't have specific information about this topic yet, but I'd be happy to discuss it if you have questions!";
       onSelectTopic(content);
     }, 500);
     
-    // If this was the daily challenge topic, add a message about the bonus
     if (topicId.toLowerCase().includes(dailyChallenge.topic.toLowerCase())) {
       setTimeout(() => {
         onSelectTopic(`🎯 Daily Challenge Progress! You've started working on today's challenge: "${dailyChallenge.description}". Complete it to earn +${dailyChallenge.xpBonus} XP bonus!`);
