@@ -12,6 +12,7 @@ import QuizModal from '@/components/QuizModal';
 import { Link } from 'react-router-dom';
 import SuggestedQueries from '@/components/SuggestedQueries';
 import SkillUpHub from '@/components/SkillUpHub';
+import ChatbotAvatar from '@/components/ChatbotAvatar';
 
 // Storage keys for user data
 const STREAK_KEY = 'skillup_streak';
@@ -83,6 +84,64 @@ const suggestedQueries = [
     icon: <Sparkles size={16} className="text-cyber-pink" />
   }
 ];
+
+// Animation variants
+const pulseAnimation = {
+  animate: {
+    scale: [1, 1.05, 1],
+    opacity: [0.9, 1, 0.9],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const floatAnimation = {
+  animate: {
+    y: [0, -10, 0],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const glowAnimation = {
+  animate: {
+    boxShadow: [
+      "0 0 5px rgba(0, 168, 255, 0.3)",
+      "0 0 15px rgba(0, 168, 255, 0.5)",
+      "0 0 5px rgba(0, 168, 255, 0.3)"
+    ],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+const sidebarVariants = {
+  closed: { x: "-100%", opacity: 0 },
+  open: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 30 } }
+};
+
+const msgContainerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { 
+      delay: i * 0.1,
+      type: "spring",
+      stiffness: 300,
+      damping: 24
+    }
+  })
+};
 
 const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -179,6 +238,10 @@ const Chatbot = () => {
         clearInterval(sessionInterval.current);
       }
     };
+
+    // Add gaming-inspired sound effects on page load
+    playSound('levelup');
+    
   }, []);
 
   useEffect(() => {
@@ -317,6 +380,36 @@ const Chatbot = () => {
       ));
     } else {
       playSound('success');
+      
+      // Add a celebratory animation when quiz is passed
+      const confetti = document.createElement('div');
+      confetti.className = 'fixed inset-0 pointer-events-none z-50';
+      document.body.appendChild(confetti);
+      
+      // Simple confetti effect
+      for (let i = 0; i < 100; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 10 + 5;
+        particle.className = 'absolute rounded-full';
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = ['#00A8FF', '#6C63FF', '#FF2EB9', '#00FF9D'][Math.floor(Math.random() * 4)];
+        particle.style.left = `${Math.random() * 100}vw`;
+        particle.style.top = `${Math.random() * 100}vh`;
+        particle.style.opacity = '0';
+        particle.style.transform = 'translateY(0)';
+        particle.style.animation = `
+          fadeIn 0.3s ease forwards, 
+          fall ${Math.random() * 2 + 2}s ease-in forwards,
+          sway ${Math.random() * 3 + 2}s ease-in-out infinite alternate
+        `;
+        
+        confetti.appendChild(particle);
+      }
+      
+      setTimeout(() => {
+        document.body.removeChild(confetti);
+      }, 5000);
     }
   };
 
@@ -480,7 +573,7 @@ const Chatbot = () => {
     
     switch (type) {
       case 'notification':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
         break;
       case 'achievement':
         audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
@@ -530,278 +623,97 @@ const Chatbot = () => {
 
   const renderUserStats = () => {
     return (
-      <div className="space-y-4 mt-6">
-        <div className="cyber-panel p-3">
+      <motion.div 
+        className="space-y-4 mt-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <motion.div 
+          className="cyber-panel p-3"
+          variants={glowAnimation}
+          animate="animate"
+        >
           <div className="flex justify-between items-center">
             <div className="text-sm font-orbitron text-cyber-blue">Level</div>
-            <div className="text-sm font-bold">{userLevel}</div>
+            <motion.div 
+              className="text-sm font-bold"
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.2, color: "#00FF9D" }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              {userLevel}
+            </motion.div>
           </div>
           <div className="w-full bg-cyber-darker h-2 rounded-full mt-1.5">
-            <div 
+            <motion.div 
               className="h-full bg-gradient-to-r from-cyber-blue to-cyber-purple rounded-full"
               style={{ width: `${userXP}%` }}
-            ></div>
+              initial={{ width: "0%" }}
+              animate={{ width: `${userXP}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            ></motion.div>
           </div>
           <div className="text-xs text-right mt-1 text-gray-400">{userXP}/100 XP</div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div className="cyber-panel p-2">
+          <motion.div 
+            className="cyber-panel p-2"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
             <div className="flex flex-col items-center">
               <div className="text-xs text-gray-400">Streak</div>
               <div className="font-orbitron text-lg text-cyber-blue flex items-center">
-                <Sparkles size={14} className="mr-1" /> {userStreak}d
+                <motion.span
+                  variants={pulseAnimation}
+                  animate="animate"
+                >
+                  <Sparkles size={14} className="mr-1" />
+                </motion.span>
+                {userStreak}d
               </div>
             </div>
-          </div>
-          <div className="cyber-panel p-2">
+          </motion.div>
+          <motion.div 
+            className="cyber-panel p-2"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
             <div className="flex flex-col items-center">
               <div className="text-xs text-gray-400">Badges</div>
               <div className="font-orbitron text-lg text-cyber-green flex items-center">
-                <Zap size={14} className="mr-1" /> {userBadges}
+                <motion.span
+                  variants={pulseAnimation}
+                  animate="animate"
+                >
+                  <Zap size={14} className="mr-1" />
+                </motion.span>
+                {userBadges}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="cyber-panel p-3">
+        <motion.div 
+          className="cyber-panel p-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
           <h4 className="text-sm font-orbitron mb-2">Skills Progress</h4>
-          {Object.entries(skillProgress).map(([skill, progress]) => (
+          {Object.entries(skillProgress).map(([skill, progress], index) => (
             <div key={skill} className="mb-2">
               <div className="flex justify-between text-xs mb-1">
                 <span>{skill}</span>
-                <span>{progress}%</span>
+                <motion.span
+                  key={`${skill}-${progress}`}
+                  initial={{ scale: 1 }}
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {progress}%
+                </motion.span>
               </div>
-              <div className="w-full bg-cyber-darker h-1.5 rounded-full">
-                <div 
-                  className="h-full rounded-full"
-                  style={{ 
-                    width: `${progress}%`,
-                    background: 
-                      skill === 'Python' ? 'linear-gradient(90deg, #00A8FF, #0077FF)' :
-                      skill === 'Web Dev' ? 'linear-gradient(90deg, #FF2EB9, #9947E8)' :
-                      skill === 'AI' ? 'linear-gradient(90deg, #6C63FF, #3736FF)' :
-                      skill === 'Cybersecurity' ? 'linear-gradient(90deg, #00FF9D, #00A8FF)' :
-                      'linear-gradient(90deg, #FFA500, #FF6347)'
-                  }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="cyber-panel p-3">
-          <h4 className="text-sm font-orbitron mb-2">Topics Explored</h4>
-          <div className="flex flex-wrap gap-1.5">
-            {topicsExplored.length > 0 ? topicsExplored.map((topic, idx) => (
-              <span key={idx} className="text-xs bg-cyber-dark/70 border border-cyber-blue/30 rounded-full px-2 py-0.5">
-                {topic}
-              </span>
-            )) : (
-              <span className="text-xs text-gray-400">No topics explored yet</span>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-cyber-dark text-foreground">
-      <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <AnimatePresence initial={false}>
-          {isSidebarOpen && (
-            <motion.div 
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 280, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="border-r border-cyber-blue/20 h-full flex flex-col bg-cyber-darker overflow-hidden"
-            >
-              <div className="p-4 border-b border-cyber-blue/20">
-                <Link to="/" className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border mr-3">
-                    <Brain size={20} className="text-white" />
-                  </div>
-                  <span className="font-orbitron text-xl cyber-gradient-text">SkillUp AI</span>
-                </Link>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-cyber-darker">
-                {/* Quick Learning Hub Section */}
-                <div className="mb-6">
-                  <div className="flex items-center mb-4">
-                    <BookOpen size={18} className="text-cyber-blue mr-2" />
-                    <h3 className="font-orbitron text-md">Quick Learning Hub</h3>
-                  </div>
-                  <div className="pl-2">
-                    <SkillUpHub onSelectTopic={(topic) => handleSelectQuery(topic)} />
-                  </div>
-                </div>
-                
-                {/* Quick References Section */}
-                <div className="mb-6">
-                  <div className="flex items-center mb-4">
-                    <ListOrdered size={18} className="text-cyber-pink mr-2" />
-                    <h3 className="font-orbitron text-md">Quick References</h3>
-                  </div>
-                  <div className="pl-2">
-                    <SuggestedQueries onSelectQuery={(query) => handleSelectQuery(query)} />
-                  </div>
-                </div>
-                
-                {/* User Stats Section */}
-                {renderUserStats()}
-              </div>
-              
-              <div className="p-4 border-t border-cyber-blue/20">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20"
-                    onClick={handleResetChat}
-                  >
-                    Reset Chat
-                  </Button>
-                  <Link to="/">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full border-cyber-pink/50 text-cyber-pink hover:bg-cyber-pink/20"
-                    >
-                      <HomeIcon size={16} className="mr-2" /> Home
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      
-        {/* Main chat area */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          {/* Header */}
-          <div className="p-4 border-b border-cyber-blue/20 flex justify-between items-center">
-            <div className="flex items-center">
-              <button
-                onClick={toggleSidebar}
-                className="mr-3 p-1 hover:bg-cyber-blue/10 rounded-md transition-colors"
-              >
-                <MenuIcon className="text-cyber-blue" size={20} />
-              </button>
-              <h1 className="font-orbitron text-xl cyber-gradient-text hidden md:block">SkillUp AI Assistant</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20"
-                onClick={handleResetChat}
-              >
-                New Chat
-              </Button>
-            </div>
-          </div>
-          
-          {/* Messages area */}
-          <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue/50 scrollbar-track-transparent">
-            {messages.length === 0 && !isTyping ? (
-              <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyber-blue/20 to-cyber-purple/20 flex items-center justify-center mb-4">
-                  <Brain size={30} className="text-cyber-blue" />
-                </div>
-                <h2 className="text-xl font-orbitron mb-2 cyber-gradient-text">Welcome to SkillUp AI</h2>
-                <p className="text-muted-foreground max-w-md mb-8">
-                  Your personal learning assistant. Ask me anything about programming, AI, data science, and more!
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
-                  {suggestedQueries.map((query, idx) => (
-                    <button
-                      key={idx}
-                      className="p-3 border border-cyber-blue/30 hover:border-cyber-blue bg-cyber-darker/50 hover:bg-cyber-darker text-left rounded-md transition-all"
-                      onClick={() => handleSelectQuery(query.text)}
-                    >
-                      <div className="flex items-center">
-                        {query.icon}
-                        <span className="ml-2 text-sm">{query.text}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4 pb-20">
-                {messages.map((message) => (
-                  <ChatMessage key={message.id} message={message} />
-                ))}
-                {isTyping && (
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <div className="w-8 h-8 rounded-full bg-cyber-blue/20 flex items-center justify-center">
-                      <Brain size={14} className="text-cyber-blue animate-pulse" />
-                    </div>
-                    <div className="flex space-x-1">
-                      <span className="animate-bounce">•</span>
-                      <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>•</span>
-                      <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>•</span>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            )}
-          </div>
-          
-          {/* Input area */}
-          <div className="p-4 border-t border-cyber-blue/20 bg-cyber-darker/50">
-            {activeQuiz ? (
-              <QuizModal 
-                quizId={activeQuiz} 
-                onComplete={(passed, score) => handleQuizComplete(passed, score, activeQuiz)} 
-                questions={quizzes[activeQuiz]?.questions || []}
-                title={quizzes[activeQuiz]?.title || 'Quiz'}
-              />
-            ) : (
-              <div className="relative">
-                <div className="flex relative rounded-lg border border-cyber-blue/30 focus-within:border-cyber-blue overflow-hidden bg-cyber-dark shadow-glow transition-all">
-                  <textarea
-                    ref={messageInputRef}
-                    className="flex-1 bg-transparent outline-none p-3 pr-12 resize-none h-[60px] max-h-[200px] placeholder:text-muted-foreground"
-                    placeholder="Ask me anything about learning tech skills..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    rows={1}
-                    style={{ minHeight: '60px' }}
-                  />
-                  <button
-                    className="absolute right-2 bottom-2 p-2 rounded-md bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30 transition-colors disabled:opacity-50"
-                    onClick={handleSendMessage}
-                    disabled={!inputValue.trim()}
-                  >
-                    <CornerDownLeft size={18} />
-                  </button>
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground flex justify-between items-center px-1">
-                  <div>
-                    <span>Use <kbd className="px-1 py-0.5 bg-cyber-darker rounded-sm mr-1">Shift + Enter</kbd> for new line</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="mr-2">
-                      {lastTopic ? `Learning: ${lastTopic}` : ''}
-                    </span>
-                    <span>{sessionTime > 0 ? `${sessionTime}m session` : ''}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Chatbot;
+              <div className="w-full bg-

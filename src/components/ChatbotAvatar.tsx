@@ -1,6 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Cpu } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const ChatbotAvatar = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,17 +104,44 @@ const ChatbotAvatar = () => {
   }, []);
   
   return (
-    <div className="cyber-panel p-3 rounded-full relative mb-4 animate-fade-in">
+    <motion.div 
+      className="cyber-panel p-3 rounded-full relative mb-4"
+      animate={{ 
+        boxShadow: [
+          "0 0 5px rgba(0, 168, 255, 0.2)",
+          "0 0 15px rgba(0, 168, 255, 0.5)",
+          "0 0 5px rgba(0, 168, 255, 0.2)"
+        ]
+      }}
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    >
       <canvas 
         ref={canvasRef} 
         className="rounded-full w-24 h-24 mx-auto"
       />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="cyber-border w-16 h-16 rounded-full flex items-center justify-center bg-cyber-darker/70">
-          <Cpu size={30} className="text-cyber-blue animate-pulse-glow" />
-        </div>
-      </div>
-    </div>
+      <motion.div 
+        className="absolute inset-0 flex items-center justify-center"
+        animate={{ rotate: [0, 360] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      >
+        <motion.div 
+          className="cyber-border w-16 h-16 rounded-full flex items-center justify-center bg-cyber-darker/70"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: [0.9, 1.1, 0.9] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <motion.div
+            animate={{ 
+              rotate: [0, 10, 0, -10, 0],
+              scale: [1, 1.1, 1, 1.1, 1]
+            }}
+            transition={{ duration: 5, repeat: Infinity }}
+          >
+            <Cpu size={30} className="text-cyber-blue" />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 
