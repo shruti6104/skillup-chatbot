@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Zap, Trophy, Star, Target, Fire, Gift } from 'lucide-react';
+import { Sparkles, Zap, Trophy, Star, Target, Gift } from 'lucide-react';
 import TopicsSection from '@/components/TopicsSection';
 import QuickLearningSection from '@/components/QuickLearningSection';
 import topicResponses from '@/data/topicResponses';
@@ -265,7 +265,7 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
                   animate={{ opacity: 1, x: 0 }}
                   className="ml-2 flex items-center"
                 >
-                  <Fire size={14} className="text-cyber-pink" />
+                  <Zap size={14} className="text-cyber-pink" />
                   <span className="text-xs text-cyber-pink ml-1">HOT</span>
                 </motion.div>
               )}
