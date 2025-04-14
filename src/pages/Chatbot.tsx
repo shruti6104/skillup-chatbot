@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, Brain, MenuIcon, HomeIcon, MessageSquare, CornerDownLeft, Sparkles, Zap } from 'lucide-react';
+import { Cpu, Brain, MenuIcon, HomeIcon, MessageSquare, CornerDownLeft, Sparkles, Zap, BookOpen, ListOrdered } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import ChatMessage from '@/components/ChatMessage';
 import { Message } from '@/types/chat';
@@ -11,6 +10,8 @@ import { defaultBadges } from '@/components/BadgesSection';
 import quizzes from '@/data/quizData';
 import QuizModal from '@/components/QuizModal';
 import { Link } from 'react-router-dom';
+import SuggestedQueries from '@/components/SuggestedQueries';
+import SkillUpHub from '@/components/SkillUpHub';
 
 // Storage keys for user data
 const STREAK_KEY = 'skillup_streak';
@@ -479,7 +480,7 @@ const Chatbot = () => {
     
     switch (type) {
       case 'notification':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
         break;
       case 'achievement':
         audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MUxBUAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MUxBgAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
@@ -628,17 +629,29 @@ const Chatbot = () => {
               </div>
               
               <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-cyber-darker">
-                {/* User profile */}
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-cyber-dark cyber-border flex items-center justify-center">
-                    <div className="text-lg font-bold">{userLevel}</div>
+                {/* Quick Learning Hub Section */}
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <BookOpen size={18} className="text-cyber-blue mr-2" />
+                    <h3 className="font-orbitron text-md">Quick Learning Hub</h3>
                   </div>
-                  <div>
-                    <div className="font-orbitron text-cyber-green">Learning Explorer</div>
-                    <div className="text-sm text-gray-400">Session: {sessionTime} min</div>
+                  <div className="pl-2">
+                    <SkillUpHub onSelectTopic={(topic) => handleSelectQuery(topic)} />
                   </div>
                 </div>
                 
+                {/* Quick References Section */}
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <ListOrdered size={18} className="text-cyber-pink mr-2" />
+                    <h3 className="font-orbitron text-md">Quick References</h3>
+                  </div>
+                  <div className="pl-2">
+                    <SuggestedQueries onSelectQuery={(query) => handleSelectQuery(query)} />
+                  </div>
+                </div>
+                
+                {/* User Stats Section */}
                 {renderUserStats()}
               </div>
               
@@ -674,106 +687,4 @@ const Chatbot = () => {
             <div className="flex items-center">
               <button
                 onClick={toggleSidebar}
-                className="mr-3 p-2 rounded-md hover:bg-cyber-blue/20 transition-colors"
-                aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
-              >
-                <MenuIcon size={20} />
-              </button>
-              <h1 className="font-orbitron text-lg">SkillUp AI Chatbot</h1>
-            </div>
-            <div className="text-sm flex items-center">
-              <div className="bg-cyber-green/20 text-cyber-green px-2 py-1 rounded-full flex items-center border border-cyber-green/20">
-                <span className="inline-block w-2 h-2 bg-cyber-green rounded-full mr-2 animate-pulse"></span>
-                Online
-              </div>
-            </div>
-          </div>
-          
-          {/* Messages area */}
-          <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-cyber-darker bg-cyber-dark/60">
-            {messages.map((message, index) => (
-              <ChatMessage 
-                key={message.id} 
-                message={message} 
-                animate={index === messages.length - 1 && message.role === 'assistant'} 
-              />
-            ))}
-            
-            {isTyping && (
-              <div className="flex gap-3 mb-4 p-3 rounded-lg bg-cyber-darker/60 animate-fade-in">
-                <div className="flex-shrink-0 mt-1">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border">
-                    <Cpu size={18} className="text-white" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="font-orbitron text-sm mb-1 text-cyber-blue">SkillUp AI</div>
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-cyber-blue rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-          
-          {/* Suggested queries */}
-          <div className="p-2 border-t border-cyber-blue/20">
-            <div className="flex overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-transparent">
-              {suggestedQueries.map((query, index) => (
-                <button
-                  key={index}
-                  className="flex items-center whitespace-nowrap px-3 py-1.5 mr-2 rounded-full bg-cyber-blue/10 border border-cyber-blue/30 hover:bg-cyber-blue/20 transition-colors"
-                  onClick={() => handleSelectQuery(query.text)}
-                >
-                  <span className="mr-1.5">{query.icon}</span>
-                  <span className="text-sm">{query.text}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Input area */}
-          <div className="p-4 border-t border-cyber-blue/20">
-            <div className="relative">
-              <textarea
-                ref={messageInputRef}
-                className="w-full bg-cyber-darker/70 cyber-border rounded-md pl-4 pr-12 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-cyber-blue/50 min-h-[60px]"
-                placeholder="Ask something about programming, AI, or other tech topics..."
-                rows={1}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                style={{ maxHeight: '120px' }}
-              />
-              <button
-                className="absolute right-3 bottom-3 p-2 rounded-md bg-cyber-blue text-white hover:bg-cyber-blue/80 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isTyping}
-              >
-                <CornerDownLeft size={18} />
-              </button>
-            </div>
-            <div className="mt-2 text-xs text-center text-gray-500">
-              SkillUp AI is your interactive learning companion. Ask about programming, AI, or any tech topic!
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {activeQuiz && quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")] && (
-        <QuizModal
-          topic={quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")].topic}
-          questions={quizzes[activeQuiz.replace("-beginner", "").replace("-enthusiast", "").replace("-explorer", "").replace("-guardian", "")].questions}
-          onClose={() => setActiveQuiz(null)}
-          onComplete={(passed, score) => handleQuizComplete(passed, score, activeQuiz)}
-        />
-      )}
-    </div>
-  );
-};
-
-export default Chatbot;
+                className="mr-3 p
