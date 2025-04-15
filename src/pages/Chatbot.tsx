@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Cpu, Brain, MenuIcon, HomeIcon, MessageSquare, CornerDownLeft, Sparkles, Zap, BookOpen, ListOrdered } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -359,7 +358,7 @@ const Chatbot = () => {
     return null;
   };
 
-  const handleQuizComplete = (passed: boolean, score: number, badgeId: string) => {
+  const handleQuizComplete = (passed: boolean, score: number) => {
     setActiveQuiz(null);
     
     const resultMessage = passed
@@ -377,7 +376,7 @@ const Chatbot = () => {
     
     if (!passed) {
       setUserBadgesList(prev => prev.map(badge => 
-        badge.id === badgeId 
+        badge.id === activeQuiz 
           ? { ...badge, earned: false, date: undefined } 
           : badge
       ));
@@ -941,7 +940,7 @@ const Chatbot = () => {
           onClose={() => setActiveQuiz(null)}
           quizData={quizzes[activeQuiz] || []}
           badgeId={activeQuiz}
-          onComplete={handleQuizComplete}
+          onComplete={(passed: boolean, score: number) => handleQuizComplete(passed, score)}
         />
       )}
     </div>

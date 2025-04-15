@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, XCircle, Timer, Medal, Brain, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,23 +12,24 @@ interface Question {
 }
 
 interface QuizModalProps {
-  topic: string;
-  questions: Question[];
+  isOpen: boolean;
+  quizData: Question[];
   onClose: () => void;
   onComplete: (passed: boolean, score: number) => void;
+  badgeId: string;
 }
 
-const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComplete }) => {
+const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComplete, badgeId }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<(string | number)[]>(new Array(questions.length).fill(''));
+  const [answers, setAnswers] = useState<(string | number)[]>(new Array(quizData.length).fill(''));
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const currentQuestion = quizData[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === quizData.length - 1;
   
   // Timer effect
   useEffect(() => {
@@ -147,7 +147,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComp
   
   const calculateScore = () => {
     let correctAnswers = 0;
-    questions.forEach((question, index) => {
+    quizData.forEach((question, index) => {
       // For multiple choice, check exact match
       // For fill-in-blank, check for case-insensitive includes
       const userAnswer = String(answers[index]).toLowerCase();
@@ -165,7 +165,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComp
       }
     });
     
-    const finalScore = Math.round((correctAnswers / questions.length) * 100);
+    const finalScore = Math.round((correctAnswers / quizData.length) * 100);
     setScore(finalScore);
     setSubmitted(true);
     
@@ -174,7 +174,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComp
   };
   
   const renderQuestion = () => {
-    const question = questions[currentQuestionIndex];
+    const question = quizData[currentQuestionIndex];
     
     return (
       <div className="mb-6">
@@ -313,7 +313,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComp
             className="mb-6"
           >
             {passed 
-              ? `You've successfully completed the ${topic} quiz!` 
+              ? `You've successfully completed the quiz!` 
               : `Review the concepts and try again. You need at least 70% to pass.`}
           </motion.p>
         </motion.div>
@@ -362,77 +362,79 @@ const QuizModal: React.FC<QuizModalProps> = ({ topic, questions, onClose, onComp
   
   return (
     <AnimatePresence>
-      <motion.div 
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        variants={backdropVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
+      {isOpen && (
         <motion.div 
-          className="cyber-panel p-6 w-full max-w-md"
-          variants={modalVariants}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          variants={backdropVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-orbitron text-xl text-cyber-blue flex items-center">
-              <Zap size={20} className="text-cyber-blue mr-2" />
-              {submitted ? 'Quiz Results' : `${topic} Quiz`}
-            </h2>
-            <motion.button 
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-1 rounded-full hover:bg-cyber-darker"
-              onClick={onClose}
-            >
-              <X size={24} className="text-cyber-pink" />
-            </motion.button>
-          </div>
-          
-          {!submitted ? (
-            <>
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-1">
-                  <div className="w-full bg-cyber-darker h-2 rounded-full flex-1 mr-2">
-                    <motion.div 
-                      className="bg-cyber-blue h-2 rounded-full" 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-                      transition={{ type: "spring", stiffness: 100 }}
-                    ></motion.div>
+          <motion.div 
+            className="cyber-panel p-6 w-full max-w-md"
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="font-orbitron text-xl text-cyber-blue flex items-center">
+                <Zap size={20} className="text-cyber-blue mr-2" />
+                {submitted ? 'Quiz Results' : 'Quiz'}
+              </h2>
+              <motion.button 
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-1 rounded-full hover:bg-cyber-darker"
+                onClick={onClose}
+              >
+                <X size={24} className="text-cyber-pink" />
+              </motion.button>
+            </div>
+            
+            {!submitted ? (
+              <>
+                <div className="mb-4">
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="w-full bg-cyber-darker h-2 rounded-full flex-1 mr-2">
+                      <motion.div 
+                        className="bg-cyber-blue h-2 rounded-full" 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${((currentQuestionIndex + 1) / quizData.length) * 100}%` }}
+                        transition={{ type: "spring", stiffness: 100 }}
+                      ></motion.div>
+                    </div>
+                    <div className="text-right text-sm text-muted-foreground whitespace-nowrap">
+                      {currentQuestionIndex + 1} / {quizData.length}
+                    </div>
                   </div>
-                  <div className="text-right text-sm text-muted-foreground whitespace-nowrap">
-                    {currentQuestionIndex + 1} / {questions.length}
+                  
+                  <div className="flex items-center justify-end text-xs mb-3">
+                    <Timer size={14} className={`mr-1 ${timeRemaining < 10 ? "text-cyber-pink animate-pulse" : "text-cyber-blue"}`} />
+                    <span className={timeRemaining < 10 ? "text-cyber-pink font-bold" : ""}>
+                      {timeRemaining}s
+                    </span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-end text-xs mb-3">
-                  <Timer size={14} className={`mr-1 ${timeRemaining < 10 ? "text-cyber-pink animate-pulse" : "text-cyber-blue"}`} />
-                  <span className={timeRemaining < 10 ? "text-cyber-pink font-bold" : ""}>
-                    {timeRemaining}s
-                  </span>
-                </div>
-              </div>
-              
-              {renderQuestion()}
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`cyber-button w-full neon-glow ${showFeedback ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={handleNext}
-                disabled={answers[currentQuestionIndex] === '' || showFeedback}
-              >
-                {showFeedback ? 'Processing...' : isLastQuestion ? 'Submit' : 'Next Question'}
-              </motion.button>
-            </>
-          ) : (
-            renderResult()
-          )}
+                {renderQuestion()}
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`cyber-button w-full neon-glow ${showFeedback ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onClick={handleNext}
+                  disabled={answers[currentQuestionIndex] === '' || showFeedback}
+                >
+                  {showFeedback ? 'Processing...' : isLastQuestion ? 'Submit' : 'Next Question'}
+                </motion.button>
+              </>
+            ) : (
+              renderResult()
+            )}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 };
