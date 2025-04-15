@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, XCircle, Timer, Medal, Brain, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,29 +12,44 @@ interface Question {
   type: 'multiple-choice' | 'fill-in-blank';
 }
 
+interface Quiz {
+  topic: string;
+  badgeId: string;
+  questions: Question[];
+}
+
 interface QuizModalProps {
   isOpen: boolean;
   quizData: Question[];
   onClose: () => void;
-  onComplete: (passed: boolean, score: number) => void;
+  onComplete: (passed: boolean, score: number, badgeId: string) => void;
   badgeId: string;
 }
 
 const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComplete, badgeId }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<(string | number)[]>(new Array(quizData.length).fill(''));
+  const [answers, setAnswers] = useState<(string | number)[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   
-  const currentQuestion = quizData[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === quizData.length - 1;
+  // Initialize answers array when quizData changes
+  useEffect(() => {
+    if (quizData && quizData.length > 0) {
+      setAnswers(new Array(quizData.length).fill(''));
+    }
+  }, [quizData]);
+  
+  // Safety check - make sure we have valid quiz data
+  const hasValidQuizData = quizData && quizData.length > 0;
+  const currentQuestion = hasValidQuizData ? quizData[currentQuestionIndex] : null;
+  const isLastQuestion = hasValidQuizData ? currentQuestionIndex === quizData.length - 1 : true;
   
   // Timer effect
   useEffect(() => {
-    if (submitted) return;
+    if (submitted || !hasValidQuizData) return;
     
     const timer = setTimeout(() => {
       if (timeRemaining > 0) {
@@ -45,7 +61,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [timeRemaining, submitted]);
+  }, [timeRemaining, submitted, hasValidQuizData]);
   
   // Reset timer when moving to next question
   useEffect(() => {
@@ -100,6 +116,8 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
   };
   
   const checkAnswer = () => {
+    if (!currentQuestion) return;
+    
     const userAnswer = String(answers[currentQuestionIndex]).toLowerCase();
     const correctAnswer = String(currentQuestion.answer).toLowerCase();
     let correct = false;
@@ -132,7 +150,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
   };
   
   const handleNext = () => {
-    if (showFeedback) return; // Prevent clicking during feedback
+    if (showFeedback || !currentQuestion) return; // Prevent clicking during feedback or if no question
     
     const userAnswer = answers[currentQuestionIndex];
     if (userAnswer === '') {
@@ -146,11 +164,18 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
   };
   
   const calculateScore = () => {
+    if (!hasValidQuizData) {
+      setScore(0);
+      setSubmitted(true);
+      onComplete(false, 0, badgeId);
+      return;
+    }
+    
     let correctAnswers = 0;
     quizData.forEach((question, index) => {
       // For multiple choice, check exact match
       // For fill-in-blank, check for case-insensitive includes
-      const userAnswer = String(answers[index]).toLowerCase();
+      const userAnswer = String(answers[index] || '').toLowerCase();
       const correctAnswer = String(question.answer).toLowerCase();
       
       if (question.type === 'multiple-choice') {
@@ -170,22 +195,28 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
     setSubmitted(true);
     
     // Pass score back to parent component
-    onComplete(finalScore >= 70, finalScore);
+    onComplete(finalScore >= 70, finalScore, badgeId);
   };
   
   const renderQuestion = () => {
-    const question = quizData[currentQuestionIndex];
+    if (!currentQuestion) {
+      return (
+        <div className="mb-6">
+          <p className="text-center text-cyber-pink">No question data available.</p>
+        </div>
+      );
+    }
     
     return (
       <div className="mb-6">
         <h3 className="font-orbitron text-lg mb-4 text-cyber-blue flex items-center">
           <Brain size={18} className="text-cyber-blue mr-2" />
-          {question.question}
+          {currentQuestion.question}
         </h3>
         
-        {question.type === 'multiple-choice' && question.options && (
+        {currentQuestion.type === 'multiple-choice' && currentQuestion.options && (
           <div className="space-y-3">
-            {question.options.map((option, index) => (
+            {currentQuestion.options.map((option, index) => (
               <motion.div 
                 key={index}
                 whileHover={{ scale: 1.02 }}
@@ -195,19 +226,19 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
                     ? 'bg-cyber-blue/20 border border-cyber-blue' 
                     : 'bg-cyber-darker hover:bg-cyber-dark'
                 } ${
-                  showFeedback && option === question.answer
+                  showFeedback && option === currentQuestion.answer
                     ? 'border-2 border-cyber-green'
-                    : showFeedback && answers[currentQuestionIndex] === option && option !== question.answer
+                    : showFeedback && answers[currentQuestionIndex] === option && option !== currentQuestion.answer
                     ? 'border-2 border-cyber-pink'
                     : ''
                 }`}
                 onClick={() => !showFeedback && handleOptionSelect(option)}
               >
                 {option}
-                {showFeedback && option === question.answer && (
+                {showFeedback && option === currentQuestion.answer && (
                   <CheckCircle size={16} className="inline ml-2 text-cyber-green" />
                 )}
-                {showFeedback && answers[currentQuestionIndex] === option && option !== question.answer && (
+                {showFeedback && answers[currentQuestionIndex] === option && option !== currentQuestion.answer && (
                   <XCircle size={16} className="inline ml-2 text-cyber-pink" />
                 )}
               </motion.div>
@@ -215,13 +246,13 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
           </div>
         )}
         
-        {question.type === 'fill-in-blank' && (
+        {currentQuestion.type === 'fill-in-blank' && (
           <motion.input
             whileFocus={{ scale: 1.02 }}
             type="text"
             placeholder="Type your answer..."
             className="cyber-input w-full"
-            value={answers[currentQuestionIndex] as string}
+            value={answers[currentQuestionIndex] as string || ''}
             onChange={handleInputChange}
             disabled={showFeedback}
           />
@@ -247,7 +278,7 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
             </div>
             {!isCorrect && (
               <div className="mt-1 text-sm">
-                The correct answer is: <span className="text-cyber-green font-medium">{question.answer}</span>
+                The correct answer is: <span className="text-cyber-green font-medium">{currentQuestion.answer}</span>
               </div>
             )}
           </motion.div>
@@ -360,6 +391,11 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
     }
   };
   
+  // If there's no quiz data, don't show the modal
+  if (!hasValidQuizData && isOpen) {
+    console.error("Quiz modal opened without valid quiz data");
+  }
+  
   return (
     <AnimatePresence>
       {isOpen && (
@@ -394,37 +430,39 @@ const QuizModal: React.FC<QuizModalProps> = ({ isOpen, quizData, onClose, onComp
             
             {!submitted ? (
               <>
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-1">
-                    <div className="w-full bg-cyber-darker h-2 rounded-full flex-1 mr-2">
-                      <motion.div 
-                        className="bg-cyber-blue h-2 rounded-full" 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${((currentQuestionIndex + 1) / quizData.length) * 100}%` }}
-                        transition={{ type: "spring", stiffness: 100 }}
-                      ></motion.div>
+                {hasValidQuizData && (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-1">
+                      <div className="w-full bg-cyber-darker h-2 rounded-full flex-1 mr-2">
+                        <motion.div 
+                          className="bg-cyber-blue h-2 rounded-full" 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${((currentQuestionIndex + 1) / quizData.length) * 100}%` }}
+                          transition={{ type: "spring", stiffness: 100 }}
+                        ></motion.div>
+                      </div>
+                      <div className="text-right text-sm text-muted-foreground whitespace-nowrap">
+                        {currentQuestionIndex + 1} / {quizData.length}
+                      </div>
                     </div>
-                    <div className="text-right text-sm text-muted-foreground whitespace-nowrap">
-                      {currentQuestionIndex + 1} / {quizData.length}
+                    
+                    <div className="flex items-center justify-end text-xs mb-3">
+                      <Timer size={14} className={`mr-1 ${timeRemaining < 10 ? "text-cyber-pink animate-pulse" : "text-cyber-blue"}`} />
+                      <span className={timeRemaining < 10 ? "text-cyber-pink font-bold" : ""}>
+                        {timeRemaining}s
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center justify-end text-xs mb-3">
-                    <Timer size={14} className={`mr-1 ${timeRemaining < 10 ? "text-cyber-pink animate-pulse" : "text-cyber-blue"}`} />
-                    <span className={timeRemaining < 10 ? "text-cyber-pink font-bold" : ""}>
-                      {timeRemaining}s
-                    </span>
-                  </div>
-                </div>
+                )}
                 
                 {renderQuestion()}
                 
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`cyber-button w-full neon-glow ${showFeedback ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`cyber-button w-full neon-glow ${showFeedback || !currentQuestion ? 'opacity-50 cursor-not-allowed' : ''}`}
                   onClick={handleNext}
-                  disabled={answers[currentQuestionIndex] === '' || showFeedback}
+                  disabled={answers[currentQuestionIndex] === '' || showFeedback || !currentQuestion}
                 >
                   {showFeedback ? 'Processing...' : isLastQuestion ? 'Submit' : 'Next Question'}
                 </motion.button>

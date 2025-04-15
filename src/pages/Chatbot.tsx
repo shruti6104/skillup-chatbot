@@ -347,7 +347,7 @@ const Chatbot = () => {
     return null;
   };
 
-  const handleQuizComplete = (passed: boolean, score: number) => {
+  const handleQuizComplete = (passed: boolean, score: number, badgeId: string) => {
     setActiveQuiz(null);
     
     const resultMessage = passed
@@ -995,7 +995,7 @@ const Chatbot = () => {
         <QuizModal
           isOpen={!!activeQuiz}
           onClose={() => setActiveQuiz(null)}
-          quizData={quizzes[activeQuiz as keyof typeof quizzes] || []}
+          quizData={activeQuiz && quizzes[activeQuiz as keyof typeof quizzes] ? quizzes[activeQuiz as keyof typeof quizzes].questions : []}
           badgeId={activeQuiz}
           onComplete={handleQuizComplete}
         />
