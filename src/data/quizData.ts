@@ -339,6 +339,206 @@ export const quizzes: Record<string, Quiz> = {
         answer: 'devtools'
       }
     ]
+  },
+  communication: {
+    topic: 'Communication Skills',
+    badgeId: 'communication-pro',
+    questions: [
+      {
+        id: 1,
+        question: 'Which communication approach focuses on expressing yourself while respecting others?',
+        options: ['Passive', 'Aggressive', 'Assertive', 'Manipulative'],
+        answer: 'Assertive',
+        type: 'multiple-choice'
+      },
+      {
+        id: 2,
+        question: 'What is active listening?',
+        options: [
+          'Waiting for your turn to speak', 
+          'Fully focusing on the speaker and their message', 
+          'Interrupting with questions', 
+          'Taking detailed notes'
+        ],
+        answer: 'Fully focusing on the speaker and their message',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which of these is NOT a component of nonverbal communication?',
+        options: ['Eye contact', 'Body language', 'Memorization', 'Facial expressions'],
+        answer: 'Memorization',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What skill refers to the ability to understand and manage your own emotions?',
+        type: 'fill-in-blank',
+        answer: 'emotional intelligence'
+      },
+      {
+        id: 5,
+        question: 'What term describes adjusting your communication style based on the audience?',
+        type: 'fill-in-blank',
+        answer: 'audience adaptation'
+      }
+    ]
+  },
+  pythonadvanced: {
+    topic: 'Advanced Python',
+    badgeId: 'python-expert',
+    questions: [
+      {
+        id: 1,
+        question: 'Which of these is a Python decorator?',
+        options: ['@property', '#classmethod', '$staticmethod', '&function'],
+        answer: '@property',
+        type: 'multiple-choice'
+      },
+      {
+        id: 2,
+        question: 'What does the "with" statement in Python handle?',
+        options: ['Exception handling', 'Resource management', 'Module importing', 'Loop control'],
+        answer: 'Resource management',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which Python data structure uses key-value pairs?',
+        options: ['List', 'Tuple', 'Dictionary', 'Set'],
+        answer: 'Dictionary',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What Python function converts an object to an iterator?',
+        type: 'fill-in-blank',
+        answer: 'iter'
+      },
+      {
+        id: 5,
+        question: 'What is the name of Python's package manager?',
+        type: 'fill-in-blank',
+        answer: 'pip'
+      }
+    ]
+  },
+  deeplearning: {
+    topic: 'Deep Learning',
+    badgeId: 'deep-learning-specialist',
+    questions: [
+      {
+        id: 1,
+        question: 'Which of these is NOT a type of neural network?',
+        options: ['CNN', 'RNN', 'DDN', 'GAN'],
+        answer: 'DDN',
+        type: 'multiple-choice'
+      },
+      {
+        id: 2,
+        question: 'What does CNN stand for in deep learning?',
+        options: ['Computer Neural Network', 'Convolutional Neural Network', 'Complex Neural Network', 'Cascading Neural Network'],
+        answer: 'Convolutional Neural Network',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which activation function outputs values between 0 and 1?',
+        options: ['ReLU', 'Sigmoid', 'Tanh', 'Leaky ReLU'],
+        answer: 'Sigmoid',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What technique helps prevent overfitting in neural networks by randomly dropping neurons?',
+        type: 'fill-in-blank',
+        answer: 'dropout'
+      },
+      {
+        id: 5,
+        question: 'What optimization algorithm is commonly used to update neural network weights?',
+        type: 'fill-in-blank',
+        answer: 'gradient descent'
+      }
+    ]
+  },
+  fullstack: {
+    topic: 'Full Stack Development',
+    badgeId: 'full-stack-dev',
+    questions: [
+      {
+        id: 1,
+        question: 'Which of these is NOT typically considered part of the backend?',
+        options: ['Database management', 'API development', 'CSS styling', 'Server configuration'],
+        answer: 'CSS styling',
+        type: 'multiple-choice'
+      },
+      {
+        id: 2,
+        question: 'What does API stand for?',
+        options: ['Application Programming Interface', 'Advanced Program Integration', 'Application Protocol Interface', 'Automated Programming Input'],
+        answer: 'Application Programming Interface',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which database type stores data in tables with rows and columns?',
+        options: ['NoSQL', 'Graph', 'Relational', 'Document'],
+        answer: 'Relational',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What architectural pattern separates an application into Model, View, and Controller components?',
+        type: 'fill-in-blank',
+        answer: 'mvc'
+      },
+      {
+        id: 5,
+        question: 'What HTTP method is typically used to update an existing resource?',
+        type: 'fill-in-blank',
+        answer: 'put'
+      }
+    ]
+  },
+  advancedcyber: {
+    topic: 'Advanced Cybersecurity',
+    badgeId: 'cyber-expert',
+    questions: [
+      {
+        id: 1,
+        question: 'Which encryption method uses different keys for encryption and decryption?',
+        options: ['Symmetric', 'Asymmetric', 'Hashing', 'Salting'],
+        answer: 'Asymmetric',
+        type: 'multiple-choice'
+      },
+      {
+        id: 2,
+        question: 'What security testing approach simulates real-world attacks on a system?',
+        options: ['Vulnerability scanning', 'Penetration testing', 'Code review', 'Compliance audit'],
+        answer: 'Penetration testing',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which security principle ensures only authorized users can access specific resources?',
+        options: ['Confidentiality', 'Integrity', 'Availability', 'Non-repudiation'],
+        answer: 'Confidentiality',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What type of malware encrypts files and demands payment for decryption?',
+        type: 'fill-in-blank',
+        answer: 'ransomware'
+      },
+      {
+        id: 5,
+        question: 'What security framework developed by NIST provides guidelines for securing critical infrastructure?',
+        type: 'fill-in-blank',
+        answer: 'cybersecurity framework'
+      }
+    ]
   }
 };
 
