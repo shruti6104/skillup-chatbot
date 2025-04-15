@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Cpu, Brain, MenuIcon, HomeIcon, MessageSquare, CornerDownLeft, Sparkles, Zap, BookOpen, ListOrdered } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -13,6 +14,8 @@ import { Link } from 'react-router-dom';
 import SuggestedQueries from '@/components/SuggestedQueries';
 import SkillUpHub from '@/components/SkillUpHub';
 import ChatbotAvatar from '@/components/ChatbotAvatar';
+import LearningSummary from '@/components/LearningSummary';
+import ChatInput from '@/components/ChatInput';
 
 // Storage keys for user data
 const STREAK_KEY = 'skillup_streak';
@@ -573,16 +576,16 @@ const Chatbot = () => {
     
     switch (type) {
       case 'notification':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAgAACHoA3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc////////////////////////////////////////AAAAAExhdmYAAAAAAAAAAAAAAAAAAAAAACQAAAAAAAAAAgh6/b5oHQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAK2AKRMQUAAPa6IRGSJfXa//IK9AMK9X33l///r3t/Lu/t/9/7OggBAEAgCOq7uzAMBoGgaA0GQf//xTgPg+DgNBYLA0//+IdB8HQfBwLAsDAUBAIAgEf/v//lYNnzsBgQDQMiLgYXBw8YjgUG/KyQ+A4Li4mVV////tP///pURcuH9zbakYxcNlCvpCYTgRLjY+xSVXvSk3///Z1qUPKQikck//NExFYYAwJxf5lIAlNrGQMR1bOcN4rO+cf7Pf7etdK131dv6gkMQRWOQIvypOuUC5HHMFTDLJJQVHIAG0ChQDyKn/7//+v/9f//S/9Hp+CAK//X/QOlfWrxcwMk/QAAAHdG9YaWpoyZbI3E53U47WKxbKCjQ8rJ6+q3//9Tmmw13bmU1JpwknScvnYi5UCUgse//+mJJQ3/k//MExDoSuxK0AZhIAFSUMHhgSn//6v/P7nO7Z+t+OKO4v1ohoEAACBXgI8w8iwHGBUqE+gzcJ5XHDtoMBgMzks3n//9CFjhw5RlCdqmRJkkCZYmP/V////99f/+7///0oAAACtkLcYEK1BMzMHMjAywwISKDHwUYMay4wd3MYYm14Ja3//3Cpwy5yuuq4ToZRjPp//+3//3X//+v////NEREAAVEzZBnZMM//MUxEUSqxaoAY9AAMFDGwUeMhhRkwQSLTBgMXMDgaMaBp8RqG85fqC6////97f1mWZyrV7lk89EpBY9K+f+v/9YAAAAKXVBDjEQYEACYKAjJQQCMxTD5hjqxgJGmHgUl3+3XlY0yHHOWdIq0ZvZ8+Wjzv9W9/vqb9/9a1r+RAFWbJOhGFjFxyoQDGVMKCIwUCTAQZAgwwkDQga8MiiY6r9NVu8v/////+bf1f/r7+jZbFFPMkpX///+v////9f/0v//9IAADAABAR4YCDphkINPCB//9f///t////ZV///2//9f/V///0QBEQABEAAv8+Xc1UxBTUUzLjk5LjWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq';
         break;
       case 'achievement':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAAErIA3Nzc3Nzc3Nzc3Nzc3N3d3d3d3d3d3d3d3d3d8vLy8vLy8vLy8vLy8vL///////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAZlAAAAAAAAErIphh4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
         break;
       case 'levelup':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAABQAAD6QAIiIiIiIiIiIiNDQ0NDQ0NDQ0NEtLS0tLS0tLS1xcXFxcXFxcXFxra2tra2tra2t7e3t7e3t7e3t7lJSUlJSUlJSUlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAABQAAD6QAIiIiIiIiIiIiNDQ0NDQ0NDQ0NEtLS0tLS0tLS1xcXFxcXFxcXFxra2tra2tra2t7e3t7e3t7e3t7lJSUlJSUlJSUlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
         break;
       case 'success':
-        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAACdEAVVVVVVVVVVVVf39/f39/f39/f6qqqqqqqqqqqv///////////////////wAAAABMYXZjNTguMTkuMTAwAAAAAAAAAAAAAAAkBDcAAAAAAAAJ0WA0RnkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
+        audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+NAwAAAAAAAAAAAAFhpbmcAAAAPAAAAAwAACdEAVVVVVVVVVVVVf39/f39/f39/f6qqqqqqqqqqqv///////////////////wAAAABMYXZjNTguMTkuMTAwAAAAAAAAAAAAAAAkBDcAAAAAAAAJ0WA0RnkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
         break;
     }
     
@@ -716,4 +719,233 @@ const Chatbot = () => {
                   {progress}%
                 </motion.span>
               </div>
-              <div className="w-full bg-
+              <div className="w-full bg-cyber-darker h-1.5 rounded-full">
+                <div 
+                  className="h-full rounded-full"
+                  style={{ 
+                    width: `${progress}%`,
+                    background: 
+                      skill === 'Python' ? 'linear-gradient(90deg, #00A8FF, #0077FF)' :
+                      skill === 'Web Dev' ? 'linear-gradient(90deg, #FF2EB9, #9947E8)' :
+                      skill === 'AI' ? 'linear-gradient(90deg, #6C63FF, #3736FF)' :
+                      skill === 'Cybersecurity' ? 'linear-gradient(90deg, #00FF9D, #00A8FF)' :
+                      'linear-gradient(90deg, #FFA500, #FF6347)'
+                  }}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div 
+          className="cyber-panel p-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <h4 className="text-sm font-orbitron mb-2">Topics Explored</h4>
+          <div className="flex flex-wrap gap-1.5">
+            {topicsExplored.length > 0 ? topicsExplored.map((topic, idx) => (
+              <span key={idx} className="text-xs bg-cyber-dark/70 border border-cyber-blue/30 rounded-full px-2 py-0.5">
+                {topic}
+              </span>
+            )) : (
+              <span className="text-xs text-gray-400">No topics explored yet</span>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-cyber-dark text-foreground">
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <AnimatePresence initial={false}>
+          {isSidebarOpen && (
+            <motion.div 
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 280, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="border-r border-cyber-blue/20 h-full flex flex-col bg-cyber-darker overflow-hidden"
+            >
+              <div className="p-4 border-b border-cyber-blue/20">
+                <Link to="/" className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border mr-3">
+                    <Brain size={20} className="text-white" />
+                  </div>
+                  <span className="font-orbitron text-xl cyber-gradient-text">SkillUp AI</span>
+                </Link>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-cyber-darker">
+                {/* Quick Learning Hub Section */}
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <BookOpen size={18} className="text-cyber-blue mr-2" />
+                    <h3 className="font-orbitron text-md">Quick Learning Hub</h3>
+                  </div>
+                  <div className="pl-2">
+                    <SkillUpHub onSelectTopic={(topic) => handleSelectQuery(topic)} />
+                  </div>
+                </div>
+                
+                {/* Quick References Section */}
+                <div className="mb-6">
+                  <div className="flex items-center mb-4">
+                    <ListOrdered size={18} className="text-cyber-pink mr-2" />
+                    <h3 className="font-orbitron text-md">Quick References</h3>
+                  </div>
+                  <div className="pl-2">
+                    <SuggestedQueries onSelectQuery={(query) => handleSelectQuery(query)} />
+                  </div>
+                </div>
+                
+                {/* User Stats Section */}
+                {renderUserStats()}
+              </div>
+              
+              <div className="p-4 border-t border-cyber-blue/20">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20"
+                    onClick={handleResetChat}
+                  >
+                    Reset Chat
+                  </Button>
+                  <Link to="/">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-cyber-pink/50 text-cyber-pink hover:bg-cyber-pink/20"
+                    >
+                      <HomeIcon size={16} className="mr-2" /> Home
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      
+        {/* Main chat area */}
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
+          {/* Header */}
+          <div className="p-4 border-b border-cyber-blue/20 flex justify-between items-center">
+            <div className="flex items-center">
+              <button
+                onClick={toggleSidebar}
+                className="mr-3 p-2 rounded-full hover:bg-cyber-darker transition-colors"
+              >
+                <MenuIcon size={20} className="text-cyber-blue" />
+              </button>
+              <h1 className="font-orbitron text-lg">SkillUp AI Assistant</h1>
+            </div>
+            
+            <motion.div
+              variants={floatAnimation}
+              animate="animate"
+              className="flex items-center space-x-2"
+            >
+              <span className="text-xs bg-cyber-blue/20 text-cyber-blue px-2 py-1 rounded-full">
+                Level {userLevel}
+              </span>
+              <span className="text-xs bg-cyber-purple/20 text-cyber-purple px-2 py-1 rounded-full">
+                XP: {userXP}/100
+              </span>
+            </motion.div>
+          </div>
+          
+          {/* Chat messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <div className="flex justify-center mb-6">
+                <ChatbotAvatar />
+              </div>
+              
+              <LearningSummary 
+                sessionTime={sessionTime}
+                topicsExplored={topicsExplored}
+                lastTopic={lastTopic}
+                messageCount={messageCount}
+              />
+            </motion.div>
+            
+            <div className="space-y-6 pb-4">
+              {messages.map((message, index) => (
+                <motion.div 
+                  key={message.id}
+                  custom={index}
+                  initial="hidden"
+                  animate="visible"
+                  variants={msgContainerVariants}
+                >
+                  <ChatMessage message={message} />
+                </motion.div>
+              ))}
+              
+              {isTyping && (
+                <motion.div 
+                  className="flex items-center space-x-2 text-gray-400"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="w-8 h-8 rounded-full bg-cyber-dark flex items-center justify-center border border-cyber-blue/30">
+                    <Cpu size={16} className="text-cyber-blue" />
+                  </div>
+                  <div className="flex space-x-1">
+                    <motion.div 
+                      className="w-2 h-2 rounded-full bg-cyber-blue"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    />
+                    <motion.div 
+                      className="w-2 h-2 rounded-full bg-cyber-blue"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.5, delay: 0.1, repeat: Infinity }}
+                    />
+                    <motion.div 
+                      className="w-2 h-2 rounded-full bg-cyber-blue"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.5, delay: 0.2, repeat: Infinity }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+          
+          {/* Input area */}
+          <div className="p-4 border-t border-cyber-blue/20">
+            <div className="relative">
+              <ChatInput 
+                onSendMessage={handleSendMessage}
+                disabled={isTyping}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Quiz Modal */}
+      {activeQuiz && (
+        <QuizModal
+          isOpen={!!activeQuiz}
+          onClose={() => setActiveQuiz(null)}
+          quizData={quizzes[activeQuiz] || []}
+          badgeId={activeQuiz}
+          onComplete={handleQuizComplete}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Chatbot;
