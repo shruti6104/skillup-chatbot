@@ -567,8 +567,142 @@ const Chatbot = () => {
   };
 
   return (
-    <div>
-      {/* JSX code for Chatbot component */}
+    <div className="flex h-screen bg-cyber-dark">
+      {/* Sidebar */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.aside
+            className="w-64 bg-cyber-darker border-r border-cyber-border p-4 flex flex-col"
+            variants={sidebarVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
+          >
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-orbitron text-lg text-cyber-blue">SkillUp AI</h2>
+                <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
+                  <CornerDownLeft className="h-4 w-4 text-cyber-blue" />
+                </Button>
+              </div>
+            </div>
+
+            <SkillUpHub
+              userLevel={userLevel}
+              userXP={userXP}
+              userBadges={userBadges}
+              userStreak={userStreak}
+              skillProgress={skillProgress}
+              lastTopic={lastTopic}
+              sessionTime={sessionTime}
+            />
+
+            <nav className="flex-1 py-4">
+              <ul>
+                <li>
+                  <Link to="/" className="flex items-center text-sm font-semibold text-cyber-blue hover:text-cyber-light mb-2">
+                    <HomeIcon className="mr-2 h-4 w-4" />
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/resources" className="flex items-center text-sm font-semibold text-cyber-blue hover:text-cyber-light mb-2">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Resources
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/stats" className="flex items-center text-sm font-semibold text-cyber-blue hover:text-cyber-light">
+                    <ListOrdered className="mr-2 h-4 w-4" />
+                    Stats
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Main Chat Interface */}
+      <div className="flex-1 flex flex-col bg-cyber-darker">
+        {/* Top Bar */}
+        <div className="border-b border-cyber-border p-3 flex items-center justify-between">
+          <div className="flex items-center">
+            {!isSidebarOpen && (
+              <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
+                <MenuIcon className="h-5 w-5 text-cyber-blue mr-2" />
+              </Button>
+            )}
+            <ChatbotAvatar animation={floatAnimation} />
+            <h1 className="font-orbitron text-lg text-cyber-blue ml-2">SkillUp AI Chat</h1>
+          </div>
+        </div>
+
+        {/* Chat Messages */}
+        <div className="flex-1 p-4 overflow-y-auto">
+          {messages.map((message, index) => (
+            <motion.div
+              key={message.id}
+              variants={msgContainerVariants}
+              initial="hidden"
+              animate="visible"
+              custom={index}
+            >
+              <ChatMessage message={message} />
+            </motion.div>
+          ))}
+          {isTyping && (
+            <motion.div
+              variants={msgContainerVariants}
+              initial="hidden"
+              animate="visible"
+              custom={messages.length}
+            >
+              <ChatMessage
+                message={{
+                  id: 'typing',
+                  role: 'assistant',
+                  content: 'Thinking...',
+                  timestamp: new Date(),
+                }}
+              />
+            </motion.div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Chat Input */}
+        <div className="p-4 border-t border-cyber-border">
+          <ChatInput
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            handleSendMessage={handleSendMessage}
+            handleKeyDown={handleKeyDown}
+            messageInputRef={messageInputRef}
+          />
+        </div>
+      </div>
+
+      {/* Right Sidebar (Quiz and Suggested Queries) */}
+      <aside className="w-80 bg-cyber-darker border-l border-cyber-border p-4 flex flex-col">
+        <ChatbotQuiz onQuizComplete={handleQuizComplete} ref={chatbotQuizRef} />
+
+        <div className="mt-4">
+          <h3 className="font-orbitron text-lg text-cyber-blue mb-2">Suggested Topics</h3>
+          <SuggestedQueries suggestedQueries={suggestedQueries} />
+        </div>
+      </aside>
+
+      {/* Quiz Modal */}
+      {activeQuiz && (
+        <QuizModal
+          isOpen={Boolean(activeQuiz)}
+          onClose={() => setActiveQuiz(null)}
+          quizData={activeQuiz && quizzes[activeQuiz] ? quizzes[activeQuiz].questions : []}
+          badgeId={activeQuiz && quizzes[activeQuiz] ? quizzes[activeQuiz].badgeId : ''}
+          onComplete={handleQuizComplete}
+        />
+      )}
     </div>
   );
 };

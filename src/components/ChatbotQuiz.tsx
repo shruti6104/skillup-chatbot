@@ -7,6 +7,7 @@ import quizzes from '@/data/quizData';
 import { findBestQuizMatch } from '@/utils/quizMatcher';
 import { Brain } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { playSound } from '@/utils/audioUtils';
 
 interface ChatbotQuizProps {
   onQuizComplete: (passed: boolean, score: number, badgeId: string) => void;
@@ -26,6 +27,7 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
         title: "Quiz Started",
         description: `Starting ${quizzes[quizId].topic} quiz. Good luck!`,
       });
+      playSound('notification');
     } else {
       console.error(`Quiz with ID ${quizId} not found`);
       toast({
@@ -43,11 +45,15 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
   // Expose the startQuizFromPrompt function via ref
   useImperativeHandle(ref, () => ({
     startQuizFromPrompt: (prompt: string) => {
+      console.log("Analyzing prompt for quiz match:", prompt);
       const quizId = findBestQuizMatch(prompt);
+      
       if (quizId) {
+        console.log(`Found matching quiz: ${quizId}`);
         handleQuizSelect(quizId);
         return true;
       }
+      console.log("No matching quiz found for prompt");
       return false;
     }
   }));

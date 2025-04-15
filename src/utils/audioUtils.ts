@@ -1,7 +1,7 @@
 
 // Audio utility functions for the chatbot
 
-// Sound effect URLs - these are kept minimal to avoid string termination issues
+// Sound effect URLs
 const AUDIO_URLS = {
   notification: '/sounds/notification.mp3',
   achievement: '/sounds/achievement.mp3',
@@ -15,8 +15,8 @@ const AUDIO_URLS = {
  */
 export function playSound(type: 'notification' | 'achievement' | 'levelup' | 'success'): void {
   try {
-    const audio = new Audio();
-    audio.src = AUDIO_URLS[type];
+    const audio = new Audio(AUDIO_URLS[type]);
+    audio.volume = 0.2; // Set a reasonable volume
     audio.play().catch(err => console.error('Error playing sound:', err));
   } catch (error) {
     console.error('Failed to play sound:', error);
