@@ -1,16 +1,4 @@
-interface Question {
-  id: number;
-  question: string;
-  options?: string[];
-  answer: string | number;
-  type: 'multiple-choice' | 'fill-in-blank';
-}
-
-interface Quiz {
-  topic: string;
-  badgeId: string;
-  questions: Question[];
-}
+import { Question, Quiz } from './quizTypes';
 
 export const quizzes: Record<string, Quiz> = {
   python: {
@@ -417,7 +405,7 @@ export const quizzes: Record<string, Quiz> = {
       },
       {
         id: 5,
-        question: 'What is the name of Python's package manager?',
+        question: "What is the name of Python's package manager?",
         type: 'fill-in-blank',
         answer: 'pip'
       }
