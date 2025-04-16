@@ -298,9 +298,8 @@ const Chatbot = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0];
     
-    // Check if the message contains a quiz prompt
     if (chatbotQuizRef.current && chatbotQuizRef.current.startQuizFromPrompt(message)) {
-      return null; // Quiz was triggered, no need to check for badge triggers
+      return null;
     }
     
     for (const [badgeId, patterns] of Object.entries(badgeTriggerPatterns)) {
@@ -568,7 +567,6 @@ const Chatbot = () => {
 
   return (
     <div className="flex h-screen bg-cyber-dark">
-      {/* Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.aside
@@ -588,6 +586,15 @@ const Chatbot = () => {
             </div>
 
             <SkillUpHub
+              onSelectTopic={(content) => {
+                const newBotMessage: Message = {
+                  id: Date.now().toString(),
+                  role: 'assistant',
+                  content,
+                  timestamp: new Date()
+                };
+                setMessages(prev => [...prev, newBotMessage]);
+              }}
               userLevel={userLevel}
               userXP={userXP}
               userBadges={userBadges}
@@ -623,9 +630,7 @@ const Chatbot = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Chat Interface */}
       <div className="flex-1 flex flex-col bg-cyber-darker">
-        {/* Top Bar */}
         <div className="border-b border-cyber-border p-3 flex items-center justify-between">
           <div className="flex items-center">
             {!isSidebarOpen && (
@@ -638,7 +643,6 @@ const Chatbot = () => {
           </div>
         </div>
 
-        {/* Chat Messages */}
         <div className="flex-1 p-4 overflow-y-auto">
           {messages.map((message, index) => (
             <motion.div
@@ -671,9 +675,9 @@ const Chatbot = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Chat Input */}
         <div className="p-4 border-t border-cyber-border">
           <ChatInput
+            onSendMessage={handleSendMessage}
             inputValue={inputValue}
             setInputValue={setInputValue}
             handleSendMessage={handleSendMessage}
@@ -683,17 +687,23 @@ const Chatbot = () => {
         </div>
       </div>
 
-      {/* Right Sidebar (Quiz and Suggested Queries) */}
       <aside className="w-80 bg-cyber-darker border-l border-cyber-border p-4 flex flex-col">
         <ChatbotQuiz onQuizComplete={handleQuizComplete} ref={chatbotQuizRef} />
 
         <div className="mt-4">
           <h3 className="font-orbitron text-lg text-cyber-blue mb-2">Suggested Topics</h3>
-          <SuggestedQueries suggestedQueries={suggestedQueries} />
+          <SuggestedQueries 
+            suggestedQueries={suggestedQueries}
+            onSelectQuery={(query) => {
+              setInputValue(query);
+              setTimeout(() => {
+                handleSendMessage();
+              }, 100);
+            }}
+          />
         </div>
       </aside>
 
-      {/* Quiz Modal */}
       {activeQuiz && (
         <QuizModal
           isOpen={Boolean(activeQuiz)}

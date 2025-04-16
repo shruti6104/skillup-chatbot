@@ -1,15 +1,22 @@
-
 import React, { useState } from 'react';
-import { Code, Database, Cpu, Network, Search, Filter, Clock, Award, Shield, FileText } from 'lucide-react';
+import { Code, Database, Cpu, Network, Search, Award, Shield, FileText } from 'lucide-react';
 
 interface SuggestedQueriesProps {
-  onSelectQuery: (query: string) => void;
+  onSelectQuery?: (query: string) => void;
+  suggestedQueries?: Array<{
+    text: string;
+    category: string;
+    icon: React.ReactNode;
+  }>;
 }
 
-const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) => {
+const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ 
+  onSelectQuery, 
+  suggestedQueries: externalQueries 
+}) => {
   const [activeTab, setActiveTab] = useState<'topics' | 'paths'>('topics');
 
-  const queries = [
+  const defaultQueries = [
     {
       icon: <Code className="text-cyber-blue" size={16} />,
       text: "Explain Python decorators",
@@ -51,6 +58,14 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
       category: "Data Science"
     }
   ];
+
+  const queries = externalQueries || defaultQueries;
+
+  const handleSelectQuery = (query: string) => {
+    if (onSelectQuery) {
+      onSelectQuery(query);
+    }
+  };
 
   const learningPaths = [
     {
@@ -157,7 +172,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
             <button 
               key={index}
               className="cyber-button w-full text-left flex items-center justify-between neon-glow"
-              onClick={() => onSelectQuery(query.text)}
+              onClick={() => handleSelectQuery(query.text)}
             >
               <span className="flex items-center">
                 {query.icon}
@@ -198,7 +213,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({ onSelectQuery }) =>
           ))}
           <button 
             className="cyber-button w-full text-sm flex items-center justify-center neon-glow"
-            onClick={() => onSelectQuery("How do I learn Python for AI?")}
+            onClick={() => handleSelectQuery("How do I learn Python for AI?")}
           >
             <Search size={14} className="mr-2" />
             Generate Custom Learning Path

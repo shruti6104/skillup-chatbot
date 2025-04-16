@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,22 +6,37 @@ import TopicsSection from '@/components/TopicsSection';
 import QuickLearningSection from '@/components/QuickLearningSection';
 import topicResponses from '@/data/topicResponses';
 import { toast } from '@/components/ui/use-toast';
+import { playSound } from '@/utils/audioUtils';
 
 interface SkillUpHubProps {
   onSelectTopic: (content: string) => void;
+  userLevel?: number;
+  userXP?: number;
+  userBadges?: number;
+  userStreak?: number;
+  skillProgress?: {[key: string]: number};
+  lastTopic?: string;
+  sessionTime?: number;
 }
 
-interface DailyChallenge {
-  topic: string;
-  description: string;
-  xpBonus: number;
-}
-
-const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
+const SkillUpHub: React.FC<SkillUpHubProps> = ({ 
+  onSelectTopic,
+  userLevel = 1,
+  userXP = 0,
+  userBadges = 0,
+  userStreak = 0,
+  skillProgress = {},
+  lastTopic = '',
+  sessionTime = 0
+}) => {
   const [activeTab, setActiveTab] = useState("topics");
   const [isExpanded, setIsExpanded] = useState(true);
   const [featuredTopic, setFeaturedTopic] = useState<string | null>(null);
-  const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge>({
+  const [dailyChallenge, setDailyChallenge] = useState<{
+    topic: string;
+    description: string;
+    xpBonus: number;
+  }>({
     topic: '',
     description: '',
     xpBonus: 0
@@ -30,7 +44,7 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   const [featureHover, setFeatureHover] = useState(false);
   const [challengeHover, setChallengeHover] = useState(false);
   
-  const dailyChallenges: DailyChallenge[] = [
+  const dailyChallenges = [
     { topic: 'Python', description: 'Learn the basics of Python functions', xpBonus: 15 },
     { topic: 'Web Development', description: 'Explore HTML and CSS fundamentals', xpBonus: 20 },
     { topic: 'AI', description: 'Understand Machine Learning concepts', xpBonus: 25 },
@@ -63,20 +77,17 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
           if (parsedChallenge && parsedChallenge.topic && parsedChallenge.description) {
             setDailyChallenge(parsedChallenge);
           } else {
-            // If stored challenge is invalid, set a new one
             const randomChallenge = dailyChallenges[Math.floor(Math.random() * dailyChallenges.length)];
             setDailyChallenge(randomChallenge);
             localStorage.setItem('skillup_daily_challenge', JSON.stringify(randomChallenge));
           }
         } catch (e) {
           console.error("Error parsing stored challenge:", e);
-          // If parsing fails, set a new challenge
           const randomChallenge = dailyChallenges[Math.floor(Math.random() * dailyChallenges.length)];
           setDailyChallenge(randomChallenge);
           localStorage.setItem('skillup_daily_challenge', JSON.stringify(randomChallenge));
         }
       } else {
-        // If no stored challenge, set a new one
         const randomChallenge = dailyChallenges[Math.floor(Math.random() * dailyChallenges.length)];
         setDailyChallenge(randomChallenge);
         localStorage.setItem('skillup_daily_challenge', JSON.stringify(randomChallenge));
@@ -87,7 +98,6 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
   const handleTopicSelect = (topicId: string) => {
     onSelectTopic("Fetching information about this topic...");
     
-    // Display a loading toast
     toast({
       title: "Loading content",
       description: "Preparing your learning materials...",
@@ -123,10 +133,7 @@ const SkillUpHub: React.FC<SkillUpHubProps> = ({ onSelectTopic }) => {
     if (dailyChallenge && dailyChallenge.topic) {
       handleTopicSelect(dailyChallenge.topic);
       
-      // Add special effect for starting challenge
-      const audio = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAABMAB//9AAALAAA/1Wf/////////////////////gAA7LAAA/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/4zDAACIAJKAgAAAGi1EwKAIMPNDA4T3+PevwYP4PH/4fBwcHH/h8HwcHBwcP/B8/U/8uAgICAgF/5c/8HwfBwEB/y4CAIAj55/l3//////8uD4eD58H/QEAQcAAAGbXJY2XwKFihgpGDkZ+BgZQgirgxOTEyIZrhAQoGCAgYEIQiAhoIHBiQFNQwFBRM3C50ODioGMAwMKiF8HAQELpNH7QUiDiZcVDBokwKPBRoGKGAwEKHgQibNFhYQCBhQWUg5mFiQQNjDQEFAocOMgwIZLkRIGPFAYCCwkyLGjjo4fCyEJKAtJCh4UCiQEVKAocbAQgOBggcHBAMLMCQEOGjYeWCQYaNhYEAgoqGA4YKGRcpKA4UOCgE4YIhQQJKjz50KNnTpZgLHwkkEiJI2bOGTBcUHiBEiUPlECBcoVJkxoCXPGgQQJhA0BChQgQGipE+YLmzRw+NADg6hDBAcRKEiRMiSOKGEDJ0yVLFyA03cEgBAgAA/+REwAAJ7AKXAAACAAAAAPA8AAAABAAAAP8AAAACCcAAAIB8IAAA/+M4wAAF/wCgAAAAADM/AcA8Hw/h8H/5+Hg/8/y/4IAhwfg+H8H/+X5//8HwcHBwcHwf/8+XBw/h/+fh4Pn4P/8uDg+8uDg4ODg+Dg4Ph4eD4PB8P4eD/+D4eD5+D5+AgCDh/8HD+IAQQQQLB//h/B//y5+D5+D5+fLg/5/l/5fl//y4Pn////B/B///D+IAICAgICAg+D/yAIAg4eAQBAEHAQcBAEHAEB/w//B//y//Lg//L///////////LgICD//wEAQcAQcAQcAQEBAQEA/+M4wABBiACYAAAAACODg+A/g4Pnni4OAgIeAICAgP+fwcHBw/g4Pn//L//////y5+Dg4Ph/+XBw///5f////////y/w//8EAQEB//8H////////Lgy7/w/h8P4fD////nh/B8H//4f/////8+D/y4P/////+H/5f//+fB/+XB//w///////l///+X//////L/////5//l////+X//////l//Lg//L/8v///y//////////////y//Lg//L/8v/y//Lg//L/////8v/y/+X/5f////8v/y////8v/y//L/5f/l//////L/////////////////////////////////////////////////////////////////w==");
-      audio.volume = 0.2;
-      audio.play().catch(e => console.log("Audio play failed:", e));
+      playSound('notification');
     }
   };
   
