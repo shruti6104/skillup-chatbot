@@ -7,7 +7,7 @@ import { detectIntent, generateResponse, updateSkillLevel, resetContext } from '
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { defaultBadges } from '@/components/BadgesSection';
-import quizzes from '@/data/quizData';
+import { quizzes } from '@/data/quizData';
 import QuizModal from '@/components/QuizModal';
 import ChatbotQuiz, { ChatbotQuizRef } from '@/components/ChatbotQuiz';
 import { Link } from 'react-router-dom';
@@ -43,8 +43,6 @@ const badgeTriggerPatterns = {
     /completed web/i,
     /learned web/i,
     /web development/i,
-    /web dev/i,
-    /html.*css.*javascript/i
   ],
   'ai-enthusiast': [
     /ai fundamentals/i,

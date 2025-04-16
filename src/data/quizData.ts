@@ -1,3 +1,4 @@
+
 import { Question, Quiz } from './quizTypes';
 
 export const quizzes: Record<string, Quiz> = {
@@ -1007,3 +1008,6 @@ export const quizzes: Record<string, Quiz> = {
     ]
   }
 };
+
+export default quizzes;
+

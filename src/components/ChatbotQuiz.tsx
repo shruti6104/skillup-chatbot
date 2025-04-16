@@ -1,9 +1,8 @@
-
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { motion } from 'framer-motion';
 import QuizModal from './QuizModal';
 import QuizSelector from './QuizSelector';
-import quizzes from '@/data/quizData';
+import { quizzes } from '@/data/quizData';
 import { findBestQuizMatch } from '@/utils/quizMatcher';
 import { Brain, Award, Trophy, Star, BarChart } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';

@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Book, Brain, Users, MessageSquare, Cpu, Shield } from 'lucide-react';
-import quizzes from '@/data/quizData';
+import { quizzes } from '@/data/quizData';
 
 type QuizSelectorProps = {
   onSelectQuiz: (quizId: string) => void;

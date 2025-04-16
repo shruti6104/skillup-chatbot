@@ -1,4 +1,4 @@
-import quizzes from '@/data/quizData';
+import { quizzes } from '@/data/quizData';
 
 interface QuizMatch {
   quizId: string;
@@ -35,13 +35,11 @@ const topicKeywords: Record<string, string[]> = {
   deeplearningexpert: ['expert deep learning', 'transformers', 'attention mechanisms', 'gans', 'advanced neural architectures']
 };
 
-// These keywords indicate the user wants to take a quiz (combined with topic keywords for better matching)
 const quizIndicators = [
   'quiz', 'test', 'assessment', 'evaluate', 'check', 'knowledge', 'challenge', 
   'question', 'exam', 'show me a quiz', 'give me a quiz', 'quiz me', 'test me'
 ];
 
-// These keywords indicate difficulty level
 const difficultyKeywords = {
   beginner: ['beginner', 'basic', 'starter', 'introduction', 'fundamentals', 'easy'],
   advanced: ['advanced', 'intermediate', 'harder', 'challenging', 'difficult'],
@@ -59,12 +57,10 @@ export function findBestQuizMatch(userPrompt: string): string | null {
   console.log(`Finding quiz match for prompt: "${userPrompt}"`);
   const lowercasePrompt = userPrompt.toLowerCase().trim();
   
-  // Check if the prompt contains any quiz indicators
   const containsQuizRequest = quizIndicators.some(indicator => 
     lowercasePrompt.includes(indicator)
   );
   
-  // Determine if a specific difficulty level is requested
   let requestedDifficulty = '';
   
   if (difficultyKeywords.expert.some(keyword => lowercasePrompt.includes(keyword))) {
@@ -75,12 +71,9 @@ export function findBestQuizMatch(userPrompt: string): string | null {
     requestedDifficulty = 'beginner';
   }
 
-  // If the prompt explicitly contains terms like "quiz" or "test"
   if (containsQuizRequest) {
-    // First try direct matching with topic keywords and difficulty
     for (const [quizId, keywords] of Object.entries(topicKeywords)) {
       if (keywords.some(keyword => lowercasePrompt.includes(keyword))) {
-        // Check if the quiz has the right difficulty (if specified)
         if (requestedDifficulty) {
           const quiz = quizzes[quizId];
           if (quiz) {
@@ -89,7 +82,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
               console.log(`Direct keyword match found with difficulty: ${quizId} (${requestedDifficulty})`);
               return quizId;
             }
-            // If difficulty doesn't match, we'll keep this as a fallback but continue searching
             continue;
           }
         } else {
@@ -99,7 +91,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       }
     }
     
-    // If no perfect match with difficulty, we'll return the best topic match
     for (const [quizId, keywords] of Object.entries(topicKeywords)) {
       if (keywords.some(keyword => lowercasePrompt.includes(keyword))) {
         console.log(`Topic match found without perfect difficulty match: ${quizId}`);
@@ -108,20 +99,15 @@ export function findBestQuizMatch(userPrompt: string): string | null {
     }
   }
   
-  // Even without quiz indicators, try to match if the prompt is very specific to a topic
   for (const [quizId, keywords] of Object.entries(topicKeywords)) {
-    // For direct matches with main topic words (higher confidence matchers)
     const primaryKeywords = keywords.slice(0, 3);
     for (const keyword of primaryKeywords) {
-      // If a primary keyword is an exact standalone word or surrounded by spaces
       const wordPattern = new RegExp(`\\b${keyword}\\b`, 'i');
       if (wordPattern.test(lowercasePrompt)) {
-        // Check if prompt has quiz related words
         if (containsQuizRequest) {
           console.log(`Strong contextual match found: ${quizId}`);
           return quizId;
         }
-        // Even without quiz indicators, match if it's likely a learning request
         if (lowercasePrompt.includes('learn') || 
             lowercasePrompt.includes('show') || 
             lowercasePrompt.includes('tell me about') ||
@@ -133,9 +119,7 @@ export function findBestQuizMatch(userPrompt: string): string | null {
     }
   }
   
-  // Handle special case combinations for topics and difficulties
   if (lowercasePrompt.includes('quiz') || lowercasePrompt.includes('test')) {
-    // Web development quizzes
     if (lowercasePrompt.includes('web')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -148,7 +132,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'webdev';
     }
     
-    // Python quizzes
     if (lowercasePrompt.includes('python')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -160,7 +143,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'python';
     }
     
-    // Cybersecurity quizzes
     if (lowercasePrompt.includes('security') || lowercasePrompt.includes('cyber')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -172,7 +154,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'cybersecurity';
     }
     
-    // AI quizzes
     if (lowercasePrompt.includes('artificial intelligence') || lowercasePrompt.includes('ai')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -184,7 +165,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'ai';
     }
     
-    // Machine learning quizzes
     if (lowercasePrompt.includes('machine learning') || lowercasePrompt.includes('ml')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -196,7 +176,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'machinelearning';
     }
     
-    // Data science quizzes
     if (lowercasePrompt.includes('data science') || lowercasePrompt.includes('data analysis')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -208,7 +187,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'datascience';
     }
     
-    // Soft skills quizzes
     if (lowercasePrompt.includes('soft skills')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -220,7 +198,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'softskills';
     }
     
-    // Communication quizzes
     if (lowercasePrompt.includes('communication')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -232,7 +209,6 @@ export function findBestQuizMatch(userPrompt: string): string | null {
       return 'communication';
     }
     
-    // Deep learning quizzes
     if (lowercasePrompt.includes('deep learning')) {
       if (lowercasePrompt.includes('expert') || lowercasePrompt.includes('master') || 
           lowercasePrompt.includes('hard') || lowercasePrompt.includes('difficult')) {
@@ -242,34 +218,28 @@ export function findBestQuizMatch(userPrompt: string): string | null {
     }
   }
   
-  // If no direct matches, check word similarity for quiz-related requests
-  if (containsQuizRequest) {
-    let bestMatch: QuizMatch | null = null;
+  let bestMatch: QuizMatch | null = null;
+  
+  for (const quizId of Object.keys(quizzes)) {
+    const quiz = quizzes[quizId];
+    const topic = quiz.topic.toLowerCase();
     
-    for (const quizId of Object.keys(quizzes)) {
-      const quiz = quizzes[quizId];
-      const topic = quiz.topic.toLowerCase();
+    if (lowercasePrompt.includes(topic)) {
+      if (requestedDifficulty && quiz.difficulty.toLowerCase() !== requestedDifficulty) {
+        continue;
+      }
       
-      if (lowercasePrompt.includes(topic)) {
-        // If difficulty is specified, make sure it matches
-        if (requestedDifficulty && quiz.difficulty.toLowerCase() !== requestedDifficulty) {
-          continue;
-        }
-        
-        const confidence = topic.length / lowercasePrompt.length;
-        
-        if (!bestMatch || confidence > bestMatch.confidence) {
-          bestMatch = {
-            quizId,
-            confidence
-          };
-        }
+      const confidence = topic.length / lowercasePrompt.length;
+      
+      if (!bestMatch || confidence > bestMatch.confidence) {
+        bestMatch = {
+          quizId,
+          confidence
+        };
       }
     }
-    
-    console.log(bestMatch ? `Best match found: ${bestMatch.quizId} (${bestMatch.confidence})` : "No match found");
-    return bestMatch?.quizId || null;
   }
   
-  return null;
+  console.log(bestMatch ? `Best match found: ${bestMatch.quizId} (${bestMatch.confidence})` : "No match found");
+  return bestMatch?.quizId || null;
 }
