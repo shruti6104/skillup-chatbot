@@ -534,8 +534,8 @@ export const quizzes: Record<string, Quiz> = {
         options: [
           'Speaking loudly', 
           'Fully focusing on the speaker and understanding their message', 
-          'Taking notes while listening', 
-          'Interrupting to ask questions'
+          'Interrupting with questions', 
+          'Taking detailed notes'
         ],
         answer: 'Fully focusing on the speaker and understanding their message',
         type: 'multiple-choice'
@@ -981,3 +981,29 @@ export const quizzes: Record<string, Quiz> = {
           'chi-square',
           'ANOVA',
           'Pearson correlation'
+        ],
+        answer: 'ANOVA',
+        type: 'multiple-choice'
+      },
+      {
+        id: 3,
+        question: 'Which of these is NOT a type of clustering algorithm?',
+        options: ['K-means', 'DBSCAN', 'Hierarchical Clustering', 'Gaussian Mixture Model'],
+        answer: 'Gaussian Mixture Model',
+        type: 'multiple-choice'
+      },
+      {
+        id: 4,
+        question: 'What is the purpose of a decision tree in data science?',
+        type: 'fill-in-blank',
+        answer: 'classification and regression'
+      },
+      {
+        id: 5,
+        question: 'What is the name of the algorithm used for time series forecasting?',
+        type: 'fill-in-blank',
+        answer: 'ARIMA'
+      }
+    ]
+  }
+};
