@@ -89,8 +89,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
   
   const handleSelectSuggestion = (suggestion: string) => {
-    onSendMessage(suggestion);
-    setShowSuggestions(false);
+    setInputValue(suggestion);
+    
+    // Using setTimeout to ensure the state is updated before sending the message
+    setTimeout(() => {
+      onSendMessage(suggestion);
+      setShowSuggestions(false);
+    }, 10);
   };
 
   return (

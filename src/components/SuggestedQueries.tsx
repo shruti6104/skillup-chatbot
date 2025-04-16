@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Code, Database, Cpu, Network, Search, Award, Shield, FileText } from 'lucide-react';
 
@@ -39,8 +40,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
     },
     {
       icon: <Search className="text-cyber-blue" size={16} />,
-      text: "How do I learn Python for AI?",
-      category: "Learning Path"
+      text: "Quiz me on Python",
+      category: "Quiz"
     },
     {
       icon: <Code className="text-cyber-purple" size={16} />,
@@ -49,13 +50,13 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
     },
     {
       icon: <Shield className="text-cyber-pink" size={16} />,
-      text: "How to get started with cybersecurity?",
-      category: "Security"
+      text: "Quiz me on cybersecurity",
+      category: "Quiz"
     },
     {
       icon: <FileText className="text-cyber-green" size={16} />,
-      text: "What are the best resources for data science?",
-      category: "Data Science"
+      text: "Test my data science knowledge",
+      category: "Quiz"
     }
   ];
 
@@ -213,7 +214,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
           ))}
           <button 
             className="cyber-button w-full text-sm flex items-center justify-center neon-glow"
-            onClick={() => handleSelectQuery("How do I learn Python for AI?")}
+            onClick={() => handleSelectQuery("Help me create a learning path for AI and Machine Learning")}
           >
             <Search size={14} className="mr-2" />
             Generate Custom Learning Path
