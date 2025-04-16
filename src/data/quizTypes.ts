@@ -10,5 +10,6 @@ export interface Question {
 export interface Quiz {
   topic: string;
   badgeId: string;
+  difficulty: 'Beginner' | 'Advanced' | 'Expert';
   questions: Question[];
 }
