@@ -8,9 +8,13 @@ import LoginForm from '@/components/LoginForm';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
+import ThemeToggle from '@/components/ThemeToggle';
+import StreakTracker from '@/components/StreakTracker';
+import StudyTimer from '@/components/StudyTimer';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showStudyTimer, setShowStudyTimer] = useState(false);
   
   useEffect(() => {
     const isUserLoggedIn = localStorage.getItem('skillup_isLoggedIn') === 'true';
@@ -36,13 +40,38 @@ const Index = () => {
     audio.play();
   };
 
+  const handleSessionComplete = (duration: number) => {
+    toast({
+      title: "Study Session Completed",
+      description: `You've completed a ${Math.floor(duration / 60)} minute study session!`,
+      duration: 3000,
+    });
+    
+    // Add XP for completed study sessions
+    const currentXP = parseInt(localStorage.getItem('skillup_xp') || '0', 10);
+    const newXP = currentXP + Math.floor(duration / 60);
+    localStorage.setItem('skillup_xp', newXP.toString());
+    
+    toast({
+      title: "XP Earned!",
+      description: `+${Math.floor(duration / 60)} XP for your study session`,
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="min-h-screen">
       <AnimatedBackground />
       
       {isLoggedIn ? (
         <div className="container mx-auto p-4 md:p-6 max-w-7xl">
-          <Header />
+          <div className="flex justify-between items-center">
+            <Header />
+            <div className="flex items-center space-x-3">
+              <StreakTracker />
+              <ThemeToggle />
+            </div>
+          </div>
           
           <div className="mt-12 text-center">
             <motion.div
@@ -69,6 +98,27 @@ const Index = () => {
                 Your interactive learning platform powered by artificial intelligence. 
                 Explore topics, earn badges, and level up your knowledge!
               </p>
+              
+              {showStudyTimer ? (
+                <div className="mb-8">
+                  <StudyTimer onSessionComplete={handleSessionComplete} />
+                  <button 
+                    onClick={() => setShowStudyTimer(false)}
+                    className="text-sm text-cyber-blue hover:text-cyber-purple mt-2"
+                  >
+                    Hide Timer
+                  </button>
+                </div>
+              ) : (
+                <motion.button
+                  onClick={() => setShowStudyTimer(true)}
+                  className="mb-6 px-4 py-2 bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30 rounded-md hover:bg-cyber-purple/30 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Start Study Timer
+                </motion.button>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <motion.div 
@@ -120,6 +170,9 @@ const Index = () => {
         </div>
       ) : (
         <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="absolute top-4 right-4">
+            <ThemeToggle />
+          </div>
           <LoginForm onLogin={handleLogin} />
         </div>
       )}
