@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Bot, Star, Sparkles, ExternalLink, ThumbsUp, ThumbsDown, Share2, Bookmark, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,7 +33,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
     if (!animate) {
       setDisplayedText(message.content);
       setIsComplete(true);
-      // Find keywords to highlight
       const foundKeywords = keywords.filter(keyword => 
         message.content.toLowerCase().includes(keyword.toLowerCase())
       );
@@ -54,20 +52,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
         clearInterval(interval);
         setIsComplete(true);
         
-        // Find keywords to highlight once complete
         const foundKeywords = keywords.filter(keyword => 
           message.content.toLowerCase().includes(keyword.toLowerCase())
         );
         setHighlightKeywords(foundKeywords);
         
-        // Play sound when assistant message is complete
         if (message.role === 'assistant') {
           const audio = new Audio();
-          audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAvIAU1NTUFBQUFBTU1NTUFBQUFBbW1tbW2pqampqamtra2tra3t7e3t7e3t7e3t7e3uMjIyMjIyMjIyMjIyMnZ2dnZ2dnZ2dnZ2dnZ2tra2tra2tra2tra2tra29vb29vb29vb29vb29zs7Ozs7Ozs7Ozs7Ozs7e3t7e3t7e3t7e3t7e3v///////////8AAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOTku//MUZAYAAAGAAAAAAAAABEAAAAAAMC0=';
+          audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAvIAU1NTUFBQUFBTU1NTUFBQUFBbW1tbW2pqampqamtra2tra3t7e3t7e3t7e3t7e3uMjIyMjIyMjIyMjIyMnZ2dnZ2dnZ2dnZ2dnZ2tra2tra2tra2tra2tra29vb29vb29vb29vb29vb29zs7Ozs7Ozs7Ozs7Ozs7e3t7e3t7e3t7e3t7e3v///////////8AAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOTku//MUZAYAAAGAAAAAAAAABEAAAAAAMC0=';
           audio.volume = 0.05;
           audio.play();
           
-          // Add subtle animation to the message
           if (messageRef.current) {
             messageRef.current.classList.add('animate-pulse');
             setTimeout(() => {
@@ -78,7 +73,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
           }
         }
       }
-    }, 10); // Speed of typing animation
+    }, 10);
     
     return () => clearInterval(interval);
   }, [message.content, animate, message.role]);
@@ -95,7 +90,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
     
     let formattedText = text;
     
-    // Apply highlighting to keywords
     highlightKeywords.forEach(keyword => {
       const regex = new RegExp(keyword, 'gi');
       formattedText = formattedText.replace(regex, (match) => 
@@ -103,17 +97,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
       );
     });
     
-    // Highlight achievements/badges with special formatting
     formattedText = formattedText.replace(/Achievement Unlocked!|New Badge Earned!|earned the|badge unlocked!|unlocked!/gi, (match) => 
       `<span class="text-cyber-pink font-bold animate-pulse-glow">${match}</span>`
     );
     
-    // Highlight XP mentions
     formattedText = formattedText.replace(/\+\d+ XP|\d+ XP gained|XP bonus/gi, (match) => 
       `<span class="text-cyber-green font-bold animate-pulse-glow">${match}</span>`
     );
     
-    // Create clickable links
     formattedText = formattedText.replace(/https?:\/\/[^\s]+/g, (match) => 
       `<a href="${match}" target="_blank" class="underline text-cyber-blue hover:text-cyber-purple transition-colors">${match} <span class="inline-block ml-1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></a>`
     );
@@ -172,6 +163,40 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
     visible: { opacity: 1, y: 0 }
   };
   
+  const bounceVariants = {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: { 
+      scale: 1, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    exit: {
+      scale: 0.8,
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const glowVariants = {
+    initial: { boxShadow: "0 0 0 rgba(0,168,255,0)" },
+    animate: {
+      boxShadow: [
+        "0 0 10px rgba(0,168,255,0.2)",
+        "0 0 20px rgba(0,168,255,0.4)",
+        "0 0 10px rgba(0,168,255,0.2)"
+      ],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }
+    }
+  };
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -207,12 +232,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
   return (
     <motion.div 
       ref={messageRef}
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      variants={bounceVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
       whileHover="hover"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
       className={`flex gap-3 mb-4 p-3 rounded-lg ${
         message.role === 'assistant' 
           ? 'bg-cyber-darker/60 cyber-border' 
@@ -301,7 +325,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
           </motion.div>
         )}
         
-        {/* Message Actions */}
+        {message.role === 'assistant' && (
+          <motion.div 
+            className="absolute -bottom-1 -right-1 w-full h-1 bg-gradient-to-r from-cyber-blue to-cyber-purple rounded-full"
+            variants={glowVariants}
+            initial="initial"
+            animate="animate"
+          />
+        )}
+        
         <AnimatePresence>
           {showActions && isComplete && (
             <motion.div 
