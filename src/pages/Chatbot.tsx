@@ -17,6 +17,9 @@ import ChatbotAvatar from '@/components/ChatbotAvatar';
 import LearningSummary from '@/components/LearningSummary';
 import ChatInput from '@/components/ChatInput';
 import { playSound } from '@/utils/audioUtils';
+import SkillBadges from '@/components/SkillBadges';
+import LearningStreak from '@/components/LearningStreak';
+import SuggestedTopics from '@/components/SuggestedTopics';
 
 const STREAK_KEY = 'skillup_streak';
 const LAST_LOGIN_KEY = 'skillup_last_login';
@@ -582,6 +585,13 @@ const Chatbot = () => {
                 </Button>
               </div>
             </div>
+
+            <SkillBadges skillProgress={skillProgress} />
+            <LearningStreak streak={userStreak} todayLearned={messageCount > 0} />
+            <SuggestedTopics onSelectTopic={(topic) => {
+              setInputValue(topic);
+              setTimeout(() => handleSendMessage(), 100);
+            }} />
 
             <SkillUpHub
               onSelectTopic={(content) => {
