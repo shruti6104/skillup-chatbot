@@ -20,15 +20,17 @@ export interface ChatbotQuizRef {
 const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComplete }, ref) => {
   const [activeQuiz, setActiveQuiz] = useState<string | null>(null);
   const [lastAttempt, setLastAttempt] = useState<string>('');
+  const [quizConfirmation, setQuizConfirmation] = useState<{show: boolean, quizId: string | null}>({
+    show: false,
+    quizId: null
+  });
 
   const handleQuizSelect = (quizId: string) => {
     if (quizzes[quizId]) {
-      setActiveQuiz(quizId);
-      toast({
-        title: `${quizzes[quizId].difficulty} Quiz Started`,
-        description: `Starting ${quizzes[quizId].topic} ${quizzes[quizId].difficulty.toLowerCase()} quiz. Good luck!`,
+      setQuizConfirmation({
+        show: true,
+        quizId: quizId
       });
-      playSound('notification');
     } else {
       console.error(`Quiz with ID ${quizId} not found`);
       toast({
@@ -39,11 +41,27 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
     }
   };
 
+  const confirmStartQuiz = () => {
+    if (quizConfirmation.quizId && quizzes[quizConfirmation.quizId]) {
+      setActiveQuiz(quizConfirmation.quizId);
+      setQuizConfirmation({ show: false, quizId: null });
+      
+      toast({
+        title: `${quizzes[quizConfirmation.quizId].difficulty} Quiz Started`,
+        description: `Starting ${quizzes[quizConfirmation.quizId].topic} ${quizzes[quizConfirmation.quizId].difficulty.toLowerCase()} quiz. Good luck!`,
+      });
+      playSound('notification');
+    }
+  };
+
+  const cancelQuiz = () => {
+    setQuizConfirmation({ show: false, quizId: null });
+  };
+
   const handleQuizClose = () => {
     setActiveQuiz(null);
   };
 
-  // Group quizzes by topic and difficulty
   const groupedQuizzes = React.useMemo(() => {
     const grouped: Record<string, { quizId: string; difficulty: string }[]> = {};
     
@@ -57,7 +75,6 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
       });
     });
     
-    // Sort by difficulty within each topic
     Object.keys(grouped).forEach(topic => {
       grouped[topic].sort((a, b) => {
         const difficultyOrder = { 'Beginner': 1, 'Advanced': 2, 'Expert': 3 };
@@ -69,12 +86,10 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
     return grouped;
   }, []);
 
-  // Expose the startQuizFromPrompt function via ref
   useImperativeHandle(ref, () => ({
     startQuizFromPrompt: (prompt: string) => {
       console.log("Analyzing prompt for quiz match:", prompt);
       
-      // Don't repeat the same quiz attempt too quickly
       if (lastAttempt === prompt) {
         console.log("Skipping repeated quiz attempt");
         return false;
@@ -84,7 +99,10 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
       
       if (quizId) {
         console.log(`Found matching quiz: ${quizId}`);
-        handleQuizSelect(quizId);
+        setQuizConfirmation({
+          show: true,
+          quizId: quizId
+        });
         setLastAttempt(prompt);
         return true;
       }
@@ -138,7 +156,7 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
           className="mb-4"
         >
           <p className="text-sm text-muted-foreground mb-2">
-            Select a quiz to test your skills or type "Quiz me on [topic]" in the chat to start a quiz.
+            Select a quiz to test your skills or type "Start quiz on [topic]" in the chat to start a quiz.
             You can also specify difficulty level (beginner, advanced, or expert).
           </p>
           <div className="flex items-center space-x-1">
@@ -182,6 +200,39 @@ const ChatbotQuiz = forwardRef<ChatbotQuizRef, ChatbotQuizProps>(({ onQuizComple
           </div>
         ))}
       </motion.div>
+      
+      {quizConfirmation.show && quizConfirmation.quizId && quizzes[quizConfirmation.quizId] && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="cyber-panel p-6 w-full max-w-md"
+          >
+            <h2 className="font-orbitron text-xl text-cyber-blue mb-4 flex items-center">
+              <Brain size={20} className="text-cyber-blue mr-2" />
+              Ready to test your knowledge?
+            </h2>
+            <p className="mb-6">
+              You are about to start a <span className="font-semibold">{quizzes[quizConfirmation.quizId].difficulty}</span> level quiz 
+              on <span className="font-semibold">{quizzes[quizConfirmation.quizId].topic}</span>.
+            </p>
+            <div className="flex space-x-4">
+              <button 
+                className="cyber-button flex-1 bg-cyber-blue/20 hover:bg-cyber-blue/40 border-cyber-blue/50 text-cyber-blue"
+                onClick={confirmStartQuiz}
+              >
+                Begin Quiz
+              </button>
+              <button 
+                className="cyber-button flex-1 bg-cyber-pink/20 hover:bg-cyber-pink/40 border-cyber-pink/50 text-cyber-pink"
+                onClick={cancelQuiz}
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
       
       {activeQuiz && (
         <QuizModal

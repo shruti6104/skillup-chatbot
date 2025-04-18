@@ -40,7 +40,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
     },
     {
       icon: <Search className="text-cyber-blue" size={16} />,
-      text: "Quiz me on Python",
+      text: "Start quiz on Python",
       category: "Quiz"
     },
     {
@@ -50,12 +50,12 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
     },
     {
       icon: <Shield className="text-cyber-pink" size={16} />,
-      text: "Quiz me on cybersecurity",
+      text: "Start quiz on cybersecurity",
       category: "Quiz"
     },
     {
       icon: <FileText className="text-cyber-green" size={16} />,
-      text: "Test my data science knowledge",
+      text: "Start quiz on data science",
       category: "Quiz"
     }
   ];
@@ -210,6 +210,12 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
                   {path.xp} XP
                 </span>
               </div>
+              <button 
+                className="mt-2 cyber-button w-full text-xs"
+                onClick={() => handleSelectQuery(`Tell me more about ${path.title}`)}
+              >
+                Learn More
+              </button>
             </div>
           ))}
           <button 

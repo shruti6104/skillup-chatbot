@@ -36,8 +36,9 @@ const topicKeywords: Record<string, string[]> = {
 };
 
 const quizIndicators = [
-  'quiz', 'test', 'assessment', 'evaluate', 'check', 'knowledge', 'challenge', 
-  'question', 'exam', 'show me a quiz', 'give me a quiz', 'quiz me', 'test me'
+  'start quiz', 'begin quiz', 'take quiz', 'start test', 'begin test', 'take test', 
+  'quiz me on', 'test me on', 'evaluate me on', 'assess my knowledge', 
+  'start assessment', 'begin assessment', 'take assessment'
 ];
 
 const difficultyKeywords = {
@@ -48,6 +49,7 @@ const difficultyKeywords = {
 
 /**
  * Finds the best matching quiz based on a user prompt
+ * Requires more explicit quiz request phrases to trigger
  * @param userPrompt - The user's text input
  * @returns The quiz ID of the best match, or null if no good match found
  */
@@ -60,6 +62,11 @@ export function findBestQuizMatch(userPrompt: string): string | null {
   const containsQuizRequest = quizIndicators.some(indicator => 
     lowercasePrompt.includes(indicator)
   );
+  
+  if (!containsQuizRequest) {
+    console.log("No explicit quiz request detected");
+    return null;
+  }
   
   let requestedDifficulty = '';
   
@@ -220,22 +227,24 @@ export function findBestQuizMatch(userPrompt: string): string | null {
   
   let bestMatch: QuizMatch | null = null;
   
-  for (const quizId of Object.keys(quizzes)) {
-    const quiz = quizzes[quizId];
-    const topic = quiz.topic.toLowerCase();
-    
-    if (lowercasePrompt.includes(topic)) {
-      if (requestedDifficulty && quiz.difficulty.toLowerCase() !== requestedDifficulty) {
-        continue;
-      }
+  if (containsQuizRequest) {
+    for (const quizId of Object.keys(quizzes)) {
+      const quiz = quizzes[quizId];
+      const topic = quiz.topic.toLowerCase();
       
-      const confidence = topic.length / lowercasePrompt.length;
-      
-      if (!bestMatch || confidence > bestMatch.confidence) {
-        bestMatch = {
-          quizId,
-          confidence
-        };
+      if (lowercasePrompt.includes(topic)) {
+        if (requestedDifficulty && quiz.difficulty.toLowerCase() !== requestedDifficulty) {
+          continue;
+        }
+        
+        const confidence = topic.length / lowercasePrompt.length;
+        
+        if (!bestMatch || confidence > bestMatch.confidence) {
+          bestMatch = {
+            quizId,
+            confidence
+          };
+        }
       }
     }
   }
