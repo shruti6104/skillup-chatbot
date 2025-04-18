@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Bot, Star, Sparkles, ExternalLink, ThumbsUp, ThumbsDown, Share2, Bookmark, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -192,7 +193,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
       transition: {
         duration: 2,
         repeat: Infinity,
-        repeatType: "mirror"
+        repeatType: "mirror" as const
       }
     }
   };
