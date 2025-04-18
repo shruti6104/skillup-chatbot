@@ -59,7 +59,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
         
         if (message.role === 'assistant') {
           const audio = new Audio();
-          audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAvIAU1NTUFBQUFBTU1NTUFBQUFBbW1tbW2pqampqamtra2tra3t7e3t7e3t7e3t7e3uMjIyMjIyMjIyMjIyMnZ2dnZ2dnZ2dnZ2dnZ2tra2tra2tra2tra2tra29vb29vb29vb29vb29vb29zs7Ozs7Ozs7Ozs7Ozs7e3t7e3t7e3t7e3t7e3v///////////8AAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOTku//MUZAYAAAGAAAAAAAAABEAAAAAAMC0=';
+          audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAABAAAAvIAU1NTUFBQUFBTU1NTUFBQUFBbW1tbW2pqampqamtra2tra3t7e3t7e3t7e3t7e3uMjIyMjIyMjIyMjIyMnZ2dnZ2dnZ2dnZ2dnZ2tra2tra2tra2tra2tra29vb29vb29vb29vb29vb29vb29zs7Ozs7Ozs7Ozs7Ozs7e3t7e3t7e3t7e3t7e3v///////////8AAAAA//MUZAAAAAGkAAAAAAAAA0gAAAAATEFN//MUZAMAAAGkAAAAAAAAA0gAAAAARTMu//MUZAYAAAGkAAAAAAAAA0gAAAAAOTku//MUZAYAAAGAAAAAAAAABEAAAAAAMC0=';
           audio.volume = 0.05;
           audio.play();
           
@@ -192,7 +192,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
       transition: {
         duration: 2,
         repeat: Infinity,
-        repeatType: "reverse"
+        repeatType: "mirror"
       }
     }
   };
@@ -242,6 +242,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
           ? 'bg-cyber-darker/60 cyber-border' 
           : 'bg-cyber-dark'
       }`}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
     >
       <motion.div 
         className="flex-shrink-0 mt-1"
