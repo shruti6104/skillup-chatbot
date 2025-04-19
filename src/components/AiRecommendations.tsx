@@ -146,12 +146,14 @@ const AiRecommendations: React.FC<AiRecommendationsProps> = ({
   };
 
   const handleRecommendationClick = (recommendation: typeof recommendations[0]) => {
-    onSelectRecommendation(recommendation.query);
-    
-    toast({
-      title: "Great choice!",
-      description: `Loading personalized content for "${recommendation.title}"`,
-    });
+    if (onSelectRecommendation) {
+      onSelectRecommendation(recommendation.query);
+      
+      toast({
+        title: "Great choice!",
+        description: `Loading personalized content for "${recommendation.title}"`,
+      });
+    }
   };
 
   return (
@@ -178,7 +180,15 @@ const AiRecommendations: React.FC<AiRecommendationsProps> = ({
               </div>
               <p className="text-xs text-muted-foreground mb-2">{rec.reason}</p>
               <div className="flex justify-end">
-                <Button size="sm" variant="ghost" className="h-7 text-xs flex items-center gap-1 bg-cyber-blue/20 hover:bg-cyber-blue/30">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-7 text-xs flex items-center gap-1 bg-cyber-blue/20 hover:bg-cyber-blue/30"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent the parent onClick from firing
+                    handleRecommendationClick(rec);
+                  }}
+                >
                   Explore <ArrowRight className="w-3 h-3" />
                 </Button>
               </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Code, Database, Cpu, Network, Search, Award, Shield, FileText, BookOpen, Brain } from 'lucide-react';
 
@@ -74,10 +73,7 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
 
   const handleSelectQuery = (query: string) => {
     if (onSelectQuery) {
-      // Use setTimeout to ensure the state update happens
-      setTimeout(() => {
-        onSelectQuery(query);
-      }, 100);
+      onSelectQuery(query);
     }
   };
 
@@ -118,7 +114,6 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       category: "Security",
       xp: 200
     },
-    // New learning paths
     {
       title: "Full Stack JavaScript",
       steps: [
