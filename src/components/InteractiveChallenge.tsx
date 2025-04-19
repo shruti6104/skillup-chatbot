@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Award, CheckCircle, XCircle, HelpCircle, ArrowRight, ArrowLeft, Cpu } from 'lucide-react';
+import { Award, CheckCircle, XCircle, HelpCircle, ArrowRight, ArrowLeft, Cpu, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card } from '@/components/ui/card';
