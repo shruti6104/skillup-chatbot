@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Globe, FileText, Cpu, Code, ExternalLink, BarChart, BookOpen, Shield, Network, Brain, Video, Github, Book, HeartHandshake, BookCheck, Layers, Bookmark, Blocks, Star, Zap } from 'lucide-react';
+import { Globe, FileText, Cpu, Code, ExternalLink, BarChart, BookOpen, Shield, Network, Brain, Video, Github, Book, HeartHandshake, BookCheck, Layers, Bookmark, Blocks, Star, Zap, Link, ListCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
 
@@ -161,6 +161,77 @@ const QuickLearningSection: React.FC<QuickLearningProps> = ({ onSelectTopic }) =
       name: "MIT OCW",
       category: "COMPUTER SCIENCE",
       url: "https://ocw.mit.edu/search/?t=Computer%20Science"
+    },
+    // New resources added
+    {
+      icon: <Link className="text-cyber-blue" size={16} />,
+      name: "LEETCODE",
+      category: "ALGORITHMS",
+      url: "https://leetcode.com/",
+      isNew: true
+    },
+    {
+      icon: <ListCheck className="text-cyber-green" size={16} />,
+      name: "COURSERA",
+      category: "VARIOUS COURSES",
+      url: "https://www.coursera.org/",
+      isNew: true
+    },
+    {
+      icon: <BookOpen className="text-cyber-purple" size={16} />,
+      name: "UDEMY",
+      category: "TECH COURSES",
+      url: "https://www.udemy.com/",
+      isNew: true
+    },
+    {
+      icon: <Code className="text-cyber-pink" size={16} />,
+      name: "GEEKSFORGEEKS",
+      category: "PROGRAMMING",
+      url: "https://www.geeksforgeeks.org/",
+      isNew: true
+    },
+    {
+      icon: <Video className="text-cyber-blue" size={16} />,
+      name: "KHAN ACADEMY",
+      category: "GENERAL LEARNING",
+      url: "https://www.khanacademy.org/",
+      isNew: true
+    },
+    {
+      icon: <Brain className="text-cyber-green" size={16} />,
+      name: "HUGGING FACE",
+      category: "AI/ML",
+      url: "https://huggingface.co/",
+      isNew: true
+    },
+    {
+      icon: <Code className="text-cyber-purple" size={16} />,
+      name: "STACK OVERFLOW",
+      category: "PROGRAMMING HELP",
+      url: "https://stackoverflow.com/",
+      isNew: true
+    },
+    {
+      icon: <Shield className="text-cyber-pink" size={16} />,
+      name: "CYBRARY",
+      category: "CYBERSECURITY",
+      url: "https://www.cybrary.it/",
+      isNew: true
+    },
+    {
+      icon: <FileText className="text-cyber-blue" size={16} />,
+      name: "HARVARD CS50",
+      category: "COMPUTER SCIENCE",
+      url: "https://cs50.harvard.edu/x/",
+      isNew: true
+    },
+    {
+      icon: <Github className="text-cyber-green" size={16} />,
+      name: "DEV.TO",
+      category: "DEVELOPER COMMUNITY",
+      url: "https://dev.to/",
+      isNew: true
     }
   ];
 

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Code, Database, Cpu, Network, Search, Award, Shield, FileText } from 'lucide-react';
+import { Code, Database, Cpu, Network, Search, Award, Shield, FileText, BookOpen, Brain } from 'lucide-react';
 
 interface SuggestedQueriesProps {
   onSelectQuery?: (query: string) => void;
@@ -57,6 +57,16 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       icon: <FileText className="text-cyber-green" size={16} />,
       text: "Start quiz on data science",
       category: "Quiz"
+    },
+    {
+      icon: <Brain className="text-cyber-blue" size={16} />,
+      text: "What are the latest AI advancements?",
+      category: "Tech News"
+    },
+    {
+      icon: <BookOpen className="text-cyber-purple" size={16} />,
+      text: "Compare Python vs JavaScript",
+      category: "Programming"
     }
   ];
 
@@ -64,7 +74,10 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
 
   const handleSelectQuery = (query: string) => {
     if (onSelectQuery) {
-      onSelectQuery(query);
+      // Use setTimeout to ensure the state update happens
+      setTimeout(() => {
+        onSelectQuery(query);
+      }, 100);
     }
   };
 
@@ -129,6 +142,30 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       difficulty: "intermediate",
       category: "Data Science",
       xp: 180
+    },
+    {
+      title: "Mobile App Development",
+      steps: [
+        "1. JavaScript/TypeScript Fundamentals",
+        "2. React Native Basics - Official Docs",
+        "3. State Management with Redux",
+        "4. Native Modules & APIs"
+      ],
+      difficulty: "intermediate",
+      category: "Mobile Dev",
+      xp: 160
+    },
+    {
+      title: "DevOps Engineer Path",
+      steps: [
+        "1. Linux & Shell Scripting",
+        "2. Docker & Containerization",
+        "3. CI/CD Pipelines",
+        "4. Kubernetes Orchestration"
+      ],
+      difficulty: "advanced",
+      category: "DevOps",
+      xp: 220
     }
   ];
 
