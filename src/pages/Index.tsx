@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Cpu, Brain, MessageSquare } from 'lucide-react';
+import { Cpu, Brain, MessageSquare, Award, BookOpen, Rocket, Sparkles } from 'lucide-react';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import Header from '@/components/Header';
 import LoginForm from '@/components/LoginForm';
@@ -73,15 +73,15 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="mt-12 text-center">
+          <div className="mt-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="cyber-panel p-8 max-w-4xl mx-auto"
+              className="cyber-panel p-8 max-w-5xl mx-auto"
             >
               <motion.div 
-                className="text-4xl font-orbitron cyber-gradient-text mb-6"
+                className="text-4xl font-orbitron cyber-gradient-text mb-6 text-center"
                 animate={{ 
                   textShadow: [
                     "0 0 5px rgba(0, 168, 255, 0.5)",
@@ -94,7 +94,7 @@ const Index = () => {
                 Welcome to SkillUp AI
               </motion.div>
               
-              <p className="text-lg mb-8">
+              <p className="text-lg mb-8 text-center">
                 Your interactive learning platform powered by artificial intelligence. 
                 Explore topics, earn badges, and level up your knowledge!
               </p>
@@ -112,7 +112,7 @@ const Index = () => {
               ) : (
                 <motion.button
                   onClick={() => setShowStudyTimer(true)}
-                  className="mb-6 px-4 py-2 bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30 rounded-md hover:bg-cyber-purple/30 transition-colors"
+                  className="mb-6 px-4 py-2 bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30 rounded-md hover:bg-cyber-purple/30 transition-colors block mx-auto"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -151,6 +151,63 @@ const Index = () => {
                   <p className="text-sm text-center">Track your progress, earn badges and see your knowledge expand</p>
                 </motion.div>
               </div>
+
+              <div className="bg-cyber-darker/70 rounded-xl p-6 mb-8">
+                <h2 className="text-xl font-orbitron text-cyber-blue mb-4 flex items-center">
+                  <Sparkles className="mr-2" size={20} />
+                  New Features
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-cyber-blue/20 rounded-md mr-3">
+                      <Award className="text-cyber-blue" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-cyber-blue mb-1">Personalized Learning Paths</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Follow structured learning paths across Python, Web Dev, AI, and Cybersecurity
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="p-2 bg-cyber-purple/20 rounded-md mr-3">
+                      <BookOpen className="text-cyber-purple" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-cyber-purple mb-1">AI Recommendations</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Get personalized learning suggestions based on your progress and interests
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="p-2 bg-cyber-green/20 rounded-md mr-3">
+                      <Rocket className="text-cyber-green" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-cyber-green mb-1">Interactive Challenges</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Test your knowledge with quizzes and earn XP to level up your skills
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <div className="p-2 bg-yellow-500/20 rounded-md mr-3">
+                      <Cpu className="text-yellow-500" size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-yellow-500 mb-1">Skill Tracking</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Monitor your progress and unlock badges as you master new topics
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -161,7 +218,7 @@ const Index = () => {
                 <Button asChild className="bg-cyber-blue hover:bg-cyber-blue/80 text-lg px-8 py-6 cyber-border">
                   <Link to="/chatbot" className="flex items-center">
                     <MessageSquare className="mr-2" />
-                    Start Chatting with SkillUp AI
+                    Start Learning with SkillUp AI
                   </Link>
                 </Button>
               </motion.div>

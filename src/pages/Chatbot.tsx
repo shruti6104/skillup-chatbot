@@ -20,6 +20,9 @@ import { playSound } from '@/utils/audioUtils';
 import SkillBadges from '@/components/SkillBadges';
 import LearningStreak from '@/components/LearningStreak';
 import SuggestedTopics from '@/components/SuggestedTopics';
+import LearningPath from '@/components/LearningPath';
+import AiRecommendations from '@/components/AiRecommendations';
+import InteractiveChallenge from '@/components/InteractiveChallenge';
 
 const STREAK_KEY = 'skillup_streak';
 const LAST_LOGIN_KEY = 'skillup_last_login';
@@ -174,6 +177,7 @@ const Chatbot = () => {
   const [sessionTime, setSessionTime] = useState(0);
   const [lastTopic, setLastTopic] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<'learn' | 'practice' | 'track'>('learn');
   
   const chatbotQuizRef = useRef<ChatbotQuizRef>(null);
 
@@ -411,6 +415,24 @@ const Chatbot = () => {
     }
   };
 
+  const handleChallengeComplete = (xpReward: number) => {
+    const currentXP = parseInt(localStorage.getItem('skillup_xp') || '0', 10);
+    const newXP = currentXP + xpReward;
+    localStorage.setItem('skillup_xp', newXP.toString());
+    
+    setSkillProgress(prev => {
+      const newProgress = { ...prev };
+      const highestSkillKey = Object.entries(newProgress)
+        .sort(([, a], [, b]) => b - a)[0][0];
+      
+      if (highestSkillKey) {
+        newProgress[highestSkillKey] = Math.min(100, newProgress[highestSkillKey] + Math.floor(xpReward / 10));
+      }
+      
+      return newProgress;
+    });
+  };
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
     
@@ -571,7 +593,7 @@ const Chatbot = () => {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.aside
-            className="w-64 bg-cyber-darker border-r border-cyber-border p-4 flex flex-col"
+            className="w-72 bg-cyber-darker border-r border-cyber-border p-4 flex flex-col"
             variants={sidebarVariants}
             initial="closed"
             animate="open"
@@ -586,33 +608,91 @@ const Chatbot = () => {
               </div>
             </div>
 
-            <SkillBadges skillProgress={skillProgress} />
-            <LearningStreak streak={userStreak} todayLearned={messageCount > 0} />
-            <SuggestedTopics onSelectTopic={(topic) => {
-              setInputValue(topic);
-              setTimeout(() => handleSendMessage(), 100);
-            }} />
+            <div className="flex border-b border-cyber-border mb-4">
+              <button
+                className={`flex-1 py-2 text-xs font-medium ${activeTab === 'learn' ? 'text-cyber-blue border-b-2 border-cyber-blue' : 'text-muted-foreground'}`}
+                onClick={() => setActiveTab('learn')}
+              >
+                Learn
+              </button>
+              <button
+                className={`flex-1 py-2 text-xs font-medium ${activeTab === 'practice' ? 'text-cyber-green border-b-2 border-cyber-green' : 'text-muted-foreground'}`}
+                onClick={() => setActiveTab('practice')}
+              >
+                Practice
+              </button>
+              <button
+                className={`flex-1 py-2 text-xs font-medium ${activeTab === 'track' ? 'text-cyber-purple border-b-2 border-cyber-purple' : 'text-muted-foreground'}`}
+                onClick={() => setActiveTab('track')}
+              >
+                Track
+              </button>
+            </div>
 
-            <SkillUpHub
-              onSelectTopic={(content) => {
-                const newBotMessage: Message = {
-                  id: Date.now().toString(),
-                  role: 'assistant',
-                  content,
-                  timestamp: new Date()
-                };
-                setMessages(prev => [...prev, newBotMessage]);
-              }}
-              userLevel={userLevel}
-              userXP={userXP}
-              userBadges={userBadges}
-              userStreak={userStreak}
-              skillProgress={skillProgress}
-              lastTopic={lastTopic}
-              sessionTime={sessionTime}
-            />
+            <div className="flex-1 overflow-y-auto pr-1 space-y-4">
+              {activeTab === 'learn' && (
+                <>
+                  <LearningPath 
+                    onSelectTopic={(topic) => {
+                      setInputValue(topic);
+                      setTimeout(() => handleSendMessage(), 100);
+                    }}
+                    skillProgress={skillProgress} 
+                  />
+                  
+                  <AiRecommendations 
+                    skillProgress={skillProgress}
+                    userStreak={userStreak}
+                    topicsExplored={topicsExplored}
+                    onSelectRecommendation={(topic) => {
+                      setInputValue(topic);
+                      setTimeout(() => handleSendMessage(), 100);
+                    }}
+                  />
+                  
+                  <SuggestedTopics 
+                    onSelectTopic={(topic) => {
+                      setInputValue(topic);
+                      setTimeout(() => handleSendMessage(), 100);
+                    }} 
+                  />
+                </>
+              )}
+              
+              {activeTab === 'practice' && (
+                <InteractiveChallenge 
+                  skillProgress={skillProgress}
+                  onChallengeComplete={handleChallengeComplete}
+                />
+              )}
+              
+              {activeTab === 'track' && (
+                <>
+                  <SkillBadges skillProgress={skillProgress} />
+                  <LearningStreak streak={userStreak} todayLearned={messageCount > 0} />
+                  <SkillUpHub
+                    onSelectTopic={(content) => {
+                      const newBotMessage: Message = {
+                        id: Date.now().toString(),
+                        role: 'assistant',
+                        content,
+                        timestamp: new Date()
+                      };
+                      setMessages(prev => [...prev, newBotMessage]);
+                    }}
+                    userLevel={userLevel}
+                    userXP={userXP}
+                    userBadges={userBadges}
+                    userStreak={userStreak}
+                    skillProgress={skillProgress}
+                    lastTopic={lastTopic}
+                    sessionTime={sessionTime}
+                  />
+                </>
+              )}
+            </div>
 
-            <nav className="flex-1 py-4">
+            <nav className="py-4 border-t border-cyber-border mt-4">
               <ul>
                 <li>
                   <Link to="/" className="flex items-center text-sm font-semibold text-cyber-blue hover:text-cyber-light mb-2">
