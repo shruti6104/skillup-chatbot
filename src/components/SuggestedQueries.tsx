@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { Code, Database, Cpu, Network, Search, Award, Shield, FileText, BookOpen, Brain } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import { Code, Database, Cpu, Network, Search, Award, Shield, FileText, BookOpen, Brain, ArrowRight, Trophy, Star, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '@/hooks/use-toast';
 
 interface SuggestedQueriesProps {
   onSelectQuery?: (query: string) => void;
@@ -15,6 +18,10 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
   suggestedQueries: externalQueries 
 }) => {
   const [activeTab, setActiveTab] = useState<'topics' | 'paths'>('topics');
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [completedSteps, setCompletedSteps] = useState<{[key: string]: boolean[]}>({});
+  const [hoveredQuery, setHoveredQuery] = useState<number | null>(null);
+  const { toast } = useToast();
 
   const defaultQueries = [
     {
@@ -71,9 +78,72 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
 
   const queries = externalQueries || defaultQueries;
 
+  useEffect(() => {
+    // Load completed steps from local storage
+    try {
+      const savedSteps = localStorage.getItem('skillup_completed_steps');
+      if (savedSteps) {
+        setCompletedSteps(JSON.parse(savedSteps));
+      }
+    } catch (e) {
+      console.error("Error loading completed steps:", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save completed steps to local storage
+    if (Object.keys(completedSteps).length > 0) {
+      localStorage.setItem('skillup_completed_steps', JSON.stringify(completedSteps));
+    }
+  }, [completedSteps]);
+
   const handleSelectQuery = (query: string) => {
     if (onSelectQuery) {
       onSelectQuery(query);
+    }
+  };
+  
+  const handlePathSelect = (pathTitle: string) => {
+    setSelectedPath(pathTitle);
+    
+    // Initialize completed steps for this path if not already done
+    if (!completedSteps[pathTitle]) {
+      setCompletedSteps(prev => ({
+        ...prev,
+        [pathTitle]: [false, false, false, false]
+      }));
+    }
+    
+    toast({
+      title: "Learning Path Selected",
+      description: `You've chosen the ${pathTitle} path. Complete the steps to earn XP!`,
+    });
+  };
+  
+  const handleStepComplete = (pathTitle: string, stepIndex: number) => {
+    // Mark the step as completed
+    setCompletedSteps(prev => ({
+      ...prev,
+      [pathTitle]: prev[pathTitle].map((completed, i) => 
+        i === stepIndex ? true : completed
+      )
+    }));
+    
+    // Check if all steps are completed
+    const updatedSteps = completedSteps[pathTitle] ? 
+      [...completedSteps[pathTitle].slice(0, stepIndex), true, ...completedSteps[pathTitle].slice(stepIndex + 1)] : 
+      Array(4).fill(false).map((_, i) => i === stepIndex);
+      
+    if (updatedSteps.every(step => step)) {
+      toast({
+        title: "🎉 Path Completed!",
+        description: `Congratulations! You've completed the ${pathTitle} learning path!`,
+      });
+    } else {
+      toast({
+        title: "Step Completed",
+        description: `You've completed step ${stepIndex + 1} of the ${pathTitle} path.`,
+      });
     }
   };
 
@@ -88,7 +158,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "beginner",
       category: "AI",
-      xp: 100
+      xp: 100,
+      estimatedTime: "4 weeks"
     },
     {
       title: "Web Development Roadmap",
@@ -100,7 +171,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "intermediate",
       category: "Web Dev",
-      xp: 150
+      xp: 150,
+      estimatedTime: "6 weeks"
     },
     {
       title: "Cybersecurity Specialist",
@@ -112,7 +184,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "advanced",
       category: "Security",
-      xp: 200
+      xp: 200,
+      estimatedTime: "8 weeks"
     },
     {
       title: "Full Stack JavaScript",
@@ -124,7 +197,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "intermediate",
       category: "Web Dev",
-      xp: 175
+      xp: 175,
+      estimatedTime: "7 weeks"
     },
     {
       title: "Data Science Career Path",
@@ -136,7 +210,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "intermediate",
       category: "Data Science",
-      xp: 180
+      xp: 180,
+      estimatedTime: "10 weeks"
     },
     {
       title: "Mobile App Development",
@@ -148,7 +223,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "intermediate",
       category: "Mobile Dev",
-      xp: 160
+      xp: 160,
+      estimatedTime: "8 weeks"
     },
     {
       title: "DevOps Engineer Path",
@@ -160,7 +236,8 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
       ],
       difficulty: "advanced",
       category: "DevOps",
-      xp: 220
+      xp: 220,
+      estimatedTime: "12 weeks"
     }
   ];
 
@@ -184,81 +261,214 @@ const SuggestedQueries: React.FC<SuggestedQueriesProps> = ({
           Quick References
         </h3>
         <div className="flex space-x-1">
-          <button 
+          <motion.button 
             className={`px-2 py-1 text-xs rounded-md ${activeTab === 'topics' ? 'bg-cyber-pink text-black' : 'bg-cyber-darker'}`}
             onClick={() => setActiveTab('topics')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Topics
-          </button>
-          <button 
+          </motion.button>
+          <motion.button 
             className={`px-2 py-1 text-xs rounded-md ${activeTab === 'paths' ? 'bg-cyber-green text-black' : 'bg-cyber-darker'}`}
             onClick={() => setActiveTab('paths')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Paths
-          </button>
+          </motion.button>
         </div>
       </div>
       
-      {activeTab === 'topics' && (
-        <div className="space-y-2">
-          {queries.map((query, index) => (
-            <button 
-              key={index}
-              className="cyber-button w-full text-left flex items-center justify-between neon-glow"
-              onClick={() => handleSelectQuery(query.text)}
-            >
-              <span className="flex items-center">
-                {query.icon}
-                <span className="ml-2 text-sm truncate">{query.text}</span>
-              </span>
-              <span className="text-xs bg-cyber-darker px-2 py-1 rounded-md">
-                {query.category}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'paths' && (
-        <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
-          {learningPaths.map((path, index) => (
-            <div key={index} className="cyber-panel p-2 border border-cyber-darker">
-              <div className="flex justify-between items-center mb-2">
-                <h4 className="font-orbitron text-sm text-cyber-blue">{path.title}</h4>
-                {getDifficultyBadge(path.difficulty)}
-              </div>
-              <div className="space-y-1 mb-2">
-                {path.steps.map((step, stepIndex) => (
-                  <div key={stepIndex} className="text-xs text-muted-foreground flex items-start">
-                    <span className="mr-1 text-cyber-green">▶</span>
-                    {step}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="bg-cyber-darker px-2 py-0.5 rounded-md">{path.category}</span>
-                <span className="flex items-center text-cyber-pink">
-                  <Award size={12} className="mr-1" />
-                  {path.xp} XP
-                </span>
-              </div>
-              <button 
-                className="mt-2 cyber-button w-full text-xs"
-                onClick={() => handleSelectQuery(`Tell me more about ${path.title}`)}
-              >
-                Learn More
-              </button>
-            </div>
-          ))}
-          <button 
-            className="cyber-button w-full text-sm flex items-center justify-center neon-glow"
-            onClick={() => handleSelectQuery("Help me create a learning path for AI and Machine Learning")}
+      <AnimatePresence mode="wait">
+        {activeTab === 'topics' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-2"
           >
-            <Search size={14} className="mr-2" />
-            Generate Custom Learning Path
-          </button>
-        </div>
-      )}
+            {queries.map((query, index) => (
+              <motion.button 
+                key={index}
+                className="cyber-button w-full text-left flex items-center justify-between neon-glow"
+                onClick={() => handleSelectQuery(query.text)}
+                onMouseEnter={() => setHoveredQuery(index)}
+                onMouseLeave={() => setHoveredQuery(null)}
+                whileHover={{ scale: 1.02, backgroundColor: 'rgba(0, 168, 255, 0.1)' }}
+              >
+                <span className="flex items-center">
+                  <motion.div
+                    animate={hoveredQuery === index ? { rotate: [0, 15, -15, 0] } : {}}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {query.icon}
+                  </motion.div>
+                  <span className="ml-2 text-sm truncate">{query.text}</span>
+                </span>
+                <motion.span 
+                  className="text-xs bg-cyber-darker px-2 py-1 rounded-md"
+                  animate={hoveredQuery === index ? { scale: 1.1 } : {}}
+                >
+                  {query.category}
+                </motion.span>
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+
+        {activeTab === 'paths' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-3 max-h-64 overflow-y-auto pr-1"
+          >
+            {selectedPath ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                <div className="flex items-center mb-3">
+                  <button 
+                    className="text-xs flex items-center text-cyber-blue hover:text-cyber-green"
+                    onClick={() => setSelectedPath(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                    Back to paths
+                  </button>
+                  <h4 className="font-orbitron text-sm text-cyber-blue ml-2">
+                    {selectedPath}
+                  </h4>
+                </div>
+                
+                {learningPaths.find(path => path.title === selectedPath)?.steps.map((step, stepIndex) => {
+                  const isCompleted = completedSteps[selectedPath] ? completedSteps[selectedPath][stepIndex] : false;
+                  
+                  return (
+                    <motion.div
+                      key={stepIndex}
+                      className={`p-3 mb-2 rounded-lg border ${isCompleted ? 'border-cyber-green/40 bg-cyber-green/10' : 'border-cyber-blue/30 bg-cyber-darker'}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: stepIndex * 0.1 }}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm ${isCompleted ? 'line-through text-cyber-green' : ''}`}>{step}</span>
+                        <button
+                          className={`text-xs px-2 py-1 rounded ${isCompleted ? 'bg-cyber-green/30 text-cyber-green' : 'bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30'}`}
+                          onClick={() => {
+                            const selectedPathObj = learningPaths.find(path => path.title === selectedPath);
+                            if (selectedPathObj) {
+                              const stepContent = step.split(' - ')[0].substring(2); // Remove the number prefix
+                              handleSelectQuery(`Tell me about ${stepContent} in ${selectedPathObj.category}`);
+                              handleStepComplete(selectedPath, stepIndex);
+                            }
+                          }}
+                        >
+                          {isCompleted ? 'Completed' : 'Start'}
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+                
+                {completedSteps[selectedPath] && completedSteps[selectedPath].filter(Boolean).length === 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mt-4 p-3 rounded-lg bg-gradient-to-r from-cyber-green/20 to-cyber-blue/20 border border-cyber-green/40"
+                  >
+                    <div className="flex items-center mb-1">
+                      <Trophy className="w-4 h-4 text-cyber-green mr-1" />
+                      <h5 className="text-sm font-medium text-cyber-green">Path Completed!</h5>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Congratulations! You've completed all steps in this learning path.
+                    </p>
+                    <div className="flex justify-end">
+                      <button
+                        className="text-xs bg-cyber-green/30 hover:bg-cyber-green/40 text-cyber-green px-2 py-1 rounded flex items-center"
+                        onClick={() => {
+                          const path = learningPaths.find(p => p.title === selectedPath);
+                          if (path) {
+                            handleSelectQuery(`What should I learn next after completing ${path.title}?`);
+                          }
+                        }}
+                      >
+                        Continue Learning <ArrowRight className="w-3 h-3 ml-1" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ) : (
+              <>
+                {learningPaths.map((path, index) => (
+                  <motion.div
+                    key={index}
+                    className="cyber-panel p-2 border border-cyber-darker hover:border-cyber-blue/50 cursor-pointer"
+                    whileHover={{ scale: 1.02, backgroundColor: 'rgba(0, 168, 255, 0.05)' }}
+                    onClick={() => handlePathSelect(path.title)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-orbitron text-sm text-cyber-blue">{path.title}</h4>
+                      {getDifficultyBadge(path.difficulty)}
+                    </div>
+                    <div className="space-y-1 mb-2">
+                      {path.steps.map((step, stepIndex) => (
+                        <div key={stepIndex} className="text-xs text-muted-foreground flex items-start">
+                          <span className="mr-1 text-cyber-green">▶</span>
+                          {step}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="bg-cyber-darker px-2 py-0.5 rounded-md">{path.category}</span>
+                      <div className="flex space-x-3">
+                        <span className="flex items-center text-muted-foreground">
+                          <Clock size={12} className="mr-1" />
+                          {path.estimatedTime}
+                        </span>
+                        <span className="flex items-center text-cyber-pink">
+                          <Award size={12} className="mr-1" />
+                          {path.xp} XP
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {completedSteps[path.title] && (
+                      <div className="mt-2 w-full bg-cyber-darker rounded-full h-1.5">
+                        <div 
+                          className="bg-cyber-green h-1.5 rounded-full" 
+                          style={{ 
+                            width: `${completedSteps[path.title].filter(Boolean).length * 25}%`,
+                            transition: 'width 0.5s ease-in-out'
+                          }}
+                        />
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+                <motion.button 
+                  className="cyber-button w-full text-sm flex items-center justify-center neon-glow"
+                  onClick={() => handleSelectQuery("Help me create a learning path for AI and Machine Learning")}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Search size={14} className="mr-2" />
+                  Generate Custom Learning Path
+                </motion.button>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

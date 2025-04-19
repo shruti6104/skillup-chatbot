@@ -1,262 +1,349 @@
 
-import { Message } from '@/types/chat';
+// This file contains utility functions for handling messages in the SkillUp AI chatbot
 
-// Initial skill levels
-let skillLevels: { [key: string]: number } = {
-  'python': 1,
-  'javascript': 1,
-  'web development': 1,
-  'ai': 1,
-  'cybersecurity': 1,
-  'soft skills': 1,
-  'machine learning': 1,
-  'react': 1,
-  'database': 1,
-  'data science': 1
-};
-
-// Topic-specific responses
-const topicResponses: { [key: string]: string } = {
-  'python': "Python is a versatile language great for beginners. It's used in web development, data science, and more.",
-  'javascript': "JavaScript is essential for web development. It makes websites interactive and is used in front-end and back-end development.",
-  'web development': "Web development involves building websites and web applications. It includes front-end (what you see) and back-end (how it works).",
-  'ai': "Artificial Intelligence (AI) is about creating machines that can perform tasks that typically require human intelligence.",
-  'cybersecurity': "Cybersecurity is crucial for protecting computer systems and networks from theft, damage, or unauthorized access.",
-  'soft skills': "Soft skills are essential for career success. They include communication, teamwork, problem-solving, and leadership.",
-  'machine learning': "Machine learning is a subset of AI that focuses on algorithms that allow computers to learn from data without being explicitly programmed.",
-  'react': "React is a JavaScript library for building user interfaces. It's efficient and used for single-page applications.",
-  'database': "Databases are structured collections of data. They are essential for storing and managing information in applications.",
-  'data science': "Data science involves analyzing and interpreting complex data to make informed decisions. It combines statistics, computer science, and domain expertise."
+// Function to detect the intent of a user message
+export const detectIntent = (message: string) => {
+  message = message.toLowerCase();
+  
+  // Define patterns for different intents
+  const learningPatterns = ['teach', 'learn', 'explain', 'how to', 'what is', 'tell me about', 'introduce', 'basics of'];
+  const greetingPatterns = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+  const feedbackPatterns = ['thanks', 'thank you', 'helpful', 'great explanation', 'appreciate'];
+  const quizPatterns = ['quiz', 'test', 'assessment', 'evaluate', 'check my knowledge'];
+  const challengePatterns = ['challenge', 'exercise', 'practice', 'problem', 'project'];
+  const opinionPatterns = ['think', 'opinion', 'believe', 'perspective', 'point of view', 'thoughts on'];
+  const comparisonPatterns = ['difference', 'compare', 'versus', 'vs', 'better', 'advantages', 'disadvantages'];
+  const recommendationPatterns = ['recommend', 'suggest', 'best', 'top', 'favorite', 'popular'];
+  const generalKnowledgePatterns = ['who', 'when', 'where', 'why', 'history', 'origins', 'created'];
+  
+  // Topic patterns
+  const pythonPatterns = ['python', 'django', 'flask', 'pandas', 'numpy', 'matplotlib'];
+  const webDevPatterns = ['html', 'css', 'javascript', 'web', 'frontend', 'backend', 'react', 'vue', 'angular'];
+  const aiPatterns = ['ai', 'artificial intelligence', 'machine learning', 'deep learning', 'neural networks'];
+  const dataPatterns = ['data science', 'data analysis', 'big data', 'statistics', 'visualization', 'tableau', 'power bi'];
+  const cyberPatterns = ['cyber', 'security', 'hacking', 'encryption', 'firewall', 'penetration testing'];
+  const softSkillsPatterns = ['soft skills', 'communication', 'leadership', 'teamwork', 'time management'];
+  const cloudPatterns = ['cloud', 'aws', 'azure', 'gcp', 'serverless', 'docker', 'kubernetes'];
+  const mobilePatterns = ['mobile', 'android', 'ios', 'swift', 'kotlin', 'react native', 'flutter'];
+  const blockchainPatterns = ['blockchain', 'cryptocurrency', 'bitcoin', 'ethereum', 'smart contracts'];
+  const gameDevPatterns = ['game', 'unity', 'unreal', 'godot', 'gaming'];
+  const devOpsPatterns = ['devops', 'ci/cd', 'jenkins', 'gitlab', 'github actions'];
+  const iotPatterns = ['iot', 'internet of things', 'arduino', 'raspberry pi', 'embedded systems'];
+  const careerPatterns = ['career', 'interview', 'resume', 'job', 'salary', 'promotion'];
+  const mathPatterns = ['math', 'mathematics', 'algebra', 'calculus', 'statistics', 'linear algebra'];
+  const generalTopics = ['technology', 'science', 'humanities', 'arts', 'social sciences', 'business', 'finance'];
+  
+  // Detect intent
+  let intent = 'general';
+  if (greetingPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'greeting';
+  } else if (learningPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'learning';
+  } else if (feedbackPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'feedback';
+  } else if (quizPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'quiz';
+  } else if (challengePatterns.some(pattern => message.includes(pattern))) {
+    intent = 'challenge';
+  } else if (opinionPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'opinion';
+  } else if (comparisonPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'comparison';
+  } else if (recommendationPatterns.some(pattern => message.includes(pattern))) {
+    intent = 'recommendation';
+  } else if (generalKnowledgePatterns.some(pattern => message.includes(pattern))) {
+    intent = 'knowledge';
+  }
+  
+  // Detect topic
+  let topic = null;
+  if (pythonPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'python';
+  } else if (webDevPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'web development';
+  } else if (aiPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'ai';
+  } else if (dataPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'data science';
+  } else if (cyberPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'cybersecurity';
+  } else if (softSkillsPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'soft skills';
+  } else if (cloudPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'cloud computing';
+  } else if (mobilePatterns.some(pattern => message.includes(pattern))) {
+    topic = 'mobile development';
+  } else if (blockchainPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'blockchain';
+  } else if (gameDevPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'game development';
+  } else if (devOpsPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'devops';
+  } else if (iotPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'iot';
+  } else if (careerPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'career development';
+  } else if (mathPatterns.some(pattern => message.includes(pattern))) {
+    topic = 'mathematics';
+  } else {
+    // Try to identify general topics
+    for (const genTopic of generalTopics) {
+      if (message.includes(genTopic)) {
+        topic = genTopic;
+        break;
+      }
+    }
+  }
+  
+  // Calculate confidence based on pattern matches
+  const matchedPatterns = [
+    ...learningPatterns, ...greetingPatterns, ...feedbackPatterns,
+    ...quizPatterns, ...challengePatterns, ...opinionPatterns,
+    ...comparisonPatterns, ...recommendationPatterns, ...generalKnowledgePatterns
+  ].filter(pattern => message.includes(pattern)).length;
+  
+  const confidence = Math.min(0.3 + (matchedPatterns * 0.1), 0.9);
+  
+  return { intent, topic, confidence };
 };
 
 // Update skill level based on topic
 export const updateSkillLevel = (topic: string) => {
-  if (skillLevels[topic]) {
-    skillLevels[topic] = Math.min(5, skillLevels[topic] + 1);
-  }
+  // This would typically interact with a user profile or database
+  // In a real implementation, this would update the user's skill level in the specified topic
+  console.log(`Updating skill level in ${topic}`);
 };
 
-// Reset context (not fully implemented)
+// Reset context for new conversation
 export const resetContext = () => {
-  // Implement context reset logic here
+  // This would typically clear conversation history or reset state
+  console.log('Resetting conversation context');
 };
 
-// Enhance the detectIntent function to handle more general queries
-export const detectIntent = (message: string): { intent: string; topic: string | null; confidence: number } => {
-  const lowerMessage = message.toLowerCase();
+// Generate response based on intent and topic
+export const generateResponse = (intent: string, topic: string | null, messages: any[]) => {
+  // Check for repeating questions to avoid redundancy
+  const lastUserMessage = messages.filter(m => m.role === 'user').pop();
+  const lastBotMessage = messages.filter(m => m.role === 'assistant').pop();
   
-  // Learning-specific intents
-  if (lowerMessage.includes('learn') || lowerMessage.includes('teach') || lowerMessage.includes('study') || lowerMessage.includes('course')) {
-    for (const topic of learningTopics) {
-      if (lowerMessage.includes(topic)) {
-        return { intent: 'learning', topic, confidence: 0.9 };
-      }
+  // Handle general chat responses for common questions
+  // This makes the AI respond like a general chat assistant for topics outside learning
+  if (intent === 'general' && !topic) {
+    const userMessage = lastUserMessage?.content?.toLowerCase() || '';
+    
+    // Handle general knowledge questions (simulate a more general AI)
+    if (userMessage.includes('who is') || userMessage.includes('what is') || userMessage.startsWith('who') || userMessage.startsWith('what')) {
+      return `I can answer that. ${generateGeneralKnowledgeResponse(userMessage)}\n\nIs there any specific aspect of this topic you'd like to explore further in relation to your learning journey?`;
     }
-    return { intent: 'learning', topic: null, confidence: 0.7 };
+    
+    // Handle time/date questions
+    if (userMessage.includes('time') || userMessage.includes('date') || userMessage.includes('day')) {
+      const now = new Date();
+      return `The current date is ${now.toLocaleDateString()} and the time is ${now.toLocaleTimeString()}. Is there anything specific you'd like to learn about today?`;
+    }
+    
+    // Handle calculation questions
+    if (userMessage.includes('+') || userMessage.includes('-') || userMessage.includes('*') || userMessage.includes('/') || 
+        userMessage.includes('calculate') || userMessage.includes('compute')) {
+      return `I can help with calculations. ${tryToCalculate(userMessage)}\n\nIs there anything else you'd like to know?`;
+    }
+    
+    // Handle weather questions with a polite deflection
+    if (userMessage.includes('weather') || userMessage.includes('temperature') || userMessage.includes('forecast')) {
+      return `I don't have access to real-time weather data, but I'd be happy to help you learn about meteorology or climate science if you're interested.`;
+    }
+    
+    // Handle general chitchat
+    if (userMessage.length < 15) {
+      return `I'm here to assist with your learning journey. Can I help you explore a specific topic or skill today?`;
+    }
+    
+    // Default response for other general queries
+    return `I'm your SkillUp AI learning assistant. I can help you learn about programming, technology, soft skills, and many other topics. What would you like to explore today?`;
   }
   
-  // Question-answering intents
-  if (lowerMessage.startsWith('what') || lowerMessage.startsWith('how') || lowerMessage.startsWith('why') || 
-      lowerMessage.startsWith('when') || lowerMessage.startsWith('where') || lowerMessage.startsWith('can') || 
-      lowerMessage.startsWith('could') || lowerMessage.startsWith('explain') || lowerMessage.includes('?')) {
-    for (const topic of learningTopics) {
-      if (lowerMessage.includes(topic)) {
-        return { intent: 'question', topic, confidence: 0.85 };
-      }
-    }
-    return { intent: 'question', topic: null, confidence: 0.8 };
+  // Handle greetings
+  if (intent === 'greeting') {
+    const greetings = [
+      "Hello! I'm SkillUp AI, your personal learning assistant. What would you like to learn today?",
+      "Hi there! Ready to expand your knowledge? What topic shall we explore together?",
+      "Greetings! I'm here to help you learn and grow. What skill would you like to work on?",
+      "Welcome back! Excited to continue your learning journey. What's on your mind today?",
+      "Hello! I'm your AI learning companion. What would you like to discover today?"
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
   }
   
-  // Check for specific topics without explicit learning intent
-  for (const topic of learningTopics) {
-    if (lowerMessage.includes(topic)) {
-      return { intent: 'topic_exploration', topic, confidence: 0.7 };
-    }
+  // Handle feedback
+  if (intent === 'feedback') {
+    const feedbackResponses = [
+      "You're welcome! I'm glad I could help. Is there anything else you'd like to learn about?",
+      "I appreciate your feedback! Let me know if you want to explore more topics.",
+      "Happy to be of assistance! Learning is a journey we're taking together.",
+      "That's great to hear! Would you like to dive deeper into this topic or try something new?",
+      "Thank you for the feedback! I'm always improving to better assist your learning needs."
+    ];
+    return feedbackResponses[Math.floor(Math.random() * feedbackResponses.length)];
   }
   
-  // General conversation/chat
-  return { intent: 'general_conversation', topic: null, confidence: 0.5 };
+  // Handle learning requests with topic
+  if (intent === 'learning' && topic) {
+    return generateLearningContent(topic);
+  }
+  
+  // Handle quiz requests
+  if (intent === 'quiz' && topic) {
+    return `I'd be happy to test your knowledge on ${topic}! Here's a quick quiz for you:\n\n${generateQuizContent(topic)}`;
+  }
+  
+  // Handle challenge requests
+  if (intent === 'challenge' && topic) {
+    return `Here's a challenge to test your ${topic} skills:\n\n${generateChallengeContent(topic)}`;
+  }
+  
+  // Handle opinion requests
+  if (intent === 'opinion') {
+    return `Here's a perspective on ${topic || 'that topic'}:\n\n${generateOpinionContent(topic || '')}`;
+  }
+  
+  // Handle comparison requests
+  if (intent === 'comparison' && topic) {
+    return generateComparisonContent(topic);
+  }
+  
+  // Handle recommendation requests
+  if (intent === 'recommendation') {
+    return generateRecommendationContent(topic || '');
+  }
+  
+  // Handle general knowledge questions
+  if (intent === 'knowledge') {
+    return generateGeneralKnowledgeContent(topic || '');
+  }
+  
+  // Default response
+  if (topic) {
+    return generateLearningContent(topic);
+  }
+  
+  return "I'm here to help you learn! Tell me what topic you're interested in, and I'll provide resources, explanations, or challenges to help you grow your skills.";
 };
 
-// Enhanced response generation for all types of queries
-export const generateResponse = (intent: string, topic: string | null, messages: Message[]): string => {
-  // Get topic-specific response if available
-  if (topic && topicResponses[topic]) {
-    return topicResponses[topic];
+// Helper functions to generate different types of content
+
+function generateLearningContent(topic: string): string {
+  const learningContent = {
+    'python': `# Python Fundamentals\n\nPython is a high-level, interpreted programming language known for its readability and versatility. Here are the key concepts to get started:\n\n## Variables and Data Types\n\n\`\`\`python\n# Variables don't need type declarations\nname = "John"  # string\nage = 30       # integer\nheight = 5.9   # float\nis_student = True  # boolean\n\`\`\`\n\n## Control Flow\n\n\`\`\`python\n# Conditional statements\nif age >= 18:\n    print("Adult")\nelse:\n    print("Minor")\n\n# Loops\nfor i in range(5):\n    print(i)  # Prints 0, 1, 2, 3, 4\n\`\`\`\n\n## Functions\n\n\`\`\`python\ndef greet(name):\n    return f"Hello, {name}!"\n\nmessage = greet("Alice")  # "Hello, Alice!"\n\`\`\`\n\n## Lists and Dictionaries\n\n\`\`\`python\n# Lists\nfruits = ["apple", "banana", "cherry"]\nfruits.append("orange")\n\n# Dictionaries\nperson = {"name": "John", "age": 30}\nperson["email"] = "john@example.com"\n\`\`\`\n\nWould you like to learn more about specific Python concepts?`,
+    
+    'web development': `# Web Development Fundamentals\n\nWeb development involves creating websites and web applications. Here's an overview of the core technologies:\n\n## HTML (Structure)\n\n\`\`\`html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My Website</title>\n</head>\n<body>\n    <h1>Welcome to my site</h1>\n    <p>This is a paragraph.</p>\n</body>\n</html>\n\`\`\`\n\n## CSS (Styling)\n\n\`\`\`css\n/* Selecting elements */\nh1 {\n    color: blue;\n    font-size: 24px;\n}\n\n/* Classes and IDs */\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n}\n\`\`\`\n\n## JavaScript (Interactivity)\n\n\`\`\`javascript\n// Variables and functions\nconst greeting = "Hello, World!";\n\nfunction showMessage() {\n    alert(greeting);\n}\n\n// DOM manipulation\ndocument.getElementById("button").addEventListener("click", showMessage);\n\`\`\`\n\n## Frontend Frameworks\n- React\n- Angular\n- Vue.js\n\n## Backend Technologies\n- Node.js\n- Python (Django, Flask)\n- PHP\n- Ruby on Rails\n\nWould you like to dive deeper into any specific web technology?`,
+    
+    'ai': `# Artificial Intelligence Fundamentals\n\nArtificial Intelligence (AI) refers to machines designed to mimic human intelligence and perform tasks that typically require human cognition.\n\n## Key AI Concepts\n\n1. **Machine Learning**: Systems that learn from data to improve performance.\n   - Supervised Learning\n   - Unsupervised Learning\n   - Reinforcement Learning\n\n2. **Neural Networks**: Computing systems inspired by biological neural networks.\n   - Neurons (nodes)\n   - Layers (input, hidden, output)\n   - Weights and biases\n\n3. **Deep Learning**: Neural networks with multiple hidden layers.\n   - Convolutional Neural Networks (CNNs)\n   - Recurrent Neural Networks (RNNs)\n   - Transformers\n\n## Popular AI Applications\n\n- **Computer Vision**: Image recognition, object detection\n- **Natural Language Processing**: Translation, sentiment analysis\n- **Robotics**: Autonomous movement and decision making\n- **Recommendation Systems**: Personalized suggestions\n\n## AI Ethics Considerations\n\n- Bias and fairness\n- Privacy concerns\n- Transparency and explainability\n- Job displacement\n\nWould you like to explore any specific area of AI in more depth?`,
+    
+    'default': `I'd be happy to help you learn about ${topic}! This is a fascinating subject with many aspects to explore. Let's start with the fundamentals:\n\n## ${topic.charAt(0).toUpperCase() + topic.slice(1)} Basics\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} involves understanding key concepts and applying them in practical scenarios. To get started, you should familiarize yourself with the core principles.\n\n## Learning Resources\n\nHere are some recommended resources to begin your journey:\n\n1. Interactive tutorials and courses\n2. Books and documentation\n3. Practice exercises and projects\n4. Community forums and discussion groups\n\n## Next Steps\n\nWould you like to:\n- Dive deeper into specific ${topic} concepts?\n- Learn about practical applications of ${topic}?\n- Get recommendations for beginner-friendly projects?\n- Explore advanced topics in ${topic}?\n\nLet me know what interests you most, and we can explore that direction!`
+  };
+  
+  return learningContent[topic.toLowerCase() as keyof typeof learningContent] || learningContent.default;
+}
+
+function generateQuizContent(topic: string): string {
+  const quizzes = {
+    'python': `**Python Quiz**\n\n1. What is the output of `print(2**3)`?\n   A) 6\n   B) 8\n   C) 9\n   D) 5\n\n2. Which of these is NOT a Python data type?\n   A) List\n   B) Dictionary\n   C) Array\n   D) Tuple\n\n3. What does the `len()` function do?\n   A) Returns the largest item in an iterable\n   B) Returns the smallest item in an iterable\n   C) Returns the number of items in an iterable\n   D) Returns the sum of all items in an iterable\n\nReply with your answers, and I'll check them!`,
+    
+    'web development': `**Web Development Quiz**\n\n1. Which HTML tag is used to link an external CSS file?\n   A) <css>\n   B) <style>\n   C) <link>\n   D) <script>\n\n2. In CSS, what does the property 'display: flex' do?\n   A) Makes an element invisible\n   B) Creates a flexible box layout\n   C) Makes text bold\n   D) Adds animation to an element\n\n3. What does API stand for in web development?\n   A) Application Programming Interface\n   B) Application Protocol Interface\n   C) Advanced Programming Interface\n   D) Application Processing Interface\n\nReply with your answers, and I'll check them!`,
+    
+    'ai': `**Artificial Intelligence Quiz**\n\n1. Which of these is NOT a type of machine learning?\n   A) Supervised learning\n   B) Reinforcement learning\n   C) Developmental learning\n   D) Unsupervised learning\n\n2. What is a neural network modeled after?\n   A) Computer processors\n   B) Human brain neurons\n   C) Database systems\n   D) Quantum mechanics\n\n3. Which algorithm is commonly used in recommendation systems?\n   A) Binary search\n   B) Bubble sort\n   C) Collaborative filtering\n   D) Depth-first search\n\nReply with your answers, and I'll check them!`,
+    
+    'default': `**${topic.charAt(0).toUpperCase() + topic.slice(1)} Quiz**\n\n1. What is one of the fundamental principles of ${topic}?\n   A) First principle\n   B) Second principle\n   C) Third principle\n   D) Fourth principle\n\n2. Which of these is most closely associated with ${topic}?\n   A) First association\n   B) Second association\n   C) Third association\n   D) Fourth association\n\n3. Who is considered a pioneer in the field of ${topic}?\n   A) First person\n   B) Second person\n   C) Third person\n   D) Fourth person\n\nReply with your answers, and I'll check them!`
+  };
+  
+  return quizzes[topic.toLowerCase() as keyof typeof quizzes] || quizzes.default;
+}
+
+function generateChallengeContent(topic: string): string {
+  const challenges = {
+    'python': `**Python Coding Challenge**\n\nCreate a function that takes a list of numbers and returns the sum of all even numbers in the list.\n\nExample input: [1, 2, 3, 4, 5, 6]\nExpected output: 12 (2 + 4 + 6)\n\nBonus: Can you do it using list comprehension?\n\n\`\`\`python\ndef sum_even(numbers):\n    # Your code here\n    pass\n\`\`\`\n\nShare your solution when you're ready!`,
+    
+    'web development': `**Web Development Challenge**\n\nCreate a responsive navigation menu that:\n1. Displays horizontally on desktop screens\n2. Collapses into a hamburger menu on mobile screens\n3. Animates smoothly when opening/closing on mobile\n\nYou can use HTML, CSS, and vanilla JavaScript (no frameworks).\n\nStart with this structure:\n\n\`\`\`html\n<nav>\n    <div class="logo">Site Name</div>\n    <ul class="nav-links">\n        <li><a href="#">Home</a></li>\n        <li><a href="#">About</a></li>\n        <li><a href="#">Services</a></li>\n        <li><a href="#">Contact</a></li>\n    </ul>\n    <div class="burger">\n        <!-- Your hamburger icon here -->\n    </div>\n</nav>\n\`\`\`\n\nShare your solution when you're ready!`,
+    
+    'ai': `**AI Challenge**\n\nDesign a simple recommendation algorithm:\n\n1. You have user ratings for movies (1-5 stars)\n2. Create a function that recommends a new movie based on similar user preferences\n\nData example:\n\`\`\`\nUser1: {MovieA: 5, MovieB: 3, MovieC: 4}\nUser2: {MovieA: 4, MovieB: 5, MovieD: 2}\nUser3: {MovieC: 5, MovieD: 3, MovieE: 4}\n\`\`\`\n\nFor a new user who rated MovieA: 5 and MovieC: 4, which movie would you recommend?\n\nExplain your approach and the recommendation you would make!`,
+    
+    'default': `**${topic.charAt(0).toUpperCase() + topic.slice(1)} Challenge**\n\nHere's a practical challenge to test your knowledge:\n\n1. Identify a real-world problem related to ${topic}\n2. Design a solution using the principles and tools of ${topic}\n3. Outline your approach, including:\n   - Key considerations\n   - Methods you would use\n   - How you would evaluate success\n\nProvide a brief description of your solution (300 words or less).\n\nBonus: Add a simple diagram or pseudocode if applicable.\n\nI'm looking forward to seeing your creative approach!`
+  };
+  
+  return challenges[topic.toLowerCase() as keyof typeof challenges] || challenges.default;
+}
+
+function generateOpinionContent(topic: string): string {
+  if (!topic) {
+    return "I'd be happy to share thoughts on a specific topic if you'd like to name one! I can discuss various perspectives on technology trends, learning approaches, career paths, or other educational topics.";
   }
   
-  // Handle based on intent
-  switch (intent) {
-    case 'learning':
-      if (!topic) {
-        return "I'd be happy to help you learn! What specific topic are you interested in? I can teach you about programming languages like Python and JavaScript, web development, artificial intelligence, data science, cybersecurity, and many other tech topics.";
+  return `When it comes to ${topic}, there are several perspectives to consider:\n\n1. **Traditional View**:\nThe conventional wisdom on ${topic} suggests that structured learning and foundational knowledge are essential before advancing to more complex concepts.\n\n2. **Modern Perspective**:\nMore recent approaches to ${topic} emphasize practical application and project-based learning, with theory introduced as needed.\n\n3. **Balanced Approach**:\nMany experts now recommend combining fundamentals with hands-on practice, creating a feedback loop that reinforces learning.\n\nPersonally, I find that success in ${topic} often comes from:\n- Starting with core concepts\n- Applying knowledge through projects early\n- Learning from mistakes and iterations\n- Connecting with communities and mentors\n\nWhat's your experience or perspective on ${topic}? I'd be interested to hear your thoughts!`;
+}
+
+function generateComparisonContent(topic: string): string {
+  // Extract potential comparison entities
+  const entities = topic.match(/(?:between\s+)?([\w\s]+)(?:\s+and\s+)([\w\s]+)/i);
+  
+  if (entities && entities.length >= 3) {
+    const entity1 = entities[1].trim();
+    const entity2 = entities[2].trim();
+    
+    return `# Comparing ${entity1} vs ${entity2}\n\n## ${entity1}\n\n**Strengths**:\n- Unique advantages of ${entity1}\n- Areas where ${entity1} excels\n- Key features of ${entity1}\n\n**Limitations**:\n- Challenges with ${entity1}\n- Scenarios where ${entity1} may not be ideal\n\n## ${entity2}\n\n**Strengths**:\n- Unique advantages of ${entity2}\n- Areas where ${entity2} excels\n- Key features of ${entity2}\n\n**Limitations**:\n- Challenges with ${entity2}\n- Scenarios where ${entity2} may not be ideal\n\n## Key Differences\n\n- Technical distinctions\n- Performance considerations\n- Learning curve comparison\n- Community and ecosystem differences\n\n## When to Choose Each\n\nConsider using **${entity1}** when:\n- Specific use cases for ${entity1}\n- Environments where ${entity1} thrives\n\nConsider using **${entity2}** when:\n- Specific use cases for ${entity2}\n- Environments where ${entity2} thrives\n\nWould you like me to elaborate on any specific aspect of this comparison?`;
+  }
+  
+  return `I'd be happy to compare different aspects of ${topic}. To provide a more focused comparison, could you specify what elements you'd like me to compare? For example:\n\n- Different approaches to learning ${topic}\n- Tools or technologies related to ${topic}\n- Career paths in ${topic}\n- Historical vs. modern perspectives on ${topic}`;
+}
+
+function generateRecommendationContent(topic: string): string {
+  if (!topic || topic.trim() === '') {
+    return "I'd be happy to provide recommendations! Could you specify what you're looking for? For example:\n\n- Learning resources for a specific topic\n- Tools for a particular task\n- Books on a subject\n- Career development paths\n- Project ideas\n\nWith a bit more information, I can provide tailored suggestions that will be most helpful for you.";
+  }
+  
+  return `# Recommendations for ${topic}\n\n## Learning Resources\n\n### Beginner Level\n- Interactive online courses that provide hands-on experience\n- Beginner-friendly books with practical examples\n- Tutorial videos with step-by-step guidance\n\n### Intermediate Level\n- More comprehensive courses that cover advanced concepts\n- Practice projects to apply your knowledge\n- Community forums where you can ask questions\n\n### Advanced Level\n- Specialized resources for expert knowledge\n- Research papers and technical documentation\n- Advanced problem sets and challenges\n\n## Tools & Technologies\n\n- Essential tools for ${topic}\n- Popular frameworks and libraries\n- Development environments and setups\n\n## Project Ideas\n\n1. Beginner project to build fundamental skills\n2. Intermediate project to challenge your abilities\n3. Advanced project to showcase expertise\n\nWould you like more specific recommendations on any of these areas?`;
+}
+
+function generateGeneralKnowledgeContent(topic: string): string {
+  return `# ${topic.charAt(0).toUpperCase() + topic.slice(1)}: An Overview\n\n## Historical Context\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} has evolved significantly over time, with key developments shaping its current form and understanding.\n\n## Key Concepts\n\nThe fundamental principles of ${topic} include:\n\n1. First principle or concept\n2. Second principle or concept\n3. Third principle or concept\n\n## Notable Contributors\n\nSeveral individuals have made significant contributions to ${topic}, including:\n\n- Key figure and their contributions\n- Another important person in the field\n- Modern innovators and their work\n\n## Practical Applications\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} has numerous real-world applications:\n\n- Application in industry\n- Application in research\n- Application in everyday life\n\n## Current Trends\n\nRecent developments in ${topic} include:\n\n- Emerging trends and innovations\n- Evolving methodologies\n- Future directions and possibilities\n\nIs there a particular aspect of ${topic} you'd like to explore further?`;
+}
+
+function generateGeneralKnowledgeResponse(query: string): string {
+  // This simulates retrieving knowledge about general topics
+  // In a real implementation, this would connect to a knowledge base or API
+  
+  if (query.includes('capital of')) {
+    return "Capitals are administrative centers of countries or regions. While I can provide educational information, I'm primarily designed to help with learning topics rather than specific trivia. Would you like to learn about geography or political systems?";
+  }
+  
+  if (query.includes('population')) {
+    return "Population statistics change over time. I can help you learn about demographics, statistics, and data analysis if you're interested in studying population trends.";
+  }
+  
+  if (query.includes('who is') || query.includes('who was')) {
+    return "While I'm primarily focused on educational topics rather than specific people, I can help you learn research methods to find biographical information. Would you like me to help you learn how to research historical or contemporary figures?";
+  }
+  
+  return "That's an interesting question! While I'm primarily designed to help with educational topics, I'm happy to provide general information when it helps with your learning journey. Would you like to explore any educational resources related to this topic?";
+}
+
+function tryToCalculate(query: string): string {
+  // Extract potential calculation
+  const calculationMatch = query.match(/calculate\s+([\d\s\+\-\*\/\(\)\.]+)/i) || 
+                          query.match(/([\d\s\+\-\*\/\(\)\.]+)/);
+  
+  if (calculationMatch) {
+    try {
+      // Safety check - only allow basic arithmetic
+      const calculation = calculationMatch[1].replace(/[^\d\s\+\-\*\/\(\)\.]/g, '');
+      if (calculation) {
+        // Use Function constructor instead of eval for safer execution
+        const result = new Function(`return ${calculation}`)();
+        return `The result of ${calculation} is ${result}.`;
       }
-      break;
-      
-    case 'question':
-      if (!topic) {
-        // Create a generic but informative response for general questions
-        return handleGeneralQuestion(messages[messages.length - 1]?.content || "");
-      }
-      break;
-      
-    case 'topic_exploration':
-      if (!topic) {
-        return "I'd be happy to explore that topic with you! Would you like to learn the basics, or dive into more advanced concepts?";
-      }
-      break;
-      
-    case 'general_conversation':
-      // Enhanced general conversation handling
-      return generateConversationalResponse(messages);
-      
-    default:
-      // Default fallback response
-      return "I'm here to help with your learning journey! Ask me about programming, tech, or any other educational topic you're curious about.";
-  }
-  
-  // Fallback for topics without specific responses
-  return `I'd be happy to teach you about ${topic}! Let's start with the basics and then we can dive deeper. What specific aspects of ${topic} would you like to explore?`;
-};
-
-// Enhanced general question handling - significantly improved to handle a wide range of queries
-const handleGeneralQuestion = (question: string): string => {
-  const lowerQuestion = question.toLowerCase();
-  
-  // Knowledge-based questions
-  if (lowerQuestion.includes("what is") || lowerQuestion.includes("define") || lowerQuestion.includes("meaning of")) {
-    if (lowerQuestion.includes("coding") || lowerQuestion.includes("programming")) {
-      return "Coding or programming is the process of creating instructions for computers using programming languages. It's how we create websites, apps, software, and even control robots. Programming involves breaking down problems into logical steps that a computer can understand and execute.";
-    }
-    
-    if (lowerQuestion.includes("algorithm")) {
-      return "An algorithm is a step-by-step procedure or formula for solving a problem. In computing, algorithms are unambiguous specifications for performing calculations, data processing, automated reasoning, and other tasks. They form the foundation of everything we do in programming.";
-    }
-    
-    if (lowerQuestion.includes("api")) {
-      return "API stands for Application Programming Interface. It's a set of rules that allows different software applications to communicate with each other. APIs enable the integration of different services and data sources, making it possible to build complex applications that leverage functionality from multiple systems.";
-    }
-    
-    if (lowerQuestion.includes("framework")) {
-      return "A framework is a pre-built structure or template that provides a foundation for developing software applications. It typically includes libraries, APIs, and tools that help developers build applications more efficiently by handling common functionalities like database access, templating, and form validation.";
+    } catch (e) {
+      return "I couldn't calculate that expression. Could you rephrase it?";
     }
   }
   
-  // How-to questions
-  if (lowerQuestion.includes("how to") || lowerQuestion.includes("steps to") || lowerQuestion.includes("guide for")) {
-    if (lowerQuestion.includes("learn programming") || lowerQuestion.includes("start coding")) {
-      return "To start learning programming:\n\n1. Choose a beginner-friendly language like Python or JavaScript\n2. Use free online resources like freeCodeCamp, Codecademy, or Khan Academy\n3. Set small, achievable goals and practice consistently\n4. Work on mini-projects to apply what you've learned\n5. Join coding communities for support\n6. Gradually tackle more complex concepts as you build confidence";
-    }
-    
-    if (lowerQuestion.includes("debug") || lowerQuestion.includes("fix errors")) {
-      return "Effective debugging techniques:\n\n1. Read the error message carefully - it often points to the exact issue\n2. Use console.log() or print statements to track variable values\n3. Use a debugger to step through code execution\n4. Check for common mistakes like typos, missing brackets, or semicolons\n5. Test with simplified inputs to isolate the problem\n6. Take breaks - sometimes a fresh perspective helps\n7. Use rubber duck debugging - explain your code line by line to spot logical errors";
-    }
-    
-    if (lowerQuestion.includes("interview") || lowerQuestion.includes("job")) {
-      return "Preparing for a tech interview:\n\n1. Review fundamental CS concepts and data structures\n2. Practice coding problems on platforms like LeetCode or HackerRank\n3. Review the company's products, values, and tech stack\n4. Prepare examples of past projects and challenges you've overcome\n5. Practice explaining your thought process while coding\n6. Prepare questions to ask the interviewer\n7. Get comfortable with collaborative coding tools\n8. Practice mock interviews with friends or mentors";
-    }
-  }
-  
-  // Comparison questions
-  if (lowerQuestion.includes(" vs ") || lowerQuestion.includes("difference between") || lowerQuestion.includes("compare")) {
-    if ((lowerQuestion.includes("python") && lowerQuestion.includes("javascript")) || 
-        (lowerQuestion.includes("python") && lowerQuestion.includes("js"))) {
-      return "Python vs JavaScript:\n\n- Syntax: Python uses indentation for blocks; JavaScript uses curly braces\n- Usage: Python excels in data science, AI, and backend; JavaScript dominates web development and is essential for frontend\n- Typing: Python is strongly typed; JavaScript is loosely typed\n- Execution: Python is interpreted; JavaScript runs in browsers and Node.js\n- Libraries: Python has extensive scientific libraries; JavaScript has rich frameworks for web development\n- Learning curve: Python is often considered more beginner-friendly";
-    }
-    
-    if ((lowerQuestion.includes("react") && lowerQuestion.includes("angular")) || 
-        (lowerQuestion.includes("react") && lowerQuestion.includes("vue"))) {
-      return "React vs Angular vs Vue:\n\n- React: Library focused on UI components, uses JSX, virtual DOM, and one-way data binding. Flexible with minimal opinions.\n- Angular: Complete framework with two-way binding, dependency injection, and TypeScript. More opinionated and comprehensive.\n- Vue: Progressive framework combining React's component model with Angular's templating. Easier learning curve with incremental adoption.\n\nAll three are excellent choices with strong communities and job markets.";
-    }
-    
-    if (lowerQuestion.includes("sql") && lowerQuestion.includes("nosql")) {
-      return "SQL vs NoSQL databases:\n\n- Structure: SQL uses tables with predefined schemas; NoSQL uses various formats (documents, key-value, graphs)\n- Scalability: SQL scales vertically; NoSQL scales horizontally more easily\n- Querying: SQL has standardized query language; NoSQL has database-specific methods\n- ACID compliance: SQL is typically ACID compliant; NoSQL often sacrifices some ACID properties for performance\n- Use cases: SQL for structured data and complex relationships; NoSQL for unstructured data, rapid development, and extreme scale";
-    }
-  }
-  
-  // Career questions
-  if (lowerQuestion.includes("career") || lowerQuestion.includes("job") || lowerQuestion.includes("salary")) {
-    if (lowerQuestion.includes("data science") || lowerQuestion.includes("data scientist")) {
-      return "Data Science career path:\n\nData Scientists analyze complex data to help organizations make better decisions. The path typically requires:\n- Strong statistics and math background\n- Programming skills (Python, R)\n- Machine learning expertise\n- Data visualization abilities\n- Domain knowledge\n\nThe average salary ranges from $90,000-$140,000+ depending on experience, location, and industry. Job growth is projected at 22% through 2030, much faster than average.";
-    }
-    
-    if (lowerQuestion.includes("web dev") || lowerQuestion.includes("web developer")) {
-      return "Web Development career path:\n\nWeb Developers build websites and web applications. Paths include:\n- Frontend (HTML, CSS, JavaScript, frameworks like React)\n- Backend (Node.js, Python, PHP, databases)\n- Full Stack (both frontend and backend)\n\nThe average salary ranges from $70,000-$120,000+ depending on specialization, experience, and location. The job market is strong with consistent demand across industries.";
-    }
-  }
-  
-  // Technology questions
-  if (lowerQuestion.includes("blockchain") || lowerQuestion.includes("crypto")) {
-    return "Blockchain technology is a distributed, immutable ledger that records transactions across many computers. Beyond cryptocurrencies like Bitcoin, it has applications in supply chain management, voting systems, identity verification, and smart contracts. The technology provides transparency, security, and removes the need for trusted third parties in many scenarios.";
-  }
-  
-  if (lowerQuestion.includes("cloud computing") || lowerQuestion.includes("aws") || lowerQuestion.includes("azure")) {
-    return "Cloud computing delivers computing services over the internet, including servers, storage, databases, networking, and software. Major providers include AWS, Microsoft Azure, and Google Cloud. Benefits include reduced infrastructure costs, scalability, and flexibility. Most modern applications use cloud services in some form, making cloud knowledge essential for many tech roles.";
-  }
-  
-  // Generic informative response for other types of questions
-  return `That's an interesting question! While I'm primarily focused on helping with coding and technical education, I'll try to provide a thoughtful response. I'd recommend exploring resources like documentation, tutorials, or community forums for more in-depth information on this topic. Would you like me to point you to some learning resources related to this question?`;
-};
-
-// Significantly enhanced conversational response handling
-const generateConversationalResponse = (messages: Message[]): string => {
-  const lastMessage = messages[messages.length - 1]?.content.toLowerCase() || '';
-  
-  // Detect greeting
-  if (lastMessage.includes('hello') || lastMessage.includes('hi ') || lastMessage.includes('hey') || lastMessage === 'hi') {
-    return "Hello! I'm SkillUp AI, your personal learning assistant. How can I help you today? Would you like to learn something new or get help with a topic you're already exploring?";
-  }
-  
-  // Detect thank you
-  if (lastMessage.includes('thank') || lastMessage.includes('thanks')) {
-    return "You're welcome! I'm happy to help. Is there anything else you'd like to learn about?";
-  }
-  
-  // Detect opinion requests
-  if (lastMessage.includes('what do you think') || lastMessage.includes('your opinion')) {
-    return "As an AI assistant, I can provide factual information about various topics. While I don't have personal opinions, I can help you understand different perspectives on this subject. Would you like me to explain more?";
-  }
-  
-  // Detect about me questions
-  if ((lastMessage.includes('who are you') || lastMessage.includes('what are you')) || 
-      (lastMessage.includes('about you') || lastMessage.includes('tell me about yourself'))) {
-    return "I'm SkillUp AI, an educational assistant designed to help you learn new skills, especially in programming and technology. I can answer questions, explain concepts, suggest learning resources, and guide you through your learning journey. My goal is to make education more accessible and personalized. How can I assist with your learning goals today?";
-  }
-  
-  // Detect capability questions
-  if (lastMessage.includes('what can you do') || lastMessage.includes('help me with') || lastMessage.includes('your capabilities')) {
-    return "I can help you with many aspects of learning:\n\n• Answer questions about programming, technology, and other topics\n• Explain complex concepts in simple terms\n• Recommend learning resources and tutorials\n• Guide you through learning paths for various skills\n• Quiz you on topics you've learned\n• Track your learning progress\n• Suggest next steps in your learning journey\n\nWhat would you like to learn about today?";
-  }
-  
-  // Detect personal life questions
-  if (lastMessage.includes('how are you') || lastMessage.includes('how do you feel')) {
-    return "I'm operating well and ready to help with your learning goals! While I don't experience feelings as humans do, I'm designed to be helpful, informative, and supportive of your educational journey. What can I help you learn today?";
-  }
-  
-  // Handle other generic interactions or chit-chat
-  const genericResponses = [
-    "I'm designed to help you learn and explore new topics. I can answer questions about programming, technology, science, and many other educational subjects. How can I assist with your learning journey today?",
-    "I'd love to help you explore new topics or deepen your understanding of subjects you're already familiar with. What would you like to learn about?",
-    "Learning is a lifelong journey, and I'm here to assist you along the way. Would you like to explore a new topic or continue with something you've been studying?",
-    "I'm here to support your educational goals. Whether you're a beginner or advanced learner, I can provide information, explanations, and resources. What topic interests you today?",
-    "I can provide information on a wide range of educational topics. Would you like to learn something new or get help with a specific question you have?"
-  ];
-  
-  return genericResponses[Math.floor(Math.random() * genericResponses.length)];
-};
-
-// Expanded learning topics to cover more general knowledge areas
-const learningTopics = [
-  'python', 'javascript', 'web development', 'ai', 'cybersecurity', 
-  'soft skills', 'machine learning', 'react', 'database', 'data science',
-  'blockchain', 'cloud computing', 'devops', 'mobile development', 'game development',
-  'quantum computing', 'iot', 'big data', 'algorithms', 'math', 'science',
-  'history', 'literature', 'languages', 'art', 'music', 'philosophy',
-  'biology', 'physics', 'chemistry', 'psychology', 'business', 'economics',
-  'marketing', 'health', 'fitness', 'cooking', 'photography', 'design',
-  'geography', 'astronomy', 'environmental science', 'politics', 'law',
-  'architecture', 'engineering', 'medicine', 'nutrition', 'sports'
-];
-
-// Make sure to export the learningTopics array
-export { learningTopics };
+  return "I'm not sure what calculation you're asking for. Could you provide a specific arithmetic expression?";
+}
