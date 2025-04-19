@@ -1,8 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Bot, Star, Sparkles, ExternalLink, ThumbsUp, ThumbsDown, Share2, Bookmark, Copy } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import MessageHeader from './chat/MessageHeader';
+import MessageAvatar from './chat/MessageAvatar';
+import MessageContent from './chat/MessageContent';
+import MessageActions from './chat/MessageActions';
 
 interface ChatMessageProps {
   message: {
@@ -79,139 +82,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
     return () => clearInterval(interval);
   }, [message.content, animate, message.role]);
 
-  const formatTime = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-  
-  const formatText = (text: string) => {
-    if (highlightKeywords.length === 0) return text;
-    
-    let formattedText = text;
-    
-    highlightKeywords.forEach(keyword => {
-      const regex = new RegExp(keyword, 'gi');
-      formattedText = formattedText.replace(regex, (match) => 
-        `<span class="text-cyber-blue font-semibold hover:scale-105 transition-transform inline-block">${match}</span>`
-      );
-    });
-    
-    formattedText = formattedText.replace(/Achievement Unlocked!|New Badge Earned!|earned the|badge unlocked!|unlocked!/gi, (match) => 
-      `<span class="text-cyber-pink font-bold animate-pulse-glow">${match}</span>`
-    );
-    
-    formattedText = formattedText.replace(/\+\d+ XP|\d+ XP gained|XP bonus/gi, (match) => 
-      `<span class="text-cyber-green font-bold animate-pulse-glow">${match}</span>`
-    );
-    
-    formattedText = formattedText.replace(/https?:\/\/[^\s]+/g, (match) => 
-      `<a href="${match}" target="_blank" class="underline text-cyber-blue hover:text-cyber-purple transition-colors">${match} <span class="inline-block ml-1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span></a>`
-    );
-    
-    return formattedText;
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 20
-      }
-    },
-    hover: {
-      scale: 1.01,
-      transition: { duration: 0.2 }
-    }
-  };
-  
-  const iconVariants = {
-    hidden: { scale: 0 },
-    visible: { 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-        delay: 0.1
-      }
-    },
-    hover: {
-      rotate: [0, -10, 10, -10, 0],
-      transition: { duration: 0.5 }
-    }
-  };
-  
-  const actionsVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: { 
-        duration: 0.2,
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const actionItemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
-  };
-  
-  const bounceVariants = {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { 
-      scale: 1, 
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    },
-    exit: {
-      scale: 0.8,
-      opacity: 0,
-      transition: { duration: 0.2 }
-    }
-  };
-
-  const glowVariants = {
-    initial: { boxShadow: "0 0 0 rgba(0,168,255,0)" },
-    animate: {
-      boxShadow: [
-        "0 0 10px rgba(0,168,255,0.2)",
-        "0 0 20px rgba(0,168,255,0.4)",
-        "0 0 10px rgba(0,168,255,0.2)"
-      ],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        repeatType: "mirror" as const
-      }
-    }
-  };
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-  
-  const copyToClipboard = () => {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(message.content);
-      toast({
-        title: "Text Copied",
-        description: "Message copied to clipboard",
-      });
-    }
-  };
-  
   const handleLike = () => {
     setHasLiked(!hasLiked);
     if (!hasLiked) {
@@ -230,6 +100,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
     });
   };
 
+  const bounceVariants = {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: { 
+      scale: 1, 
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    exit: {
+      scale: 0.8,
+      opacity: 0,
+      transition: { duration: 0.2 }
+    }
+  };
+
   return (
     <motion.div 
       ref={messageRef}
@@ -246,75 +134,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <motion.div 
-        className="flex-shrink-0 mt-1"
-        variants={iconVariants}
-      >
-        {message.role === 'assistant' ? (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-blue to-cyber-purple flex items-center justify-center cyber-border relative">
-            <Bot size={18} className="text-white" />
-            <motion.div 
-              className="absolute -top-1 -right-1 w-3 h-3 bg-cyber-green rounded-full"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [1, 0.7, 1]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyber-purple to-cyber-pink flex items-center justify-center">
-            <User size={18} className="text-white" />
-          </div>
-        )}
-      </motion.div>
+      <MessageAvatar role={message.role} />
       
       <div className="flex-1">
-        <div className="flex justify-between items-center mb-1">
-          <div className="font-orbitron text-sm flex items-center">
-            {message.role === 'assistant' ? (
-              <motion.span 
-                className="text-cyber-blue flex items-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                SkillUp AI
-                <motion.span
-                  animate={{ 
-                    rotate: [0, 10, 0, -10, 0],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{ duration: 5, repeat: Infinity, repeatDelay: 2 }}
-                  className="ml-1"
-                >
-                  <Star size={12} className="text-yellow-400" />
-                </motion.span>
-              </motion.span>
-            ) : (
-              <span className="text-cyber-purple">You</span>
-            )}
-          </div>
-          <div className="text-xs text-gray-500">{formatTime(message.timestamp)}</div>
-        </div>
+        <MessageHeader role={message.role} timestamp={message.timestamp} />
         
-        <div className={`prose prose-invert max-w-none ${!isExpanded && message.content.length > 300 ? 'max-h-32 overflow-hidden relative' : ''}`}>
-          <div dangerouslySetInnerHTML={{ __html: formatText(displayedText) }} />
-          {!isComplete && (
-            <span className="border-r-2 border-cyber-blue ml-1 animate-blink">&nbsp;</span>
-          )}
-          
-          {!isExpanded && message.content.length > 300 && (
-            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-cyber-darker/90 to-transparent"></div>
-          )}
-        </div>
-        
-        {message.content.length > 300 && isComplete && (
-          <button 
-            onClick={toggleExpand}
-            className="mt-2 text-xs text-cyber-blue hover:text-cyber-purple transition-colors"
-          >
-            {isExpanded ? 'Show less' : 'Show more'}
-          </button>
-        )}
+        <MessageContent 
+          content={message.content}
+          displayedText={displayedText}
+          isComplete={isComplete}
+          isExpanded={isExpanded}
+          highlightKeywords={highlightKeywords}
+          onToggleExpand={() => setIsExpanded(!isExpanded)}
+        />
         
         {isComplete && message.role === 'assistant' && message.content.includes('Achievement') && (
           <motion.div
@@ -323,74 +155,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, animate = false }) =
             transition={{ delay: 0.5 }}
             className="mt-2 flex items-center"
           >
-            <Sparkles size={14} className="text-yellow-400 mr-1" />
             <span className="text-xs text-yellow-400">Achievement progress updated!</span>
           </motion.div>
         )}
         
-        {message.role === 'assistant' && (
-          <motion.div 
-            className="absolute -bottom-1 -right-1 w-full h-1 bg-gradient-to-r from-cyber-blue to-cyber-purple rounded-full"
-            variants={glowVariants}
-            initial="initial"
-            animate="animate"
-          />
-        )}
-        
-        <AnimatePresence>
-          {showActions && isComplete && (
-            <motion.div 
-              className="mt-3 flex gap-2 justify-end"
-              variants={actionsVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-            >
-              <motion.button 
-                onClick={handleLike}
-                className={`p-1 rounded-full ${hasLiked ? 'bg-cyber-blue/20 text-cyber-blue' : 'hover:bg-cyber-blue/10'}`}
-                variants={actionItemVariants}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                title="Like"
-              >
-                <ThumbsUp size={14} />
-              </motion.button>
-              
-              <motion.button 
-                onClick={copyToClipboard}
-                className="p-1 rounded-full hover:bg-cyber-blue/10"
-                variants={actionItemVariants}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                title="Copy to clipboard"
-              >
-                <Copy size={14} />
-              </motion.button>
-              
-              <motion.button 
-                onClick={handleBookmark}
-                className={`p-1 rounded-full ${hasBookmarked ? 'bg-cyber-pink/20 text-cyber-pink' : 'hover:bg-cyber-blue/10'}`}
-                variants={actionItemVariants}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                title="Save message"
-              >
-                <Bookmark size={14} />
-              </motion.button>
-              
-              <motion.button 
-                className="p-1 rounded-full hover:bg-cyber-blue/10"
-                variants={actionItemVariants}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                title="Share"
-              >
-                <Share2 size={14} />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <MessageActions 
+          content={message.content}
+          showActions={showActions}
+          hasLiked={hasLiked}
+          hasBookmarked={hasBookmarked}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+        />
       </div>
     </motion.div>
   );
