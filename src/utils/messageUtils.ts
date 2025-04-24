@@ -1,5 +1,5 @@
-
 // This file contains utility functions for handling messages in the SkillUp AI chatbot
+import { roadmaps } from '@/data/roadmapData';
 
 // Function to detect the intent of a user message
 export const detectIntent = (message: string) => {
@@ -302,9 +302,51 @@ Key Points to Consider:
 Would you like me to focus on any specific aspect of this topic? I can provide code examples, diagrams, or step-by-step explanations! 🎯`;
 }
 
-// Helper functions to generate different types of content
+export const generateLearningContent = (topic: string): string => {
+  // Find matching roadmap
+  const roadmapKey = Object.keys(roadmaps).find(key => 
+    key === topic.toLowerCase() || 
+    roadmaps[key].category.toLowerCase().includes(topic.toLowerCase())
+  );
 
-function generateLearningContent(topic: string): string {
+  if (roadmapKey) {
+    const roadmap = roadmaps[roadmapKey];
+    
+    let response = `# ${roadmap.icon} ${roadmap.category} Learning Path\n\n`;
+    response += `${roadmap.description}\n\n`;
+    
+    response += "## Learning Steps:\n\n";
+    roadmap.steps.forEach((step, index) => {
+      response += `${index + 1}. **${step.title}** (${step.duration})\n`;
+      response += `   ${step.description}\n\n`;
+      
+      if (step.prerequisites?.length) {
+        response += "   Prerequisites:\n";
+        step.prerequisites.forEach(prereq => {
+          response += `   - ${prereq}\n`;
+        });
+        response += "\n";
+      }
+      
+      response += "   Free Resources:\n";
+      step.resources
+        .filter(r => r.isFree)
+        .forEach(resource => {
+          response += `   - [${resource.name}](${resource.url}) (${resource.type})\n`;
+        });
+      response += "\n";
+    });
+    
+    response += "\nWould you like to:\n";
+    response += "1. 🎯 Explore a specific step in detail?\n";
+    response += "2. 📚 Get more free learning resources?\n";
+    response += "3. 💡 Take a quiz to test your knowledge?\n";
+    response += "4. 🤝 Connect with other learners?\n\n";
+    response += "Just let me know what interests you most!";
+    
+    return response;
+  }
+
   const learningContent = {
     'python': `# Python Fundamentals\n\nPython is a high-level, interpreted programming language known for its readability and versatility. Here are the key concepts to get started:\n\n## Variables and Data Types\n\n\`\`\`python\n# Variables don't need type declarations\nname = "John"  # string\nage = 30       # integer\nheight = 5.9   # float\nis_student = True  # boolean\n\`\`\`\n\n## Control Flow\n\n\`\`\`python\n# Conditional statements\nif age >= 18:\n    print("Adult")\nelse:\n    print("Minor")\n\n# Loops\nfor i in range(5):\n    print(i)  # Prints 0, 1, 2, 3, 4\n\`\`\`\n\n## Functions\n\n\`\`\`python\ndef greet(name):\n    return f"Hello, {name}!"\n\nmessage = greet("Alice")  # "Hello, Alice!"\n\`\`\`\n\n## Lists and Dictionaries\n\n\`\`\`python\n# Lists\nfruits = ["apple", "banana", "cherry"]\nfruits.append("orange")\n\n# Dictionaries\nperson = {"name": "John", "age": 30}\nperson["email"] = "john@example.com"\n\`\`\`\n\nWould you like to learn more about specific Python concepts?`,
     
@@ -377,46 +419,4 @@ function generateRecommendationContent(topic: string): string {
 }
 
 function generateGeneralKnowledgeContent(topic: string): string {
-  return `# ${topic.charAt(0).toUpperCase() + topic.slice(1)}: An Overview\n\n## Historical Context\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} has evolved significantly over time, with key developments shaping its current form and understanding.\n\n## Key Concepts\n\nThe fundamental principles of ${topic} include:\n\n1. First principle or concept\n2. Second principle or concept\n3. Third principle or concept\n\n## Notable Contributors\n\nSeveral individuals have made significant contributions to ${topic}, including:\n\n- Key figure and their contributions\n- Another important person in the field\n- Modern innovators and their work\n\n## Practical Applications\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} has numerous real-world applications:\n\n- Application in industry\n- Application in research\n- Application in everyday life\n\n## Current Trends\n\nRecent developments in ${topic} include:\n\n- Emerging trends and innovations\n- Evolving methodologies\n- Future directions and possibilities\n\nIs there a particular aspect of ${topic} you'd like to explore further?`;
-}
-
-function generateGeneralKnowledgeResponse(query: string): string {
-  // This simulates retrieving knowledge about general topics
-  // In a real implementation, this would connect to a knowledge base or API
-  
-  if (query.includes('capital of')) {
-    return "Capitals are administrative centers of countries or regions. While I can provide educational information, I'm primarily designed to help with learning topics rather than specific trivia. Would you like to learn about geography or political systems?";
-  }
-  
-  if (query.includes('population')) {
-    return "Population statistics change over time. I can help you learn about demographics, statistics, and data analysis if you're interested in studying population trends.";
-  }
-  
-  if (query.includes('who is') || query.includes('who was')) {
-    return "While I'm primarily focused on educational topics rather than specific people, I can help you learn research methods to find biographical information. Would you like me to help you learn how to research historical or contemporary figures?";
-  }
-  
-  return "That's an interesting question! While I'm primarily designed to help with educational topics, I'm happy to provide general information when it helps with your learning journey. Would you like to explore any educational resources related to this topic?";
-}
-
-function tryToCalculate(query: string): string {
-  // Extract potential calculation
-  const calculationMatch = query.match(/calculate\s+([\d\s\+\-\*\/\(\)\.]+)/i) || 
-                          query.match(/([\d\s\+\-\*\/\(\)\.]+)/);
-  
-  if (calculationMatch) {
-    try {
-      // Safety check - only allow basic arithmetic
-      const calculation = calculationMatch[1].replace(/[^\d\s\+\-\*\/\(\)\.]/g, '');
-      if (calculation) {
-        // Use Function constructor instead of eval for safer execution
-        const result = new Function(`return ${calculation}`)();
-        return `The result of ${calculation} is ${result}.`;
-      }
-    } catch (e) {
-      return "I couldn't calculate that expression. Could you rephrase it?";
-    }
-  }
-  
-  return "I'm not sure what calculation you're asking for. Could you provide a specific arithmetic expression?";
-}
+  return `# ${topic.charAt(0).toUpperCase() + topic.slice(1)}: An Overview\n\n## Historical Context\n\n${topic.charAt(0).toUpperCase() + topic.slice(1)} has evolved significantly over time, with key developments shaping its current form and understanding.\n\n## Key Concepts\n\nThe fundamental principles of ${topic} include:\n\n1. First principle or concept\n2. Second principle or concept\n3. Third principle or concept\n\n## Notable Contributors\n\n
