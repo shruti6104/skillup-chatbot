@@ -121,6 +121,67 @@ export const resetContext = () => {
 
 // Generate response based on intent and topic
 export const generateResponse = (intent: string, topic: string | null, messages: any[]) => {
+  // Add personality traits to responses
+  const personalityTraits = {
+    encouraging: ["That's a great question!", "Excellent choice!", "I'm excited to help you learn about this!"],
+    supportive: ["Don't worry if this seems complex at first.", "Let's break this down together.", "You're making great progress!"],
+    engaging: ["What aspects interest you most?", "Have you had any experience with this before?", "Would you like to try a hands-on example?"],
+    knowledgeable: ["According to recent studies...", "In practice, most developers...", "A common approach is..."]
+  };
+
+  const addPersonality = (response: string) => {
+    const trait = Object.values(personalityTraits)[Math.floor(Math.random() * Object.values(personalityTraits).length)];
+    const phrase = trait[Math.floor(Math.random() * trait.length)];
+    return `${phrase} ${response}`;
+  };
+
+  // Check conversation context
+  const conversationHistory = messages.slice(-5);
+  const isFollowUpQuestion = conversationHistory.length > 2 && 
+    conversationHistory.some(m => m.role === 'user' && m.content.toLowerCase().includes('why') || m.content.toLowerCase().includes('how'));
+
+  // Enhanced response generation based on context and intent
+  if (intent === 'learning' && topic) {
+    let response = generateLearningContent(topic);
+    
+    // Add interactive elements
+    response += '\n\nWould you like to:\n';
+    response += '1. 🎯 Try a hands-on exercise\n';
+    response += '2. 📚 Explore more advanced concepts\n';
+    response += '3. 🤝 See real-world applications\n';
+    response += '4. 🎮 Take a quick quiz to test your knowledge\n\n';
+    response += "Just let me know what interests you, and I'll guide you further!";
+    
+    return addPersonality(response);
+  }
+
+  if (intent === 'quiz' && topic) {
+    const response = generateQuizContent(topic);
+    return addPersonality(response + "\n\nDon't worry about getting everything perfect - this is a learning opportunity! 🌟");
+  }
+
+  // Enhanced feedback handling
+  if (intent === 'feedback') {
+    const encouragements = [
+      "I'm glad I could help! Would you like to explore any related topics?",
+      "Your enthusiasm for learning is inspiring! What would you like to discover next?",
+      "That's great to hear! Remember, consistent practice is key to mastery. Shall we continue exploring?",
+      "Thank you for your feedback! Learning is a journey, and I'm here to support you every step of the way. What's next on your learning path?"
+    ];
+    return encouragements[Math.floor(Math.random() * encouragements.length)];
+  }
+
+  // Add more context-aware responses
+  if (isFollowUpQuestion) {
+    const lastTopic = conversationHistory
+      .filter(m => m.role === 'assistant')
+      .pop()?.content;
+    
+    if (lastTopic) {
+      return addPersonality("Let me elaborate on that further. " + generateDetailedExplanation(lastTopic));
+    }
+  }
+
   // Check for repeating questions to avoid redundancy
   const lastUserMessage = messages.filter(m => m.role === 'user').pop();
   const lastBotMessage = messages.filter(m => m.role === 'assistant').pop();
@@ -225,8 +286,20 @@ export const generateResponse = (intent: string, topic: string | null, messages:
     return generateLearningContent(topic);
   }
   
-  return "I'm here to help you learn! Tell me what topic you're interested in, and I'll provide resources, explanations, or challenges to help you grow your skills.";
+  return addPersonality("I'm your AI learning companion, ready to help you master new skills and knowledge. What would you like to explore today? We can dive into programming, technology, soft skills, or any other topic that interests you! 🚀");
 };
+
+function generateDetailedExplanation(topic: string): string {
+  return `Let me break this down further with some practical examples and real-world applications. 
+
+Key Points to Consider:
+1. The fundamental concepts and how they interconnect
+2. Common challenges and how to overcome them
+3. Best practices from industry experts
+4. Practical application scenarios
+
+Would you like me to focus on any specific aspect of this topic? I can provide code examples, diagrams, or step-by-step explanations! 🎯`;
+}
 
 // Helper functions to generate different types of content
 
@@ -234,7 +307,7 @@ function generateLearningContent(topic: string): string {
   const learningContent = {
     'python': `# Python Fundamentals\n\nPython is a high-level, interpreted programming language known for its readability and versatility. Here are the key concepts to get started:\n\n## Variables and Data Types\n\n\`\`\`python\n# Variables don't need type declarations\nname = "John"  # string\nage = 30       # integer\nheight = 5.9   # float\nis_student = True  # boolean\n\`\`\`\n\n## Control Flow\n\n\`\`\`python\n# Conditional statements\nif age >= 18:\n    print("Adult")\nelse:\n    print("Minor")\n\n# Loops\nfor i in range(5):\n    print(i)  # Prints 0, 1, 2, 3, 4\n\`\`\`\n\n## Functions\n\n\`\`\`python\ndef greet(name):\n    return f"Hello, {name}!"\n\nmessage = greet("Alice")  # "Hello, Alice!"\n\`\`\`\n\n## Lists and Dictionaries\n\n\`\`\`python\n# Lists\nfruits = ["apple", "banana", "cherry"]\nfruits.append("orange")\n\n# Dictionaries\nperson = {"name": "John", "age": 30}\nperson["email"] = "john@example.com"\n\`\`\`\n\nWould you like to learn more about specific Python concepts?`,
     
-    'web development': `# Web Development Fundamentals\n\nWeb development involves creating websites and web applications. Here's an overview of the core technologies:\n\n## HTML (Structure)\n\n\`\`\`html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My Website</title>\n</head>\n<body>\n    <h1>Welcome to my site</h1>\n    <p>This is a paragraph.</p>\n</body>\n</html>\n\`\`\`\n\n## CSS (Styling)\n\n\`\`\`css\n/* Selecting elements */\nh1 {\n    color: blue;\n    font-size: 24px;\n}\n\n/* Classes and IDs */\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n}\n\`\`\`\n\n## JavaScript (Interactivity)\n\n\`\`\`javascript\n// Variables and functions\nconst greeting = "Hello, World!";\n\nfunction showMessage() {\n    alert(greeting);\n}\n\n// DOM manipulation\ndocument.getElementById("button").addEventListener("click", showMessage);\n\`\`\`\n\n## Frontend Frameworks\n- React\n- Angular\n- Vue.js\n\n## Backend Technologies\n- Node.js\n- Python (Django, Flask)\n- PHP\n- Ruby on Rails\n\nWould you like to dive deeper into any specific web technology?`,
+    'web development': `# Web Development Fundamentals\n\nWeb development involves creating websites and web applications. Here's an overview of the core technologies:\n\n## HTML (Structure)\n\n\`\`\`html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My Website</title>\n</head>\n<body>\n    <h1>Welcome to my site</h1>\n    <p>This is a paragraph.</p>\n</body>\n</html>\n\`\`\`\n\n## CSS (Styling)\n\n\`\`\`css\n/* Selecting elements */\nh1 {\n    color: blue;\n    font-size: 24px;\n}\n\n/* Classes and IDs */\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n}\`\`\`\n\n## JavaScript (Interactivity)\n\n\`\`\`javascript\n// Variables and functions\nconst greeting = "Hello, World!";\n\nfunction showMessage() {\n    alert(greeting);\n}\n\n// DOM manipulation\ndocument.getElementById("button").addEventListener("click", showMessage);\n\`\`\`\n\n## Frontend Frameworks\n- React\n- Angular\n- Vue.js\n\n## Backend Technologies\n- Node.js\n- Python (Django, Flask)\n- PHP\n- Ruby on Rails\n\nWould you like to dive deeper into any specific web technology?`,
     
     'ai': `# Artificial Intelligence Fundamentals\n\nArtificial Intelligence (AI) refers to machines designed to mimic human intelligence and perform tasks that typically require human cognition.\n\n## Key AI Concepts\n\n1. **Machine Learning**: Systems that learn from data to improve performance.\n   - Supervised Learning\n   - Unsupervised Learning\n   - Reinforcement Learning\n\n2. **Neural Networks**: Computing systems inspired by biological neural networks.\n   - Neurons (nodes)\n   - Layers (input, hidden, output)\n   - Weights and biases\n\n3. **Deep Learning**: Neural networks with multiple hidden layers.\n   - Convolutional Neural Networks (CNNs)\n   - Recurrent Neural Networks (RNNs)\n   - Transformers\n\n## Popular AI Applications\n\n- **Computer Vision**: Image recognition, object detection\n- **Natural Language Processing**: Translation, sentiment analysis\n- **Robotics**: Autonomous movement and decision making\n- **Recommendation Systems**: Personalized suggestions\n\n## AI Ethics Considerations\n\n- Bias and fairness\n- Privacy concerns\n- Transparency and explainability\n- Job displacement\n\nWould you like to explore any specific area of AI in more depth?`,
     
@@ -325,24 +398,4 @@ function generateGeneralKnowledgeResponse(query: string): string {
   return "That's an interesting question! While I'm primarily designed to help with educational topics, I'm happy to provide general information when it helps with your learning journey. Would you like to explore any educational resources related to this topic?";
 }
 
-function tryToCalculate(query: string): string {
-  // Extract potential calculation
-  const calculationMatch = query.match(/calculate\s+([\d\s\+\-\*\/\(\)\.]+)/i) || 
-                          query.match(/([\d\s\+\-\*\/\(\)\.]+)/);
-  
-  if (calculationMatch) {
-    try {
-      // Safety check - only allow basic arithmetic
-      const calculation = calculationMatch[1].replace(/[^\d\s\+\-\*\/\(\)\.]/g, '');
-      if (calculation) {
-        // Use Function constructor instead of eval for safer execution
-        const result = new Function(`return ${calculation}`)();
-        return `The result of ${calculation} is ${result}.`;
-      }
-    } catch (e) {
-      return "I couldn't calculate that expression. Could you rephrase it?";
-    }
-  }
-  
-  return "I'm not sure what calculation you're asking for. Could you provide a specific arithmetic expression?";
-}
+function
