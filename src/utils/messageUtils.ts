@@ -1,3 +1,4 @@
+
 // This file contains utility functions for handling messages in the SkillUp AI chatbot
 
 // Function to detect the intent of a user message
@@ -398,4 +399,24 @@ function generateGeneralKnowledgeResponse(query: string): string {
   return "That's an interesting question! While I'm primarily designed to help with educational topics, I'm happy to provide general information when it helps with your learning journey. Would you like to explore any educational resources related to this topic?";
 }
 
-function
+function tryToCalculate(query: string): string {
+  // Extract potential calculation
+  const calculationMatch = query.match(/calculate\s+([\d\s\+\-\*\/\(\)\.]+)/i) || 
+                          query.match(/([\d\s\+\-\*\/\(\)\.]+)/);
+  
+  if (calculationMatch) {
+    try {
+      // Safety check - only allow basic arithmetic
+      const calculation = calculationMatch[1].replace(/[^\d\s\+\-\*\/\(\)\.]/g, '');
+      if (calculation) {
+        // Use Function constructor instead of eval for safer execution
+        const result = new Function(`return ${calculation}`)();
+        return `The result of ${calculation} is ${result}.`;
+      }
+    } catch (e) {
+      return "I couldn't calculate that expression. Could you rephrase it?";
+    }
+  }
+  
+  return "I'm not sure what calculation you're asking for. Could you provide a specific arithmetic expression?";
+}
