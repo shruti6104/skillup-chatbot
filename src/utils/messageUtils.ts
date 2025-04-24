@@ -1,4 +1,3 @@
-
 // This file contains utility functions for handling messages in the SkillUp AI chatbot
 
 // Function to detect the intent of a user message
@@ -247,7 +246,7 @@ function generateLearningContent(topic: string): string {
 
 function generateQuizContent(topic: string): string {
   const quizzes = {
-    'python': `**Python Quiz**\n\n1. What is the output of `print(2**3)`?\n   A) 6\n   B) 8\n   C) 9\n   D) 5\n\n2. Which of these is NOT a Python data type?\n   A) List\n   B) Dictionary\n   C) Array\n   D) Tuple\n\n3. What does the `len()` function do?\n   A) Returns the largest item in an iterable\n   B) Returns the smallest item in an iterable\n   C) Returns the number of items in an iterable\n   D) Returns the sum of all items in an iterable\n\nReply with your answers, and I'll check them!`,
+    'python': `**Python Quiz**\n\n1. What is the output of \`print(2**3)\`?\n   A) 6\n   B) 8\n   C) 9\n   D) 5\n\n2. Which of these is NOT a Python data type?\n   A) List\n   B) Dictionary\n   C) Array\n   D) Tuple\n\n3. What does the \`len()\` function do?\n   A) Returns the largest item in an iterable\n   B) Returns the smallest item in an iterable\n   C) Returns the number of items in an iterable\n   D) Returns the sum of all items in an iterable\n\nReply with your answers, and I'll check them!`,
     
     'web development': `**Web Development Quiz**\n\n1. Which HTML tag is used to link an external CSS file?\n   A) <css>\n   B) <style>\n   C) <link>\n   D) <script>\n\n2. In CSS, what does the property 'display: flex' do?\n   A) Makes an element invisible\n   B) Creates a flexible box layout\n   C) Makes text bold\n   D) Adds animation to an element\n\n3. What does API stand for in web development?\n   A) Application Programming Interface\n   B) Application Protocol Interface\n   C) Advanced Programming Interface\n   D) Application Processing Interface\n\nReply with your answers, and I'll check them!`,
     
